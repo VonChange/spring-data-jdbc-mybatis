@@ -9,7 +9,7 @@
 
 	<name>spring data mybatis mini</name>
 	<description>Spring Data module for JDBC repositories.</description>
-	<url>https://projects.spring.io/spring-data-jdbc</url>
+	<url>https://github.com/VonChange/spring-data-mybatis-mini</url>
 	<parent>
 		<groupId>com.vonchange.common</groupId>
 		<artifactId>parent-jar</artifactId>
