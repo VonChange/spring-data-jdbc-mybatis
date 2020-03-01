@@ -61,6 +61,10 @@ public class DemoApplication {
 Add the Maven dependency:
 
 ```
+ <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-jdbc</artifactId>
+ </dependency>
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>

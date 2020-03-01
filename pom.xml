@@ -23,7 +23,6 @@
 
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
