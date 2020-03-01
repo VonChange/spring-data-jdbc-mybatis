@@ -3,7 +3,6 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.springframework.data</groupId>
     <artifactId>spring-data-mybatis-mini</artifactId>
     <version>1.0-SNAPSHOT</version>
 
