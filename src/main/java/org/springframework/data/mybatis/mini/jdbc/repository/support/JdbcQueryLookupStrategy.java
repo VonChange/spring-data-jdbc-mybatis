@@ -62,7 +62,6 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 		ConfigLocation configLocation=	repositoryMetadata.getRepositoryInterface().getAnnotation(ConfigLocation.class);
 		String configLoc=null!=configLocation?configLocation.value():"sql.sql";
 		JdbcQueryMethod queryMethod = new JdbcQueryMethod(method, repositoryMetadata, projectionFactory);
-
 		ConfigInfo configInfo= new ConfigInfo();
 		configInfo.setMethod(method.getName());
 		configInfo.setLocation(configLoc);

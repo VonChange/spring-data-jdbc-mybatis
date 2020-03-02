@@ -79,12 +79,11 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		}
 
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-
-			return operations.queryList(configInfo.getType(), sqlId,parameters);
+			return operations.queryList(queryMethod.getReturnedObjectType(), sqlId,parameters);
 		}
 
 		try {
-			return operations.queryOne(configInfo.getType(),sqlId,parameters);
+			return operations.queryOne(queryMethod.getReturnedObjectType(),sqlId,parameters);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
