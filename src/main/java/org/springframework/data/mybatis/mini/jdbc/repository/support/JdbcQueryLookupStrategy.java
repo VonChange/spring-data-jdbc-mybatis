@@ -15,7 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepostitory;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import org.springframework.data.mybatis.mini.jdbc.repository.query.ConfigLocation;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
@@ -39,13 +39,13 @@ import java.lang.reflect.Method;
  */
 class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 
-	private final JdbcRepostitory operations;
+	private final JdbcRepository operations;
 
 	/**
 	 * Creates a new {@link JdbcQueryLookupStrategy} for the given {@link RelationalMappingContext},
 	 *
 	 */
-	JdbcQueryLookupStrategy(JdbcRepostitory operations) {
+	JdbcQueryLookupStrategy(JdbcRepository operations) {
 
 		Assert.notNull(operations, "operations must not be null!");
 		this.operations = operations;

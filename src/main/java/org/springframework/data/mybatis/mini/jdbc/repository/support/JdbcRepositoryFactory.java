@@ -15,7 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepostitory;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalPersistentEntity;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 
 	private final RelationalMappingContext context;
-	private final JdbcRepostitory operations;
+	private final JdbcRepository operations;
 
 
 
@@ -52,7 +52,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	 * @param context must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	public JdbcRepositoryFactory( RelationalMappingContext context,JdbcRepostitory operations) {
+	public JdbcRepositoryFactory( RelationalMappingContext context,JdbcRepository operations) {
 
 
 		this.context = context;

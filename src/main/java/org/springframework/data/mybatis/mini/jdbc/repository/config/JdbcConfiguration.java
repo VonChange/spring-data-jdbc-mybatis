@@ -15,16 +15,16 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.config;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepostitory;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.springjdbc.repository.JdbcRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mybatis.mini.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.mybatis.mini.relational.core.conversion.BasicRelationalConverter;
 import org.springframework.data.mybatis.mini.relational.core.conversion.RelationalConverter;
 import org.springframework.data.mybatis.mini.relational.core.mapping.NamingStrategy;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
-import org.springframework.data.mybatis.mini.jdbc.core.convert.JdbcCustomConversions;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -42,7 +42,7 @@ import java.util.Optional;
 public class JdbcConfiguration {
 
 	@Bean
-	public JdbcRepostitory initJdbcRepostitory(DataSource dataSource){
+	public JdbcRepository initJdbcRepostitory(DataSource dataSource){
 		return new JdbcRepositoryImpl(dataSource);
 	}
 	/**

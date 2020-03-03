@@ -15,7 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepostitory;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mapping.PersistentEntity;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
 
-	private final @NonNull JdbcRepostitory entityOperations;
+	private final @NonNull JdbcRepository entityOperations;
 	private final @NonNull PersistentEntity<T, ?> entity;
 
 	/*

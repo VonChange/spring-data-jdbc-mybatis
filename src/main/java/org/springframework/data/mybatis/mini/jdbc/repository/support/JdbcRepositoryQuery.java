@@ -15,13 +15,16 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepostitory;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mybatis.mini.jdbc.repository.config.BindParameterWrapper;
 import org.springframework.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +43,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	private static final String PARAMETER_NEEDS_TO_BE_NAMED = "For queries with named parameters you need to provide names for method parameters. Use @Param for query method parameters, or when on Java 8+ use the javac flag -parameters.";
 
 	private final JdbcQueryMethod queryMethod;
-	private final JdbcRepostitory operations;
+	private final JdbcRepository operations;
 	private final ConfigInfo configInfo;
 
 	/**
@@ -50,7 +53,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	 * @param queryMethod must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	JdbcRepositoryQuery(JdbcQueryMethod queryMethod, JdbcRepostitory operations, ConfigInfo configInfo) {
+	JdbcRepositoryQuery(JdbcQueryMethod queryMethod, JdbcRepository operations, ConfigInfo configInfo) {
 
 		Assert.notNull(queryMethod, "Query method must not be null!");
 		Assert.notNull(operations, "NamedParameterJdbcOperations must not be null!");
@@ -66,24 +69,29 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	 */
 	@Override
 	public Object execute(Object[] objects) {
-		Map<String,Object> parameters = bindParameter(objects);
+		BindParameterWrapper parameters = bindParameter(objects);
         String sqlId= configInfo.getLocation()+"."+configInfo.getMethod();
 		if (configInfo.getMethod().startsWith("update")) {
-			int updatedCount = operations.update(sqlId,parameters);
+			int updatedCount = operations.update(sqlId,parameters.getParameter());
 			Class<?> returnedObjectType = queryMethod.getReturnedObjectType();
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
 		}
 		if (configInfo.getMethod().startsWith("insert")||configInfo.getMethod().startsWith("save")) {
-			return operations.insert(sqlId,parameters);
+			return operations.insert(sqlId,parameters.getParameter());
 		}
 
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-			return operations.queryList(queryMethod.getReturnedObjectType(), sqlId,parameters);
+			return operations.queryList(queryMethod.getReturnedObjectType(), sqlId,parameters.getParameter());
 		}
-
+		if(queryMethod.isPageQuery()){
+			return operations.queryPage(queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
+		}
+		if(com.vonchange.jdbc.abstractjdbc.util.clazz.ClassUtils.isBaseType(queryMethod.getReturnedObjectType())){
+			return operations.queryOneColumn(queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
+		}
 		try {
-			return operations.queryOne(queryMethod.getReturnedObjectType(),sqlId,parameters);
+			return operations.queryOne(queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -99,13 +107,25 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	}
 
 
-	private Map<String,Object> bindParameter(Object[] objects) {
+	private BindParameterWrapper bindParameter(Object[] objects) {
+
 		Map<String,Object> map = new HashMap<>();
+		BindParameterWrapper bindParameterWrapper = new BindParameterWrapper();
+		if(objects.length>0){
+			Class<?> type = queryMethod.getParameters().getParameter(0).getType();
+			if(ClassUtils.isAssignable(Pageable.class, type)){
+				Pageable pageable =(Pageable) objects[0];
+				map.put("pageNumber", pageable.getPageNumber());
+				map.put("pageSize", pageable.getPageSize());
+				bindParameterWrapper.setPageable(pageable);
+			}
+		}
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
-			String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
-			map.put(parameterName, objects[p.getIndex()]);
+				String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
+				map.put(parameterName, objects[p.getIndex()]);
 		});
-		return map;
+		bindParameterWrapper.setParameter(map);
+		return bindParameterWrapper;
 	}
 
 

@@ -15,7 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepostitory;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -46,7 +46,7 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 
 	private RelationalMappingContext mappingContext;
 	private RelationalConverter converter;
-	private JdbcRepostitory operations;
+	private JdbcRepository operations;
 
 	/**
 	 * Creates a new {@link JdbcRepositoryFactoryBean} for the given repository interface.
@@ -88,7 +88,7 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 
 
 	@Autowired
-	public void setJdbcOperations(JdbcRepostitory operations) {
+	public void setJdbcOperations(JdbcRepository operations) {
 		this.operations = operations;
 	}
 
