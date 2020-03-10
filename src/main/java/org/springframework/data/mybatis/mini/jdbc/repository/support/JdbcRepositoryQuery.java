@@ -16,6 +16,7 @@
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mybatis.mini.jdbc.repository.config.BindParameterWrapper;
@@ -82,10 +83,16 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		}
 
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
+			/*if(ClassUtils.isAssignable(Map.class,queryMethod.getReturnedObjectType())){
+				return operations.queryList(sqlId,parameters.getParameter());
+			}*/
 			return operations.queryList(queryMethod.getReturnedObjectType(), sqlId,parameters.getParameter());
 		}
 		if(queryMethod.isPageQuery()){
-			return operations.queryPage(queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
+			if(null==parameters.getAbstractPageWork()){
+				return operations.queryPage(queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
+			}
+			return operations.queryBigData(queryMethod.getReturnedObjectType(),sqlId,parameters.getAbstractPageWork(),parameters.getParameter());
 		}
 		if(com.vonchange.jdbc.abstractjdbc.util.clazz.ClassUtils.isBaseType(queryMethod.getReturnedObjectType())){
 			return operations.queryOneColumn(queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
@@ -119,8 +126,13 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 				map.put("pageSize", pageable.getPageSize());
 				bindParameterWrapper.setPageable(pageable);
 			}
+			if(ClassUtils.isAssignable(AbstractPageWork.class, type)){
+				bindParameterWrapper.setAbstractPageWork((AbstractPageWork) objects[0]);
+			}
 		}
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
+			//Param annotation =
+			//return Optional.ofNullable(annotation == null ? parameter.getParameterName() : annotation.value());
 				String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
 				map.put(parameterName, objects[p.getIndex()]);
 		});

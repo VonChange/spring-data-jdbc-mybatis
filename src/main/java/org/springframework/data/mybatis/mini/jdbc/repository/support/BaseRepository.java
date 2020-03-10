@@ -18,8 +18,6 @@ package org.springframework.data.mybatis.mini.jdbc.repository.support;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
-import java.util.Optional;
-
 /**
  * Interface for generic CRUD operations on a repository for a specific type.
  *
@@ -69,6 +67,6 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 	 * @return the entity with the given id or {@literal Optional#empty()} if none found.
 	 * @throws IllegalArgumentException if {@literal id} is {@literal null}.
 	 */
-	Optional<T> findById(ID id);
+	T findById(ID id);
 
 }

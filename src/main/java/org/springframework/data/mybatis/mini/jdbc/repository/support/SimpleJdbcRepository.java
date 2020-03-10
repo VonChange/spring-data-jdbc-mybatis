@@ -20,14 +20,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mapping.PersistentEntity;
 
-import java.util.Optional;
-
 /**
  * @author Jens Schauder
  * @author Oliver Gierke
  */
 @RequiredArgsConstructor
-public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
+public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 
 	private final @NonNull JdbcRepository entityOperations;
 	private final @NonNull PersistentEntity<T, ?> entity;
@@ -62,8 +60,8 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
 	 * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
 	 */
 	@Override
-	public Optional<T> findById(ID id) {
-		return Optional.ofNullable(entityOperations.queryById(entity.getType(),id));
+	public T findById(ID id) {
+		return entityOperations.queryById(entity.getType(),id);
 	}
 
 }

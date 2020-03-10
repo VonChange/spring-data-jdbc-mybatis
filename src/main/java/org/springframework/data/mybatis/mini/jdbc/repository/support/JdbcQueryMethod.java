@@ -15,6 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
+
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
@@ -39,6 +40,8 @@ public class JdbcQueryMethod extends QueryMethod {
 
 		this.method = method;
 	}
+
+
 
 
 }
