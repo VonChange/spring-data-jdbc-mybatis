@@ -122,8 +122,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			Class<?> type = queryMethod.getParameters().getParameter(0).getType();
 			if(ClassUtils.isAssignable(Pageable.class, type)){
 				Pageable pageable =(Pageable) objects[0];
-				map.put("pageNumber", pageable.getPageNumber());
-				map.put("pageSize", pageable.getPageSize());
 				bindParameterWrapper.setPageable(pageable);
 			}
 			if(ClassUtils.isAssignable(AbstractPageWork.class, type)){
