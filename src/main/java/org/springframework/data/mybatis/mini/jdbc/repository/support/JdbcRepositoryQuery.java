@@ -72,7 +72,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	public Object execute(Object[] objects) {
 		BindParameterWrapper parameters = bindParameter(objects);
         String sqlId= configInfo.getLocation()+"."+configInfo.getMethod();
-		if (configInfo.getMethod().startsWith("update")) {
+		if (configInfo.getMethod().startsWith("update")||configInfo.getMethod().startsWith("delete")) {
 			int updatedCount = operations.update(sqlId,parameters.getParameter());
 			Class<?> returnedObjectType = queryMethod.getReturnedObjectType();
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
