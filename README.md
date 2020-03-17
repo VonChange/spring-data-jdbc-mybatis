@@ -100,12 +100,6 @@ public class UserBaseDO {
 }
 ```
 
-```
--- findByFirstnameLike
-
-SELECT * FROM person WHERE firstname LIKE CONCAT('%', #{lastname}, '%'))
-
-```
 
 ```
 
