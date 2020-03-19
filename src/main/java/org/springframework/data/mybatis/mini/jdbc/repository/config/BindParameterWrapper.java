@@ -9,6 +9,15 @@ public class BindParameterWrapper {
     private  Pageable pageable;
     private  AbstractPageWork abstractPageWork;
     private Map<String,Object> parameter;
+    private Object firstParam;
+
+    public Object getFirstParam() {
+        return firstParam;
+    }
+
+    public void setFirstParam(Object firstParam) {
+        this.firstParam = firstParam;
+    }
 
     public AbstractPageWork getAbstractPageWork() {
         return abstractPageWork;

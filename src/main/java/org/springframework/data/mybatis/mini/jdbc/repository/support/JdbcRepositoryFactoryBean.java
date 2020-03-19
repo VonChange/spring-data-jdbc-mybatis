@@ -19,7 +19,7 @@ import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-
+import org.springframework.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import org.springframework.data.mybatis.mini.relational.core.conversion.RelationalConverter;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.repository.Repository;
@@ -47,6 +47,7 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	private RelationalMappingContext mappingContext;
 	private RelationalConverter converter;
 	private JdbcRepository operations;
+	private  DataSourceWrapperHelper dataSourceWrapperHelper;
 
 	/**
 	 * Creates a new {@link JdbcRepositoryFactoryBean} for the given repository interface.
@@ -74,7 +75,7 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	protected RepositoryFactorySupport doCreateRepositoryFactory() {
 
 		JdbcRepositoryFactory jdbcRepositoryFactory = new JdbcRepositoryFactory( mappingContext,
-				operations);
+				operations,dataSourceWrapperHelper);
 		return jdbcRepositoryFactory;
 	}
 
@@ -86,7 +87,10 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	}
 
 
-
+	@Autowired
+	public void setDataSourceWrapperHelper(DataSourceWrapperHelper dataSourceWrapperHelper) {
+		this.dataSourceWrapperHelper = dataSourceWrapperHelper;
+	}
 	@Autowired
 	public void setJdbcOperations(JdbcRepository operations) {
 		this.operations = operations;

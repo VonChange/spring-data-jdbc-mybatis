@@ -17,6 +17,7 @@ package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -77,33 +79,37 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	private Object executeDo(Object[] objects){
 		BindParameterWrapper parameters = bindParameter(objects);
 		String sqlId= configInfo.getLocation()+"."+configInfo.getMethod();
+		DataSourceWrapper dataSourceWrapper = configInfo.getDataSourceWrapper();
+		if(null==dataSourceWrapper&&queryMethod.isReadDataSource()){
+			dataSourceWrapper=operations.getReadDataSource();
+		}
+		if (queryMethod.isBatchUpdate()){
+			return operations.batchUpdate(dataSourceWrapper,sqlId,(List<Object>)parameters.getFirstParam());
+		}
 		if (configInfo.getMethod().startsWith("update")||configInfo.getMethod().startsWith("delete")) {
-			int updatedCount = operations.update(sqlId,parameters.getParameter());
+			int updatedCount = operations.update(dataSourceWrapper,sqlId,parameters.getParameter());
 			Class<?> returnedObjectType = queryMethod.getReturnedObjectType();
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
 		}
 		if (configInfo.getMethod().startsWith("insert")||configInfo.getMethod().startsWith("save")) {
-			return operations.insert(sqlId,parameters.getParameter());
+			return operations.insert(dataSourceWrapper,sqlId,parameters.getParameter());
 		}
 
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-			/*if(ClassUtils.isAssignable(Map.class,queryMethod.getReturnedObjectType())){
-				return operations.queryList(sqlId,parameters.getParameter());
-			}*/
-			return operations.queryList(queryMethod.getReturnedObjectType(), sqlId,parameters.getParameter());
+			return operations.queryList(dataSourceWrapper,queryMethod.getReturnedObjectType(), sqlId,parameters.getParameter());
 		}
 		if(queryMethod.isPageQuery()){
 			if(null==parameters.getAbstractPageWork()){
-				return operations.queryPage(queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
+				return operations.queryPage(dataSourceWrapper,queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
 			}
-			return operations.queryBigData(queryMethod.getReturnedObjectType(),sqlId,parameters.getAbstractPageWork(),parameters.getParameter());
+			return operations.queryBigData(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getAbstractPageWork(),parameters.getParameter());
 		}
 		if(com.vonchange.jdbc.abstractjdbc.util.clazz.ClassUtils.isBaseType(queryMethod.getReturnedObjectType())){
-			return operations.queryOneColumn(queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
+			return operations.queryOneColumn(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
 		}
 		try {
-			return operations.queryOne(queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
+			return operations.queryOne(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -132,10 +138,12 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			if(ClassUtils.isAssignable(AbstractPageWork.class, type)){
 				bindParameterWrapper.setAbstractPageWork((AbstractPageWork) objects[0]);
 			}
+			bindParameterWrapper.setFirstParam(objects[0]);
+		}
+		if(queryMethod.isBatchUpdate()){
+			return bindParameterWrapper;
 		}
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
-			//Param annotation =
-			//return Optional.ofNullable(annotation == null ? parameter.getParameterName() : annotation.value());
 				String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
 				map.put(parameterName, objects[p.getIndex()]);
 		});

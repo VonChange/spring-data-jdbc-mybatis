@@ -16,8 +16,11 @@
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.mybatis.tpl.EntityUtil;
 import org.springframework.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
+import org.springframework.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import org.springframework.data.mybatis.mini.jdbc.repository.query.ConfigLocation;
+import org.springframework.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
@@ -40,15 +43,17 @@ import java.lang.reflect.Method;
 class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 
 	private final JdbcRepository operations;
+	private final DataSourceWrapperHelper dataSourceWrapperHelper;
 
 	/**
 	 * Creates a new {@link JdbcQueryLookupStrategy} for the given {@link RelationalMappingContext},
 	 *
 	 */
-	JdbcQueryLookupStrategy(JdbcRepository operations) {
+	JdbcQueryLookupStrategy(JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {
 
 		Assert.notNull(operations, "operations must not be null!");
 		this.operations = operations;
+		this.dataSourceWrapperHelper=dataSourceWrapperHelper;
 	}
 
 	/*
@@ -58,14 +63,22 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 	@Override
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata repositoryMetadata,
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
-
+        String interfaceName =repositoryMetadata.getRepositoryInterface().getSimpleName();
+		Class<?> domainType =repositoryMetadata.getDomainType();
+		if(!domainType.equals(BaseModel.class)){
+			EntityUtil.initEntityInfo(domainType);
+		}
 		ConfigLocation configLocation=	repositoryMetadata.getRepositoryInterface().getAnnotation(ConfigLocation.class);
-		String configLoc=null!=configLocation?configLocation.value():"sql.sql";
+		DataSourceKey dataSourceKey=	repositoryMetadata.getRepositoryInterface().getAnnotation(DataSourceKey.class);
+		String configLoc=null!=configLocation?configLocation.value():"sql."+interfaceName;
+		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		JdbcQueryMethod queryMethod = new JdbcQueryMethod(method, repositoryMetadata, projectionFactory);
 		ConfigInfo configInfo= new ConfigInfo();
 		configInfo.setMethod(method.getName());
 		configInfo.setLocation(configLoc);
+		configInfo.setRepositoryName(interfaceName);
 		configInfo.setType(repositoryMetadata.getDomainType());
+		configInfo.setDataSourceWrapper(null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null);
 		return new JdbcRepositoryQuery(queryMethod, operations,configInfo);
 	}
 

@@ -143,7 +143,6 @@ class BasicRelationalPersistentProperty extends AnnotationBasedPersistentPropert
 
 	@Nullable
 	private Class columnTypeIfEntity(Class type) {
-
 		RelationalPersistentEntity<?> persistentEntity = context.getPersistentEntity(type);
 
 		if (persistentEntity == null) {
@@ -159,7 +158,6 @@ class BasicRelationalPersistentProperty extends AnnotationBasedPersistentPropert
 	}
 
 	private Class columnTypeForNonEntity(Class type) {
-
 		return javaToDbType.entrySet().stream() //
 				.filter(e -> e.getKey().isAssignableFrom(type)) //
 				.map(e -> (Class) e.getValue()) //

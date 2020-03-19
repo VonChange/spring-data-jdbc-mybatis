@@ -18,6 +18,8 @@ package org.springframework.data.mybatis.mini.jdbc.repository.support;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
+import java.util.List;
+
 /**
  * Interface for generic CRUD operations on a repository for a specific type.
  *
@@ -37,6 +39,10 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 	 */
 	<S extends T> S save(S entity);
 
+	<S extends T> int saveBatch(List<S> entitys);
+	<S extends T> int updateBatch(List<S> entitys);
+
+	<S extends T> int updateBatchAllField(List<S> entitys);
 	/**
 	 * insert into  on duplication key
 	 * @param entity
@@ -59,7 +65,7 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 	 * @param <S>
 	 * @return
 	 */
-	<S extends T> int  updateAll(S entity);
+	<S extends T> int  updateAllField(S entity);
 	/**
 	 * Retrieves an entity by its id.
 	 *

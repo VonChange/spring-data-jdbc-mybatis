@@ -16,7 +16,7 @@
 package org.springframework.data.mybatis.mini.jdbc.repository.config;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.springjdbc.repository.JdbcRepositoryImpl;
+import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -25,6 +25,7 @@ import org.springframework.data.mybatis.mini.relational.core.conversion.BasicRel
 import org.springframework.data.mybatis.mini.relational.core.conversion.RelationalConverter;
 import org.springframework.data.mybatis.mini.relational.core.mapping.NamingStrategy;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
+import org.springframework.data.mybatis.mini.repository.JdbcRepositorySpringDataImpl;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -41,9 +42,15 @@ import java.util.Optional;
 @Configuration
 public class JdbcConfiguration {
 
+
 	@Bean
-	public JdbcRepository initJdbcRepostitory(DataSource dataSource){
-		return new JdbcRepositoryImpl(dataSource);
+	public JdbcRepository initJdbcRepository(DataSource... dataSource){
+		return new JdbcRepositorySpringDataImpl(dataSource);
+	}
+
+	@Bean
+	public DataSourceWrapperHelper initDataSourceWrapperHelper(DataSourceWrapper... dataSourceWrapper){
+		return new DataSourceWrapperHelperImpl(dataSourceWrapper);
 	}
 	/**
 	 * Register a {@link RelationalMappingContext} and apply an optional {@link NamingStrategy}.

@@ -17,6 +17,7 @@ package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.repository.core.EntityInformation;
@@ -42,6 +43,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 
 	private final RelationalMappingContext context;
 	private final JdbcRepository operations;
+	private final DataSourceWrapperHelper dataSourceWrapperHelper;
 
 
 
@@ -52,11 +54,12 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	 * @param context must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	public JdbcRepositoryFactory( RelationalMappingContext context,JdbcRepository operations) {
+	public JdbcRepositoryFactory( RelationalMappingContext context,JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {
 
 
 		this.context = context;
 		this.operations = operations;
+		this.dataSourceWrapperHelper=dataSourceWrapperHelper;
 	}
 
 
@@ -105,6 +108,6 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
 		}
 
-		return Optional.of(new JdbcQueryLookupStrategy(operations));
+		return Optional.of(new JdbcQueryLookupStrategy(operations,dataSourceWrapperHelper));
 	}
 }

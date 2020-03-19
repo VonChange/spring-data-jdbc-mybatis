@@ -16,10 +16,12 @@
 package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
 
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.mybatis.mini.jdbc.repository.query.BatchUpdate;
+import org.springframework.data.mybatis.mini.jdbc.repository.query.ReadDataSource;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
-
 
 import java.lang.reflect.Method;
 
@@ -40,7 +42,13 @@ public class JdbcQueryMethod extends QueryMethod {
 
 		this.method = method;
 	}
+	public boolean isReadDataSource() {
+		return AnnotationUtils.findAnnotation(method, ReadDataSource.class) != null;
+	}
 
+	public boolean isBatchUpdate() {
+		return AnnotationUtils.findAnnotation(method, BatchUpdate.class) != null;
+	}
 
 
 

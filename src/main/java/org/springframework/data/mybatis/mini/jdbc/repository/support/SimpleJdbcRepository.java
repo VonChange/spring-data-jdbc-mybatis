@@ -20,6 +20,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mapping.PersistentEntity;
 
+import java.util.List;
+
 /**
  * @author Jens Schauder
  * @author Oliver Gierke
@@ -30,18 +32,34 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	private final @NonNull JdbcRepository entityOperations;
 	private final @NonNull PersistentEntity<T, ?> entity;
 
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.CrudRepository#save(S)
 	 */
 	@Override
 	public <S extends T> S save(S instance) {
-		return entityOperations.save(instance);
+		return entityOperations.insert(instance);
+	}
+
+	@Override
+	public <S extends T> int saveBatch(List<S> entitys) {
+		return entityOperations.insertBatch(entitys);
+	}
+
+	@Override
+	public <S extends T> int updateBatch(List<S> entitys) {
+		return entityOperations.updateBatch(entitys);
+	}
+
+	@Override
+	public <S extends T> int updateBatchAllField(List<S> entitys) {
+		return entityOperations.updateBatchAllField(entitys);
 	}
 
 	@Override
 	public <S extends T> S saveDuplicateKey(S entity) {
-		return entityOperations.saveDuplicateKey(entity);
+		return entityOperations.insertDuplicateKey(entity);
 	}
 
 	@Override
@@ -50,8 +68,8 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	}
 
 	@Override
-	public <S extends T> int updateAll(S entity) {
-		return entityOperations.updateAll(entity);
+	public <S extends T> int updateAllField(S entity) {
+		return entityOperations.updateAllField(entity);
 	}
 
 
