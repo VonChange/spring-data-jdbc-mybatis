@@ -37,9 +37,11 @@ spring data  jdbc mybatis-mini 实现
 == 与mybatis 和 mybatis-plus jpa 比较
 
 1. sql写在markdown文件里 写起来舒服 
-2. 无需resultType resultMap 复杂指定 只需要个方法名 
-3. 不允许查询sql放到@Select 和 @Query上(虽然也能实现) 保持mybatis风格写在文件里 便于维护 
-4. 无缓存 无条件构造器(EntityWrapper) 类似的鸡肋功能 查询就该是sql 
+2. 无需resultType resultMap 复杂指定(mybatis xml啰嗦的配置) 只需定义方法名
+
+3. 不允许查询sql放到@Select 和 @Query上(虽然也能实现) 保持mybatis风格写在文件里
+便于维护
+4. 无缓存 无条件构造器(EntityWrapper) 类似的鸡肋功能 查询就该是sql jdbc
 5. 使用简单 约定大于配置 默认配置基本都满足 不用配置属性 
 6. 就很 6666666666666666666666666666666666666666
 
