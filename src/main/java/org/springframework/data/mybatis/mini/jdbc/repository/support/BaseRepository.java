@@ -37,19 +37,21 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 	 * @return the saved entity; will never be {@literal null}.
 	 * @throws IllegalArgumentException in case the given {@literal entity} is {@literal null}.
 	 */
-	<S extends T> S save(S entity);
+	<S extends T> ID insert(S entity);
 
-	<S extends T> int saveBatch(List<S> entitys);
-	<S extends T> int updateBatch(List<S> entitys);
-
-	<S extends T> int updateBatchAllField(List<S> entitys);
+	<S extends T> int insertBatch(List<S> entitys);
 	/**
 	 * insert into  on duplication key
 	 * @param entity
 	 * @param <S>
 	 * @return
 	 */
-	<S extends T> S saveDuplicateKey(S entity);
+	<S extends T> ID insertDuplicateKey(S entity);
+
+	<S extends T> int updateBatch(List<S> entitys);
+
+	<S extends T> int updateBatchAllField(List<S> entitys);
+
 
 	/**
 	 * 默认只更新不为空的字段

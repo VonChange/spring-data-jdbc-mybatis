@@ -81,7 +81,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 
 		//JdbcAggregateTemplate template = new JdbcAggregateTemplate(publisher, context, converter, accessStrategy);
 
-		return new SimpleJdbcRepository<>(operations, context.getRequiredPersistentEntity(repositoryInformation.getDomainType()));
+		return new SimpleJdbcRepository<>(operations, context.getRequiredPersistentEntity(repositoryInformation.getDomainType()),dataSourceWrapperHelper);
 	}
 
 	/*
