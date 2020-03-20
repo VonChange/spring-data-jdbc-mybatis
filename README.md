@@ -90,7 +90,7 @@ public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
 }
 ```
 
--- sql 包下 sql.md 识别```开头结尾的 -- 定义的同名方法 参见sql.md[sql.md]
+-- sql 包下 sql.md 识别```开头结尾的 -- 定义的同名方法 参见[sql.md](sql.md)
 
 
 ```
