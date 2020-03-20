@@ -15,13 +15,6 @@
  */
 package org.springframework.data.mybatis.mini.relational.core.conversion;
 
-import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.mapping.PersistentPropertyPath;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
@@ -30,16 +23,37 @@ import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalP
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Represents the change happening to the aggregate (as used in the context of Domain Driven Design) as a whole.
  *
  * @author Jens Schauder
  * @author Mark Paluch
  */
-@Getter
 public class AggregateChange<T> {
 
 	private final Kind kind;
+
+	public Kind getKind() {
+		return kind;
+	}
+
+	public Class<T> getEntityType() {
+		return entityType;
+	}
+
+	@Nullable
+	public T getEntity() {
+		return entity;
+	}
+
+	public List<DbAction<?>> getActions() {
+		return actions;
+	}
 
 	/** Type of the aggregate root to be changed */
 	private final Class<T> entityType;

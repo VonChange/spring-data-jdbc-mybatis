@@ -15,20 +15,20 @@
  */
 package org.springframework.data.mybatis.mini.relational.core.mapping.event;
 
-import lombok.Getter;
-
-import java.util.Optional;
-
 import org.springframework.data.mybatis.mini.relational.core.conversion.AggregateChange;
 import org.springframework.lang.Nullable;
+
+import java.util.Optional;
 
 /**
  * A {@link SimpleRelationalEvent} which is guaranteed to have an identifier and an entity.
  *
  * @author Jens Schauder
  */
-@Getter
 public class RelationalEventWithIdAndEntity extends RelationalEventWithId implements WithEntity {
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
 
 	private static final long serialVersionUID = -3194462549552515519L;
 

@@ -18,7 +18,8 @@ package org.springframework.data.mybatis.mini.jdbc.repository.support;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mybatis.mini.jdbc.repository.config.BindParameterWrapper;
@@ -42,9 +43,9 @@ import java.util.Map;
  * @author Oliver Gierke
  * @author Maciej Walkowiak
  */
-@Slf4j
-class JdbcRepositoryQuery implements RepositoryQuery {
 
+class JdbcRepositoryQuery implements RepositoryQuery {
+	private static final Logger log = LoggerFactory.getLogger(JdbcRepositoryQuery.class);
 	private static final String PARAMETER_NEEDS_TO_BE_NAMED = "For queries with named parameters you need to provide names for method parameters. Use @Param for query method parameters, or when on Java 8+ use the javac flag -parameters.";
 
 	private final JdbcQueryMethod queryMethod;

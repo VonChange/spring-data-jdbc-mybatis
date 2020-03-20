@@ -17,8 +17,6 @@ package org.springframework.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import org.springframework.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
@@ -29,14 +27,18 @@ import java.util.List;
  * @author Jens Schauder
  * @author Oliver Gierke
  */
-@RequiredArgsConstructor
+
 public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 
-	private final @NonNull JdbcRepository entityOperations;
-	private final @NonNull PersistentEntity<T, ?> entity;
-	private final @NonNull DataSourceWrapperHelper dataSourceWrapperHelper;
+	private final  JdbcRepository entityOperations;
+	private final  PersistentEntity<T, ?> entity;
+	private final  DataSourceWrapperHelper dataSourceWrapperHelper;
 
-
+	public SimpleJdbcRepository(JdbcRepository entityOperations, PersistentEntity<T, ?> entity, DataSourceWrapperHelper dataSourceWrapperHelper) {
+		this.entityOperations = entityOperations;
+		this.entity = entity;
+		this.dataSourceWrapperHelper = dataSourceWrapperHelper;
+	}
 
 	private DataSourceWrapper getDataSourceWrapper(){
 		DataSourceKey dataSourceKey =  entity.findAnnotation(DataSourceKey.class);
@@ -44,7 +46,7 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 			return null;
 		}
 		String dataSourceKeyValue=dataSourceKey.value();
-		return null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null;
+		return (!"".equals(dataSourceKeyValue))?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null;
 	}
 	/*
 	 * (non-Javadoc)

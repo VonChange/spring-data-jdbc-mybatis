@@ -15,14 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.relational.core.conversion;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.convert.EntityWriter;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.PersistentPropertyPath;
@@ -32,6 +25,8 @@ import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalP
 import org.springframework.data.util.Pair;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.*;
 
 /**
  * Converts an aggregate represented by its root into an {@link AggregateChange}.
@@ -244,8 +239,26 @@ public class RelationalEntityWriter implements EntityWriter<Object, AggregateCha
 	 * Represents a single entity in an aggregate along with its property path from the root entity and the chain of objects
 	 * to traverse a long this path.
 	 */
-	@Value
+
 	static class PathNode {
+		public PathNode(PersistentPropertyPath<RelationalPersistentProperty> path, @Nullable PathNode parent, Object value) {
+			this.path = path;
+			this.parent = parent;
+			this.value = value;
+		}
+
+		public PersistentPropertyPath<RelationalPersistentProperty> getPath() {
+			return path;
+		}
+
+		@Nullable
+		public PathNode getParent() {
+			return parent;
+		}
+
+		public Object getValue() {
+			return value;
+		}
 
 		/** The path to this entity */
 		PersistentPropertyPath<RelationalPersistentProperty> path;

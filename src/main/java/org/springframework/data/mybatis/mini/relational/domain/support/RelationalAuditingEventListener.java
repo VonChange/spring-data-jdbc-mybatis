@@ -15,8 +15,6 @@
  */
 package org.springframework.data.mybatis.mini.relational.domain.support;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.data.auditing.IsNewAwareAuditingHandler;
@@ -31,7 +29,6 @@ import org.springframework.data.mybatis.mini.relational.core.mapping.event.Befor
  * @author Jens Schauder
  * @author Oliver Gierke
  */
-@RequiredArgsConstructor
 public class RelationalAuditingEventListener implements ApplicationListener<BeforeSaveEvent>, Ordered {
 
 	/**
@@ -44,6 +41,10 @@ public class RelationalAuditingEventListener implements ApplicationListener<Befo
 	public static final int AUDITING_ORDER = 100;
 
 	private final IsNewAwareAuditingHandler handler;
+
+	public RelationalAuditingEventListener(IsNewAwareAuditingHandler handler) {
+		this.handler = handler;
+	}
 
 	/**
 	 * {@inheritDoc}

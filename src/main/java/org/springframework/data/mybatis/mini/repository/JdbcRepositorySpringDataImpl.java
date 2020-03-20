@@ -3,7 +3,8 @@ package org.springframework.data.mybatis.mini.repository;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.sql.DataSource;
@@ -11,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Slf4j
+
 public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql implements JdbcRepository {
+    private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringDataImpl.class);
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
     @Value("${mybatis-mini.isReadExcludePrimary:false}")

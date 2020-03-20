@@ -3,32 +3,50 @@ spring data  jdbc mybatis-mini 实现
 
 == Getting Started
 
-1. 类似于mybatis plus 增加增删改(没有删除) 基础方法 
-2. 底层是spring jdbc  但写法是常用的mybatis写法 无学习曲线
+1. 类似于mybatis plus 增加增删改(没有删除) 批量更新插入等基础方法
+2. 底层是spring jdbc 无缓存 但写法是常用的mybatis模版写法 无学习曲线
 3. 抛弃繁琐的xml 所有sql 写在markdown文件里 便于书写和阅读
    默认位置sql包下repository接口名.md @ConfigLocation 可自定义位置
-4. update/save/insert/delete 开头方法是更新操作 
-5. 支持分页 分页参数必须是第一个参数 同名+Count可优化分页
-6. 支持读写分离 根据业务逻辑添加@ReadDataSource在方法名上 默认配置多数据源随机取
-   多数源也能实现但在微服务化潮流里尽量保证同一数据源
-7. mybatis-mini.isReadExcludePrimary 默认不排除主库 设置成true 除主库外读
-8. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
-9. 提供其他if 判断和in查询简写方式(偷懒 >-<)
-10. 支持mysql 本来也支持oracle的 但不打算再支持
-11. 注解属于spring data jpa 体系的
-12. {@sql XX} XX markdown文件XX名的sql片段
-13. 查询返回实体 不需要必须是DO 如果没特殊规范
-   也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
+4. 自定义更新 update/save/insert/delete 开头方法是更新操作 
+5. 支持分页 分页参数必须是第一个参数 
+6. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
+7. 提供其他if 判断和in查询简写方式(偷懒 >-<)
+8. 注解属于spring data jpa 体系的
+9. {@sql XX} XX markdown文件XX名的sql片段
+10. 查询返回实体 不需要必须是DO 如果没特殊规范
+    也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
+11. 支持批量更新（jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true）
+12. 支持mysql 本来也支持oracle的 但不打算再支持 
 
-== 使用步骤 
+== 其他特性 无特殊需要可不用关心 
+
+1. 分页 可自定义同名+Count的sql 优化分页 
+2. 支持读写分离
+   根据业务逻辑添加@ReadDataSource在方法名上 默认配置多数据源随机取   
+3. 多数源也能实现但在微服务化潮流里尽量保证同一数据源(不提供说明支持方法)
+4. 读写分离 参数mybatis-mini.isReadExcludePrimary 默认不排除主库 设置成true
+   除主库外读
+
+== 使用步骤
 
 1. 添加依赖 
 2. @EnableMybatisMini
 3. extends BaseRepository<UserBaseDO, Long> 或 extends
    BaseQueryRepository(只查询)
  
- Here is a quick teaser of an application using Spring Data Repositories
- in Java:
+== 与mybatis 和 mybatis-plus jpa 比较
+
+1. sql写在markdown 文件里 写起来舒服 
+2. 无需resultType resultMap 复杂指定 只需要个方法名 
+3. 不允许查询sql放到@Select 和 @Query上 保持mybatis风格写在文件里 便于维护 
+4. 无缓存 无条件构造器(EntityWrapper) 类似的鸡肋功能 查询就该是sql 
+5. 使用简单 约定大于配置 默认配置基本都满足 不用配置属性 
+6. 就很 6666666666666666666666666666666666666666
+
+ 
+ 
+ Here is a quick teaser of an application using Spring Data
+Repositories in Java:
 
 
 ``` 
@@ -38,7 +56,7 @@ import org.springframework.data.repository.query.Param;
 
 @ConfigLocation("sql.sql")
 public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
-
+  @ReadDataSource
   List<UserBaseDO> findList(@Param("userName") String userName,
                           @Param("createTime") Date createTime);
   Page<UserBaseDO> findList(Pageable pageable, @Param("userName") String userName,@Param("createTime") Date createTime);

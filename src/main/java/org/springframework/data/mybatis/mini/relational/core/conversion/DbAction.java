@@ -15,17 +15,12 @@
  */
 package org.springframework.data.mybatis.mini.relational.core.conversion;
 
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.data.mapping.PersistentPropertyPath;
 import org.springframework.data.mybatis.mini.relational.core.mapping.RelationalPersistentProperty;
 import org.springframework.lang.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An instance of this interface represents a (conceptual) single interaction with a database, e.g. a single update,
@@ -68,16 +63,49 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Data
+
 	class Insert<T> implements WithGeneratedId<T>, WithDependingOn<T> {
 
-		@NonNull final T entity;
-		@NonNull final PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
-		@NonNull final WithEntity<?> dependingOn;
+		final T entity;
+		final PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+		final WithEntity<?> dependingOn;
+		public Insert(T entity,PersistentPropertyPath<RelationalPersistentProperty> propertyPath,WithEntity<?> dependingOn){
+			this.entity=entity;
+			this.propertyPath=propertyPath;
+			this.dependingOn=dependingOn;
+		}
 
 		Map<String, Object> additionalValues = new HashMap<>();
 
 		private Object generatedId;
+
+		public T getEntity() {
+			return entity;
+		}
+
+		public PersistentPropertyPath<RelationalPersistentProperty> getPropertyPath() {
+			return propertyPath;
+		}
+
+		public WithEntity<?> getDependingOn() {
+			return dependingOn;
+		}
+
+		public Map<String, Object> getAdditionalValues() {
+			return additionalValues;
+		}
+
+		public void setAdditionalValues(Map<String, Object> additionalValues) {
+			this.additionalValues = additionalValues;
+		}
+
+		public Object getGeneratedId() {
+			return generatedId;
+		}
+
+		public void setGeneratedId(Object generatedId) {
+			this.generatedId = generatedId;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -95,13 +123,26 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Data
-	@RequiredArgsConstructor
 	class InsertRoot<T> implements WithEntity<T>, WithGeneratedId<T> {
 
-		@NonNull private final T entity;
+	    private final T entity;
+		public InsertRoot(T entity){
+			this.entity=entity;
+		}
 
 		private Object generatedId;
+
+		public T getEntity() {
+			return entity;
+		}
+
+		public Object getGeneratedId() {
+			return generatedId;
+		}
+
+		public void setGeneratedId(Object generatedId) {
+			this.generatedId = generatedId;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -114,11 +155,21 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class Update<T> implements WithEntity<T> {
+		 T entity;
+		 PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+         public Update(T entity,PersistentPropertyPath<RelationalPersistentProperty> propertyPath){
+         	this.entity=entity;
+         	this.propertyPath=propertyPath;
+		 }
+		@Override
+		public T getEntity() {
+			return entity;
+		}
 
-		@NonNull T entity;
-		@NonNull PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+		public PersistentPropertyPath<RelationalPersistentProperty> getPropertyPath() {
+			return propertyPath;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -131,10 +182,16 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class UpdateRoot<T> implements WithEntity<T> {
 
-		@NonNull private final T entity;
+		private final T entity;
+        public UpdateRoot(T entity){
+        	this.entity=entity;
+		}
+		@Override
+		public T getEntity() {
+			return entity;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -147,12 +204,35 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class Merge<T> implements WithDependingOn<T>, WithPropertyPath<T> {
 
-		@NonNull T entity;
-		@NonNull PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
-		@NonNull WithEntity<?> dependingOn;
+		T entity;
+		PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+		WithEntity<?> dependingOn;
+        public Merge(T entity,PersistentPropertyPath<RelationalPersistentProperty> propertyPath,WithEntity<?> dependingOn){
+        	this.entity=entity;
+        	this.propertyPath=propertyPath;
+        	this.dependingOn=dependingOn;
+		}
+		@Override
+		public T getEntity() {
+			return entity;
+		}
+
+		@Override
+		public PersistentPropertyPath<RelationalPersistentProperty> getPropertyPath() {
+			return propertyPath;
+		}
+
+		@Override
+		public WithEntity<?> getDependingOn() {
+			return dependingOn;
+		}
+
+		@Override
+		public Map<String, Object> getAdditionalValues() {
+			return additionalValues;
+		}
 
 		Map<String, Object> additionalValues = new HashMap<>();
 
@@ -167,11 +247,24 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class Delete<T> implements WithPropertyPath<T> {
 
-		@NonNull Object rootId;
-		@NonNull PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+		Object rootId;
+		PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+
+		public Delete(Object rootId, PersistentPropertyPath<RelationalPersistentProperty> propertyPath) {
+			this.rootId = rootId;
+			this.propertyPath = propertyPath;
+		}
+
+		public Object getRootId() {
+			return rootId;
+		}
+
+		@Override
+		public PersistentPropertyPath<RelationalPersistentProperty> getPropertyPath() {
+			return propertyPath;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -187,11 +280,24 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class DeleteRoot<T> implements DbAction<T> {
 
-		@NonNull Class<T> entityType;
-		@NonNull Object rootId;
+		 Class<T> entityType;
+		 Object rootId;
+
+		public DeleteRoot(Class<T> entityType, Object rootId) {
+			this.entityType = entityType;
+			this.rootId = rootId;
+		}
+
+		@Override
+		public Class<T> getEntityType() {
+			return entityType;
+		}
+
+		public Object getRootId() {
+			return rootId;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -205,10 +311,18 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class DeleteAll<T> implements WithPropertyPath<T> {
 
-		@NonNull PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+		PersistentPropertyPath<RelationalPersistentProperty> propertyPath;
+
+		public DeleteAll(PersistentPropertyPath<RelationalPersistentProperty> propertyPath) {
+			this.propertyPath = propertyPath;
+		}
+
+		@Override
+		public PersistentPropertyPath<RelationalPersistentProperty> getPropertyPath() {
+			return propertyPath;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {
@@ -224,10 +338,18 @@ public interface DbAction<T> {
 	 *
 	 * @param <T> type of the entity for which this represents a database interaction.
 	 */
-	@Value
 	class DeleteAllRoot<T> implements DbAction<T> {
 
-		@NonNull private final Class<T> entityType;
+		private final Class<T> entityType;
+
+		public DeleteAllRoot(Class<T> entityType) {
+			this.entityType = entityType;
+		}
+
+		@Override
+		public Class<T> getEntityType() {
+			return entityType;
+		}
 
 		@Override
 		public void doExecuteWith(Interpreter interpreter) {

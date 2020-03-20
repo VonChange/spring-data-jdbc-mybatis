@@ -15,13 +15,12 @@
  */
 package org.springframework.data.mybatis.mini.relational.core.mapping;
 
-import lombok.Getter;
 
-import org.springframework.data.mybatis.mini.jdbc.core.mapping.JdbcSimpleTypes;
 import org.springframework.data.mapping.context.AbstractMappingContext;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.mapping.model.Property;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
+import org.springframework.data.mybatis.mini.jdbc.core.mapping.JdbcSimpleTypes;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 
@@ -37,7 +36,11 @@ import org.springframework.util.Assert;
 public class RelationalMappingContext
 		extends AbstractMappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> {
 
-	@Getter private final NamingStrategy namingStrategy;
+	private final NamingStrategy namingStrategy;
+
+	public NamingStrategy getNamingStrategy() {
+		return namingStrategy;
+	}
 
 	/**
 	 * Creates a new {@link RelationalMappingContext}.

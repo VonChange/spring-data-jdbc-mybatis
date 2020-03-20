@@ -15,9 +15,6 @@
  */
 package org.springframework.data.mybatis.mini.relational.core.mapping.event;
 
-import lombok.NonNull;
-import lombok.Value;
-
 import java.util.Optional;
 
 /**
@@ -26,10 +23,21 @@ import java.util.Optional;
  * @author Jens Schauder
  * @author Oliver Gierke
  */
-@Value(staticConstructor = "of")
 class SpecifiedIdentifier implements Identifier.Specified {
 
-	@NonNull Object value;
+	Object value;
+	public static   SpecifiedIdentifier of(Object value) {
+		return new SpecifiedIdentifier(value);
+	}
+
+	private SpecifiedIdentifier(Object value) {
+		this.value = value;
+	}
+
+	@Override
+	public Object getValue() {
+		return value;
+	}
 
 	/*
 	 * (non-Javadoc)

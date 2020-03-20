@@ -15,7 +15,7 @@
  */
 package org.springframework.data.mybatis.mini.jdbc.support;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.jdbc.support.JdbcUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,14 +26,12 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.jdbc.support.JdbcUtils;
-
 /**
  * Contains methods dealing with the quirks of JDBC, independent of any Entity, Aggregate or Repository abstraction.
  *
  * @author Jens Schauder
  */
-@UtilityClass
+
 public class JdbcUtil {
 
 	private static final Map<Class<?>, Integer> sqlTypeMappings = new HashMap<>();
