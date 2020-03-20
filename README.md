@@ -47,6 +47,7 @@ spring data  jdbc mybatis-mini 实现
  
  Here is a quick teaser of an application using Spring Data
 Repositories in Java:
+
 === Maven configuration
 
 Add the Maven dependency:
