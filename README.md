@@ -90,54 +90,9 @@ public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
 }
 ```
 
--- sql 包下 sql.md 识别```开头结尾的 -- 定义的同名方法 参见[sql.md](sql.md)
+> sql 包下sql.md 识别```开头结尾的 -- 定义的同名方法 参见[sql.md](sql.md)
 
 
-```
--- findListX
-select * from user_base
-where user_name = #{userName}
-and create_time  < #{createTime}
-```
-
-```
--- findList
-select * from user_base
-where {@sql findListWhereSql}
-```
-
-```
--- findListWhereSql
-user_name = #{userName} and 1=1
-and create_time  < #{createTime}
-```
-
-```
--- findUserName
-SELECT user_name FROM user_base WHERE user_name = #{userName}
-```
-
-
-```
--- findListByIdsX
-SELECT * FROM user_base WHERE 1=1 
-<if test="null!=userName"> and user_name <> #{userName} </if>
-<if test="null!=idList and idList.size>0">  and id in <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">#{item}</foreach></if>
-<if test="null!=createTime">  and create_time < #{createTime}  </if>
-```
-
-```
--- findListByIds
-SELECT * FROM user_base WHERE 1=1 
-{@and user_name <> userName}
-{@and id in idList}
-{@and create_time < createTime}
-```
-
-```
--- updateIsDelete
-update user_base set is_delete = #{isDelete} where id =#{id}
-```
 
 > 实体类 定义ID 和TABLE 名
 ```
