@@ -10,7 +10,7 @@ spring data  jdbc mybatis-mini 实现
 4. 自定义更新 update/save/insert/delete 开头方法是更新操作 
 5. 支持分页 分页参数必须是第一个参数 
 6. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
-7. 提供其他if 判断和in查询简写方式(偷懒 >-<)
+7. 提供if判断和in查询简写方式(偷懒 >-<)
 8. 注解属于spring data jpa 体系的
 9. {@sql XX} XX markdown文件XX名的sql片段
 10. 查询返回实体 不需要必须是DO 如果没特殊规范
@@ -36,7 +36,7 @@ spring data  jdbc mybatis-mini 实现
  
 == 与mybatis 和 mybatis-plus jpa 比较
 
-1. sql写在markdown 文件里 写起来舒服 
+1. sql写在markdown文件里 写起来舒服 
 2. 无需resultType resultMap 复杂指定 只需要个方法名 
 3. 不允许查询sql放到@Select 和 @Query上 保持mybatis风格写在文件里 便于维护 
 4. 无缓存 无条件构造器(EntityWrapper) 类似的鸡肋功能 查询就该是sql 
@@ -47,7 +47,27 @@ spring data  jdbc mybatis-mini 实现
  
  Here is a quick teaser of an application using Spring Data
 Repositories in Java:
+=== Maven configuration
 
+Add the Maven dependency:
+
+```
+
+<dependency>
+  <groupId>com.vonchange.common</groupId>
+  <artifactId>spring-data-mybatis-mini</artifactId>
+  <version>1.3</version>
+</dependency>
+ <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-jdbc</artifactId>
+ </dependency>
+<dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.15</version>
+</dependency>
+```
 
 ``` 
 import org.springframework.data.mybatis.mini.jdbc.repository.query.ConfigLocation;
@@ -70,7 +90,7 @@ public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
 }
 ```
 
--- sql 包下 sql.md 识别```开头结尾的 -- 定义的同名方法
+-- sql 包下 sql.md 识别```开头结尾的 -- 定义的同名方法 参见sql.md[sql.md]
 
 
 ```
@@ -158,28 +178,7 @@ public class DemoApplication {
 } 
 ```
 
-=== Maven configuration
 
-Add the Maven dependency:
-
-```
-
-<dependency>
-  <groupId>com.vonchange.common</groupId>
-  <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>1.2</version>
-</dependency>
-
- <dependency>
-         <groupId>org.springframework.boot</groupId>
-         <artifactId>spring-boot-starter-jdbc</artifactId>
- </dependency>
-<dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.15</version>
-</dependency>
-```
 
 > 偷懒简化 if test 和in查询 识别 {@开头
 
