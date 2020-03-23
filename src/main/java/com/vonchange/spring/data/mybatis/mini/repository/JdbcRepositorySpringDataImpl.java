@@ -34,7 +34,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
         if(null==dataSources||dataSources.length==0){
             throw new MybatisMinRuntimeException("无 dataSource 定义");
         }
-        if(dataSources.length==1||!isReadAllScopeOpen){
+        if(dataSources.length==1){
             return  new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
         }
         List<DataSourceWrapper> dataSourceWrapperList = new ArrayList<>();
@@ -69,5 +69,8 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     protected int batchSize() {
         return batchSize;
     }
-
+    @Override
+    protected boolean  readAllScopeOpen(){
+        return isReadAllScopeOpen;
+    }
 }
