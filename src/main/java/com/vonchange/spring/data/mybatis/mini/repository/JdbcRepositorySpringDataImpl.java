@@ -3,6 +3,7 @@ package com.vonchange.spring.data.mybatis.mini.repository;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
+import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,17 +20,22 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private DataSource[] dataSources;
     @Value("${mybatis-mini.isReadExcludePrimary:false}")
     private boolean isReadExcludePrimary;
+    @Value("${mybatis-mini.isReadAllScopeOpen:false}")
+    private boolean isReadAllScopeOpen;
     @Value("${mybatis-mini.batchSize:5000}")
     private int batchSize;
-
+    private static final String   DATA_SOURCE_NAME="dataSource";
     public JdbcRepositorySpringDataImpl(DataSource... dataSources){
         this.dataSources=dataSources;
     }
 
     @Override
     public DataSourceWrapper getReadDataSource() {
-        if(dataSources.length==1){
-            return  new DataSourceWrapper(dataSources[0],"dataSource");
+        if(null==dataSources||dataSources.length==0){
+            throw new MybatisMinRuntimeException("无 dataSource 定义");
+        }
+        if(dataSources.length==1||!isReadAllScopeOpen){
+            return  new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
         }
         List<DataSourceWrapper> dataSourceWrapperList = new ArrayList<>();
         int i=0;
@@ -38,7 +44,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
                 i++;
                 continue;
             }
-            dataSourceWrapperList.add(new DataSourceWrapper(dataSource,"dataSource"+((i==0)?"":i)));
+            dataSourceWrapperList.add(new DataSourceWrapper(dataSource,DATA_SOURCE_NAME+((i==0)?"":i)));
             i++;
         }
         int random =RANDOM.nextInt(dataSourceWrapperList.size());
@@ -48,7 +54,10 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
 
     @Override
     protected DataSourceWrapper getWriteDataSource() {
-        return new DataSourceWrapper(dataSources[0],"dataSource");
+        if(null==dataSources||dataSources.length==0){
+            throw new MybatisMinRuntimeException("无 dataSource 定义");
+        }
+        return new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
     }
 
     @Override
