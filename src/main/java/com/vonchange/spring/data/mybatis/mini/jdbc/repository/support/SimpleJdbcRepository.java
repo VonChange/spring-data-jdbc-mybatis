@@ -53,6 +53,7 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	 * @see org.springframework.data.repository.CrudRepository#save(S)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <S extends T> ID insert(S instance) {
 		return (ID) entityOperations.insert(getDataSourceWrapper(),instance);
 	}
@@ -62,6 +63,11 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 		return entityOperations.insertBatch(getDataSourceWrapper(),entitys);
 	}
 	@Override
+	public <S extends T> int  insertBatchDuplicateKey(List<S> entitys){
+		return entityOperations.insertBatchDuplicateKey(getDataSourceWrapper(),entitys);
+	}
+	@Override
+	@SuppressWarnings("unchecked")
 	public <S extends T> ID insertDuplicateKey(S entity) {
 		return (ID) entityOperations.insertDuplicateKey(getDataSourceWrapper(),entity);
 	}

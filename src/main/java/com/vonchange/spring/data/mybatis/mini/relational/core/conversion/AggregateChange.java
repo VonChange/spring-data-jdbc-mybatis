@@ -195,6 +195,7 @@ public class AggregateChange<T> {
 	/**
 	 * Sets the id of the entity referenced in the action and uses the {@link PersistentPropertyAccessor} used for that.
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> PersistentPropertyAccessor<T> setId(RelationalConverter converter,
 			DbAction.WithDependingOn<T> action, Object generatedId) {
 

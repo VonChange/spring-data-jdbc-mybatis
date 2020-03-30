@@ -24,6 +24,13 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private boolean isReadAllScopeOpen;
     @Value("${mybatis-mini.batchSize:5000}")
     private int batchSize;
+    @Value("${mybatis-mini.logWrite:false}")
+    private boolean logWrite;
+    @Value("${mybatis-mini.logRead:false}")
+    private boolean logRead;
+    @Value("${mybatis-mini.logFullSql:false}")
+    private boolean logFullSql;
+
     private static final String   DATA_SOURCE_NAME="dataSource";
     public JdbcRepositorySpringDataImpl(DataSource... dataSources){
         this.dataSources=dataSources;
@@ -69,6 +76,22 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     protected int batchSize() {
         return batchSize;
     }
+
+    @Override
+    protected boolean logRead() {
+        return logRead;
+    }
+
+    @Override
+    protected boolean logWrite() {
+        return logWrite;
+    }
+
+    @Override
+    protected boolean logFullSql() {
+        return logFullSql;
+    }
+
     @Override
     protected boolean  readAllScopeOpen(){
         return isReadAllScopeOpen;

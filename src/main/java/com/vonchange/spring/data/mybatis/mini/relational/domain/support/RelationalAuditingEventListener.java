@@ -32,8 +32,8 @@ import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.event.Befo
 public class RelationalAuditingEventListener implements ApplicationListener<BeforeSaveEvent>, Ordered {
 
 	/**
-	 * The order used for this {@link org.springframework.context.event.EventListener}. Ordering ensures that this
-	 * {@link ApplicationListener} will run before other listeners without a specified priority.
+	 * The order used for this { org.springframework.context.event.EventListener}. Ordering ensures that this
+	 * { ApplicationListener} will run before other listeners without a specified priority.
 	 *
 	 * @see org.springframework.core.annotation.Order
 	 * @see Ordered

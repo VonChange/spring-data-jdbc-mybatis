@@ -100,7 +100,7 @@ public class RelationalEntityWriter implements EntityWriter<Object, AggregateCha
 
 			return actions;
 		}
-
+		@SuppressWarnings("unchecked")
 		private List<DbAction<?>> insertAll(PersistentPropertyPath<RelationalPersistentProperty> path) {
 
 			List<DbAction<?>> actions = new ArrayList<>();

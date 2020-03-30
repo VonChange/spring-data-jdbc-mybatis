@@ -77,6 +77,8 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	public Object execute(Object[] objects) {
 	    return executeDo(objects);
 	}
+
+	@SuppressWarnings("unchecked")
 	private Object executeDo(Object[] objects){
 		BindParameterWrapper parameters = bindParameter(objects);
 		String sqlId= configInfo.getLocation()+"."+configInfo.getMethod();

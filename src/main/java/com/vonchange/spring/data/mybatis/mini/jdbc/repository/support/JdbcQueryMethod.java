@@ -26,7 +26,7 @@ import org.springframework.data.repository.query.QueryMethod;
 import java.lang.reflect.Method;
 
 /**
- * {@link QueryMethod} implementation that implements a method by executing the query from a {@link Query} annotation on
+ * {QueryMethod} implementation that implements a method by executing the query from a { Query} annotation on
  * that method. Binds method arguments to named parameters in the SQL statement.
  *
  * @author Jens Schauder
