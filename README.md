@@ -59,7 +59,7 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>1.3</version>
+  <version>1.5</version>
 </dependency>
  <dependency>
          <groupId>org.springframework.boot</groupId>
