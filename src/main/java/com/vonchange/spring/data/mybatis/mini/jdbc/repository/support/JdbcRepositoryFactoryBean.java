@@ -15,17 +15,14 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
-import com.vonchange.spring.data.mybatis.mini.relational.core.conversion.RelationalConverter;
-import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
@@ -44,8 +41,6 @@ import java.io.Serializable;
 public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> //
 		extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> implements ApplicationEventPublisherAware {
 
-	private RelationalMappingContext mappingContext;
-	private RelationalConverter converter;
 	private JdbcRepository operations;
 	private DataSourceWrapperHelper dataSourceWrapperHelper;
 
@@ -73,18 +68,11 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	 */
 	@Override
 	protected RepositoryFactorySupport doCreateRepositoryFactory() {
-
-		JdbcRepositoryFactory jdbcRepositoryFactory = new JdbcRepositoryFactory( mappingContext,
+		JdbcRepositoryFactory jdbcRepositoryFactory = new JdbcRepositoryFactory(
 				operations,dataSourceWrapperHelper);
 		return jdbcRepositoryFactory;
 	}
 
-	@Autowired
-	protected void setMappingContext(RelationalMappingContext mappingContext) {
-
-		super.setMappingContext(mappingContext);
-		this.mappingContext = mappingContext;
-	}
 
 
 	@Autowired
@@ -96,22 +84,4 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 		this.operations = operations;
 	}
 
-	@Autowired
-	public void setConverter(RelationalConverter converter) {
-		this.converter = converter;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() {
-
-		Assert.state(this.mappingContext != null, "MappingContext is required and must not be null!");
-		Assert.state(this.converter != null, "RelationalConverter is required and must not be null!");
-
-
-		super.afterPropertiesSet();
-	}
 }

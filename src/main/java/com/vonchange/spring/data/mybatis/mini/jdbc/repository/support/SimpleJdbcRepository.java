@@ -15,12 +15,10 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import org.springframework.data.mapping.PersistentEntity;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,26 +26,16 @@ import java.util.List;
  * @author Oliver Gierke
  */
 
-public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
+public class SimpleJdbcRepository<T, ID extends Serializable> implements BaseRepository<T,ID> {
 
 	private final  JdbcRepository entityOperations;
-	private final  PersistentEntity<T, ?> entity;
-	private final DataSourceWrapperHelper dataSourceWrapperHelper;
+	private final ConfigInfo configInfo;
 
-	public SimpleJdbcRepository(JdbcRepository entityOperations, PersistentEntity<T, ?> entity, DataSourceWrapperHelper dataSourceWrapperHelper) {
+	public SimpleJdbcRepository(JdbcRepository entityOperations, ConfigInfo configInfo) {
 		this.entityOperations = entityOperations;
-		this.entity = entity;
-		this.dataSourceWrapperHelper = dataSourceWrapperHelper;
+		this.configInfo = configInfo;
 	}
 
-	private DataSourceWrapper getDataSourceWrapper(){
-		DataSourceKey dataSourceKey =  entity.findAnnotation(DataSourceKey.class);
-		if(null==dataSourceKey){
-			return null;
-		}
-		String dataSourceKeyValue=dataSourceKey.value();
-		return (!"".equals(dataSourceKeyValue))?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null;
-	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.CrudRepository#save(S)
@@ -55,52 +43,49 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends T> ID insert(S instance) {
-		return (ID) entityOperations.insert(getDataSourceWrapper(),instance);
+		return (ID) entityOperations.insert(configInfo.getDataSourceWrapper(),instance);
 	}
 
 	@Override
 	public <S extends T> int insertBatch(List<S> entitys) {
-		return entityOperations.insertBatch(getDataSourceWrapper(),entitys);
+		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(),entitys);
 	}
 	@Override
 	public <S extends T> int  insertBatchDuplicateKey(List<S> entitys){
-		return entityOperations.insertBatchDuplicateKey(getDataSourceWrapper(),entitys);
+		return entityOperations.insertBatchDuplicateKey(configInfo.getDataSourceWrapper(),entitys);
 	}
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends T> ID insertDuplicateKey(S entity) {
-		return (ID) entityOperations.insertDuplicateKey(getDataSourceWrapper(),entity);
+		return (ID) entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(),entity);
 	}
 	@Override
 	public <S extends T> int updateBatch(List<S> entitys) {
-		return entityOperations.updateBatch(getDataSourceWrapper(),entitys);
+		return entityOperations.updateBatch(configInfo.getDataSourceWrapper(),entitys);
 	}
 
 	@Override
 	public <S extends T> int updateBatchAllField(List<S> entitys) {
-		return entityOperations.updateBatchAllField(getDataSourceWrapper(),entitys);
+		return entityOperations.updateBatchAllField(configInfo.getDataSourceWrapper(),entitys);
 	}
 
 
 
 	@Override
 	public <S extends T> int update(S entity) {
-		return entityOperations.update(getDataSourceWrapper(),entity);
+		return entityOperations.update(configInfo.getDataSourceWrapper(),entity);
 	}
 
 	@Override
 	public <S extends T> int updateAllField(S entity) {
-		return entityOperations.updateAllField(getDataSourceWrapper(),entity);
+		return entityOperations.updateAllField(configInfo.getDataSourceWrapper(),entity);
 	}
 
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
-	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public T findById(ID id) {
-		return entityOperations.queryById(getDataSourceWrapper(),entity.getType(),id);
+		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(),configInfo.getType(),id);
 	}
 
 }

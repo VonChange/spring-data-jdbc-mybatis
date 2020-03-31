@@ -15,17 +15,14 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.config;
 
-import com.vonchange.spring.data.mybatis.mini.relational.core.conversion.BasicRelationalConverter;
-import com.vonchange.spring.data.mybatis.mini.relational.core.conversion.RelationalConverter;
-import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.NamingStrategy;
-import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
-import com.vonchange.spring.data.mybatis.mini.repository.JdbcRepositorySpringDataImpl;
+
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.spring.data.mybatis.mini.repository.JdbcRepositorySpringDataImpl;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import com.vonchange.spring.data.mybatis.mini.jdbc.core.convert.JdbcCustomConversions;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -49,7 +46,7 @@ public class JdbcConfiguration {
 	}
 
 	@Bean
-	public DataSourceWrapperHelper initDataSourceWrapperHelper(DataSourceWrapper... dataSourceWrapper){
+	public DataSourceWrapperHelper initDataSourceWrapperHelper( DataSourceWrapper... dataSourceWrapper){
 		return new DataSourceWrapperHelperImpl(dataSourceWrapper);
 	}
 	/**
@@ -57,7 +54,7 @@ public class JdbcConfiguration {
 	 *
 	 * @param namingStrategy optional {@link NamingStrategy}. Use {@link NamingStrategy#INSTANCE} as fallback.
 	 * @return must not be {@literal null}.
-	 */
+	 *//*
 	@Bean
 	protected RelationalMappingContext jdbcMappingContext(Optional<NamingStrategy> namingStrategy) {
 
@@ -66,30 +63,30 @@ public class JdbcConfiguration {
 		mappingContext.setSimpleTypeHolder(jdbcCustomConversions().getSimpleTypeHolder());
 
 		return mappingContext;
-	}
-
-	/**
+	}*/
+/*
+	*//**
 	 * Creates a {@link RelationalConverter} using the configured {@link #jdbcMappingContext(Optional)}. Will get
 	 * {@link #jdbcCustomConversions()} applied.
 	 *
 	 * @see #jdbcMappingContext(Optional)
 	 * @see #jdbcCustomConversions()
 	 * @return must not be {@literal null}.
-	 */
+	 *//*
 	@Bean
 	protected RelationalConverter relationalConverter(RelationalMappingContext mappingContext) {
 		return new BasicRelationalConverter(mappingContext, jdbcCustomConversions());
 	}
 
-	/**
+	*//**
 	 * Register custom {@link Converter}s in a {@link JdbcCustomConversions} object if required. These
 	 * {@link JdbcCustomConversions} will be registered with the {@link #relationalConverter(RelationalMappingContext)}.
 	 * Returns an empty {@link JdbcCustomConversions} instance by default.
 	 *
 	 * @return must not be {@literal null}.
-	 */
+	 *//*
 	@Bean
 	protected JdbcCustomConversions jdbcCustomConversions() {
 		return new JdbcCustomConversions();
-	}
+	}*/
 }

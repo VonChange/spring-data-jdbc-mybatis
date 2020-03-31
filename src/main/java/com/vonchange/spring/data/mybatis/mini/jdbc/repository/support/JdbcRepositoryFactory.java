@@ -15,21 +15,19 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
-import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
-import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.RelationalPersistentEntity;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.core.support.PersistentEntityInformation;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
-import org.springframework.lang.Nullable;
 
-import java.util.Optional;
+import java.io.Serializable;
 
 /**
  * Creates repository implementation based on JDBC.
@@ -41,47 +39,38 @@ import java.util.Optional;
  */
 public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 
-	private final RelationalMappingContext context;
+
 	private final JdbcRepository operations;
 	private final DataSourceWrapperHelper dataSourceWrapperHelper;
 
-
-
 	/**
 	 *
-	 * {@link RelationalMappingContext} and {@link ApplicationEventPublisher}.
+	 *  and {@link ApplicationEventPublisher}.
 	 *
-	 * @param context must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	public JdbcRepositoryFactory( RelationalMappingContext context,JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {
-
-
-		this.context = context;
+	public JdbcRepositoryFactory(JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {
 		this.operations = operations;
 		this.dataSourceWrapperHelper=dataSourceWrapperHelper;
 	}
 
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> aClass) {
-
-		RelationalPersistentEntity<?> entity = context.getRequiredPersistentEntity(aClass);
-
-		return (EntityInformation<T, ID>) new PersistentEntityInformation<>(entity);
+	public <T, ID extends Serializable> EntityInformation<T, ID> getEntityInformation(Class<T> aClass) {
+		return null;
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getTargetRepository(org.springframework.data.repository.core.RepositoryInformation)
 	 */
 	@Override
 	protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
-
-		//JdbcAggregateTemplate template = new JdbcAggregateTemplate(publisher, context, converter, accessStrategy);
-
-		return new SimpleJdbcRepository<>(operations, context.getRequiredPersistentEntity(repositoryInformation.getDomainType()),dataSourceWrapperHelper);
+		DataSourceKey dataSourceKey=repositoryInformation.getRepositoryInterface().getAnnotation(DataSourceKey.class);
+		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
+		ConfigInfo configInfo= new ConfigInfo();
+		configInfo.setType(repositoryInformation.getDomainType());
+		configInfo.setDataSourceWrapper(null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null);
+		return new SimpleJdbcRepository<>(operations,configInfo);
 	}
 
 	/*
@@ -93,21 +82,15 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 		return SimpleJdbcRepository.class;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getQueryLookupStrategy(org.springframework.data.repository.query.QueryLookupStrategy.Key, org.springframework.data.repository.query.EvaluationContextProvider)
-	 */
 	@Override
-	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable QueryLookupStrategy.Key key,
-			QueryMethodEvaluationContextProvider evaluationContextProvider) {
-
+	protected QueryLookupStrategy getQueryLookupStrategy( QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider) {
 		if (key != null //
 				&& key != QueryLookupStrategy.Key.USE_DECLARED_QUERY //
 				&& key != QueryLookupStrategy.Key.CREATE_IF_NOT_FOUND //
 		) {
 			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
 		}
-
-		return Optional.of(new JdbcQueryLookupStrategy(operations,dataSourceWrapperHelper));
+		return  new JdbcQueryLookupStrategy( operations,dataSourceWrapperHelper);
 	}
+
 }

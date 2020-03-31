@@ -15,9 +15,6 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.config;
 
-import java.lang.annotation.Annotation;
-
-import com.vonchange.spring.data.mybatis.mini.relational.domain.support.RelationalAuditingEventListener;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -26,6 +23,8 @@ import org.springframework.data.auditing.IsNewAwareAuditingHandler;
 import org.springframework.data.auditing.config.AuditingBeanDefinitionRegistrarSupport;
 import org.springframework.data.auditing.config.AuditingConfiguration;
 import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} which registers additional beans in order to enable auditing via the
@@ -77,8 +76,8 @@ class JdbcAuditingRegistrar extends AuditingBeanDefinitionRegistrarSupport {
 	}
 
 	/**
-	 * Register the bean definition of {@link RelationalAuditingEventListener}. {@inheritDoc}
-	 * 
+	 * Register the bean definition of{@inheritDoc}
+	 *
 	 * @see AuditingBeanDefinitionRegistrarSupport#registerAuditListenerBeanDefinition(BeanDefinition,
 	 *      BeanDefinitionRegistry)
 	 */
@@ -86,11 +85,6 @@ class JdbcAuditingRegistrar extends AuditingBeanDefinitionRegistrarSupport {
 	protected void registerAuditListenerBeanDefinition(BeanDefinition auditingHandlerDefinition,
 			BeanDefinitionRegistry registry) {
 
-		Class<?> listenerClass = RelationalAuditingEventListener.class;
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(listenerClass) //
-				.addConstructorArgReference(AUDITING_HANDLER_BEAN_NAME);
-
-		registerInfrastructureBeanWithId(builder.getRawBeanDefinition(), listenerClass.getName(), registry);
 	}
 
 }

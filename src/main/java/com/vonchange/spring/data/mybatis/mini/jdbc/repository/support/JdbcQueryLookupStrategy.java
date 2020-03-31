@@ -15,13 +15,12 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.ConfigLocation;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
-import com.vonchange.spring.data.mybatis.mini.relational.core.mapping.RelationalMappingContext;
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.mybatis.tpl.EntityUtil;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -46,7 +45,7 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 	private final DataSourceWrapperHelper dataSourceWrapperHelper;
 
 	/**
-	 * Creates a new {@link JdbcQueryLookupStrategy} for the given {@link RelationalMappingContext},
+	 * Creates a new {@link JdbcQueryLookupStrategy} for the given
 	 *
 	 */
 	JdbcQueryLookupStrategy(JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {

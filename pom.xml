@@ -4,20 +4,22 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-data-mybatis-mini</artifactId>
-    <version>1.5</version>
-
+    <version>1.6.1-SNAPSHOT</version>
+   <!-- SNAPSHOT-->
 	<name>spring data mybatis mini</name>
 	<description>Spring Data module for JDBC repositories.</description>
 	<url>https://github.com/VonChange/spring-data-mybatis-mini</url>
 	<parent>
 		<groupId>com.vonchange.common</groupId>
 		<artifactId>parent-jar</artifactId>
-		<version>1.2</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<properties>
-		<springdata.commons>2.1.5.RELEASE</springdata.commons>
-		<spring.commons>5.1.5.RELEASE</spring.commons>
+	<!--	<springdata.commons>2.1.5.RELEASE</springdata.commons>
+		<spring.commons>5.1.5.RELEASE</spring.commons>-->
+		<springdata.commons>1.13.1.RELEASE</springdata.commons>
+		<spring.commons>4.3.18.RELEASE</spring.commons>
 		<mysql-connector-java.version>8.0.15</mysql-connector-java.version>
 	</properties>
 
@@ -27,41 +29,47 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
 			<version>${springdata.commons}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<version>${spring.commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>${spring.commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 			<version>${spring.commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${spring.commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.vonchange.common</groupId>
 			<artifactId>mybatis-mini</artifactId>
-			<version>1.5</version>
+			<version>1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
