@@ -18,7 +18,6 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ import java.util.List;
  * @author Eberhard Wolff
  */
 @NoRepositoryBean
-public interface BaseRepository<T, ID extends Serializable> extends Repository<T, ID> {
+public interface BaseRepository<T, ID> extends Repository<T, ID> {
 
 	/**
 	 * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the

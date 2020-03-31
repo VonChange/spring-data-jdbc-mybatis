@@ -18,7 +18,6 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -26,7 +25,7 @@ import java.util.List;
  * @author Oliver Gierke
  */
 
-public class SimpleJdbcRepository<T, ID extends Serializable> implements BaseRepository<T,ID> {
+public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 
 	private final  JdbcRepository entityOperations;
 	private final ConfigInfo configInfo;
