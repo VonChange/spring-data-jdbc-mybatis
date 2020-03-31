@@ -16,8 +16,6 @@
 	</parent>
 
 	<properties>
-	<!--	<springdata.commons>2.1.5.RELEASE</springdata.commons>
-		<spring.commons>5.1.5.RELEASE</spring.commons>-->
 		<springdata.commons>1.13.1.RELEASE</springdata.commons>
 		<spring.commons>4.3.18.RELEASE</spring.commons>
 		<mysql-connector-java.version>8.0.15</mysql-connector-java.version>

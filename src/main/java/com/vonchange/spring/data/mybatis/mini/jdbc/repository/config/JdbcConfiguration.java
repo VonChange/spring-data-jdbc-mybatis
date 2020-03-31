@@ -19,13 +19,10 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.config;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.spring.data.mybatis.mini.repository.JdbcRepositorySpringDataImpl;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 
 /**
  * Beans that must be registered for Spring Data JDBC to work.
@@ -39,54 +36,17 @@ import java.util.Optional;
 @Configuration
 public class JdbcConfiguration {
 
-
 	@Bean
 	public JdbcRepository initJdbcRepository(DataSource... dataSource){
 		return new JdbcRepositorySpringDataImpl(dataSource);
 	}
 
-	@Bean
-	public DataSourceWrapperHelper initDataSourceWrapperHelper( DataSourceWrapper... dataSourceWrapper){
-		return new DataSourceWrapperHelperImpl(dataSourceWrapper);
+	@Bean("defaultNullDataSourceWrapper")
+	public DataSourceWrapper defaultDataSourceWrapper() {
+		return new DataSourceWrapper(null,"defaultNullDataSourceWrapper");
 	}
-	/**
-	 * Register a {@link RelationalMappingContext} and apply an optional {@link NamingStrategy}.
-	 *
-	 * @param namingStrategy optional {@link NamingStrategy}. Use {@link NamingStrategy#INSTANCE} as fallback.
-	 * @return must not be {@literal null}.
-	 *//*
 	@Bean
-	protected RelationalMappingContext jdbcMappingContext(Optional<NamingStrategy> namingStrategy) {
-
-		RelationalMappingContext mappingContext = new RelationalMappingContext(
-				namingStrategy.orElse(NamingStrategy.INSTANCE));
-		mappingContext.setSimpleTypeHolder(jdbcCustomConversions().getSimpleTypeHolder());
-
-		return mappingContext;
-	}*/
-/*
-	*//**
-	 * Creates a {@link RelationalConverter} using the configured {@link #jdbcMappingContext(Optional)}. Will get
-	 * {@link #jdbcCustomConversions()} applied.
-	 *
-	 * @see #jdbcMappingContext(Optional)
-	 * @see #jdbcCustomConversions()
-	 * @return must not be {@literal null}.
-	 *//*
-	@Bean
-	protected RelationalConverter relationalConverter(RelationalMappingContext mappingContext) {
-		return new BasicRelationalConverter(mappingContext, jdbcCustomConversions());
+	public DataSourceWrapperHelper initDataSourceWrapperHelper(DataSourceWrapper... dataSourceWrappers){
+		return new DataSourceWrapperHelperImpl(dataSourceWrappers);
 	}
-
-	*//**
-	 * Register custom {@link Converter}s in a {@link JdbcCustomConversions} object if required. These
-	 * {@link JdbcCustomConversions} will be registered with the {@link #relationalConverter(RelationalMappingContext)}.
-	 * Returns an empty {@link JdbcCustomConversions} instance by default.
-	 *
-	 * @return must not be {@literal null}.
-	 *//*
-	@Bean
-	protected JdbcCustomConversions jdbcCustomConversions() {
-		return new JdbcCustomConversions();
-	}*/
 }
