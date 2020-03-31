@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>com.vonchange.common</groupId>
 		<artifactId>parent-jar</artifactId>
-		<version>1.0.2</version>
+		<version>1.2</version>
 	</parent>
 
 	<properties>
