@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-data-mybatis-mini</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.7</version>
    <!-- SNAPSHOT-->
 	<name>spring data mybatis mini</name>
 	<description>Spring Data module for JDBC repositories.</description>
@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>com.vonchange.common</groupId>
 		<artifactId>parent-jar</artifactId>
-		<version>1.0.2</version>
+		<version>1.2</version>
 	</parent>
 
 	<properties>
@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>com.vonchange.common</groupId>
 			<artifactId>mybatis-mini</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5</version>
 		</dependency>
 	</dependencies>
 
