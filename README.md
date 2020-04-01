@@ -55,12 +55,17 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-
+  <!-- spring boot 2.x 是使用版本2.0 1.5.x 使用版本1.7 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>1.5</version>
+  <version>2.0</version>
 </dependency>
+  <!-- 用于监控与管理 -->
+<dependency>
+       <groupId>org.springframework.data</groupId>
+       <artifactId>spring-data-commons</artifactId>
+ </dependency>
  <dependency>
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-starter-jdbc</artifactId>
