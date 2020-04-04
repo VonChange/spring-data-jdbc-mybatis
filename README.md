@@ -41,7 +41,8 @@ spring data  jdbc mybatis-mini 实现
 
 3. 不允许查询sql放到@Select 和 @Query上(虽然也能实现) 保持mybatis风格写在文件里
 便于维护
-4. 无缓存 无条件构造器(EntityWrapper) 类似的鸡肋功能 查询就该是sql jdbc
+4. 无缓存 无根据方法名生成sql(需要你思考 不透明) 无条件构造器(EntityWrapper)
+   类似的鸡肋功能 查询就该是sql 纯纯的jdbc
 5. 使用简单 约定大于配置 默认配置基本都满足 不用配置属性 
 6. 就很 6666666666666666666666666666666666666666
 
