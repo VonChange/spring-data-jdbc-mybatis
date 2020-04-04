@@ -146,11 +146,20 @@ public class DemoApplication {
 
 > 偷懒简化 if test 和in查询 识别 {@开头
 
-1. {@and id in idList} 等于 <if test="null!=idList and idList.size>0">
-  and id in <foreach collection="idList" index="index" item="item"
-  open="(" separator="," close=")">#{item}</foreach></if> 
+1. {@and id in idList} 等于 
+
+```
+<if test="null!=idList and idList.size>0"> and id in <foreach
+collection="idList" index="index" item="item" open="(" separator=","
+close=")">#{item}</foreach></if>
   
-2. {@and user_name <> userName} 等于 <if test="null!=userName and
-   ''!=userName"> and user_name <> #{userName} </if> 
+  ```
+  
+2. {@and user_name <> userName} 等于 
+
+```
+<if test="null!=userName and ''!=userName"> and user_name <>
+#{userName} </if>
+   ```
    
 3. in 查询List实体下的属性 {@and id in userList:id} 
