@@ -6,6 +6,7 @@ import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
 import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.sql.DataSource;
@@ -18,6 +19,8 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringDataImpl.class);
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
+    private DataSourceInSql dataSourceInSql;
+
     @Value("${mybatis-mini.isReadExcludePrimary:false}")
     private boolean isReadExcludePrimary;
     @Value("${mybatis-mini.isReadAllScopeOpen:false}")
@@ -36,10 +39,16 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
         this.dataSources=dataSources;
     }
 
+
+    @Autowired(required = false)
+    public void setDataSourceInSql(DataSourceInSql dataSourceInSql) {
+        this.dataSourceInSql = dataSourceInSql;
+    }
+
     @Override
     public DataSourceWrapper getReadDataSource() {
         if(null==dataSources||dataSources.length==0){
-            throw new MybatisMinRuntimeException("无 dataSource 定义");
+            throw new MybatisMinRuntimeException("no dataSource");
         }
         if(dataSources.length==1){
             return  new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
@@ -62,7 +71,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     @Override
     protected DataSourceWrapper getWriteDataSource() {
         if(null==dataSources||dataSources.length==0){
-            throw new MybatisMinRuntimeException("无 dataSource 定义");
+            throw new MybatisMinRuntimeException("no dataSource");
         }
         return new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
     }
@@ -71,7 +80,13 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     protected boolean needInitEntityInfo() {
         return false;
     }
-
+    @Override
+    protected DataSourceWrapper getDataSourceFromSql(String sql){
+        if(null==dataSourceInSql){
+            return null;
+        }
+        return dataSourceInSql.getDataSourceFromSql(sql);
+    }
     @Override
     protected int batchSize() {
         return batchSize;

@@ -19,8 +19,8 @@ import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.ConfigLocation;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.SqlPackage;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -67,9 +67,9 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 		if(!domainType.equals(BaseModel.class)){
 			EntityUtil.initEntityInfo(domainType);
 		}
-		ConfigLocation configLocation=	repositoryMetadata.getRepositoryInterface().getAnnotation(ConfigLocation.class);
+		SqlPackage sqlPackage=	repositoryMetadata.getRepositoryInterface().getAnnotation(SqlPackage.class);
 		DataSourceKey dataSourceKey=	repositoryMetadata.getRepositoryInterface().getAnnotation(DataSourceKey.class);
-		String configLoc=null!=configLocation?configLocation.value():"sql."+interfaceName;
+		String configLoc=null!=sqlPackage?sqlPackage.value()+"."+interfaceName:"sql."+interfaceName;
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		JdbcQueryMethod queryMethod = new JdbcQueryMethod(method, repositoryMetadata, projectionFactory);
 		ConfigInfo configInfo= new ConfigInfo();

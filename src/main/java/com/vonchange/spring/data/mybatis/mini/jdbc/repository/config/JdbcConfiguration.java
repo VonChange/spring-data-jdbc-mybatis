@@ -19,6 +19,7 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.config;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.spring.data.mybatis.mini.repository.JdbcRepositorySpringDataImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,12 +42,8 @@ public class JdbcConfiguration {
 	public JdbcRepository initJdbcRepository(DataSource... dataSource){
 		return new JdbcRepositorySpringDataImpl(dataSource);
 	}
-	@Bean("defaultNullDataSourceWrapper")
-	public DataSourceWrapper defaultDataSourceWrapper() {
-		return new DataSourceWrapper(null,"defaultNullDataSourceWrapper");
-	}
 	@Bean
-	public DataSourceWrapperHelper initDataSourceWrapperHelper( DataSourceWrapper... dataSourceWrapper){
+	public DataSourceWrapperHelper initDataSourceWrapperHelper(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper){
 		return new DataSourceWrapperHelperImpl(dataSourceWrapper);
 	}
 }
