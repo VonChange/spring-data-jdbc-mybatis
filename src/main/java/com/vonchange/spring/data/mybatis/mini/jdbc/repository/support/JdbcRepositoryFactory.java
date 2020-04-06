@@ -16,9 +16,12 @@
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.jdbc.abstractjdbc.util.markdown.MarkdownUtil;
+import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.SqlPackage;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
@@ -65,6 +68,16 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	 */
 	@Override
 	protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
+		Class<?> domainType =repositoryInformation.getDomainType();
+		if(!domainType.equals(BaseModel.class)){
+			EntityUtil.initEntityInfo(domainType);
+		}
+		String interfaceName =repositoryInformation.getRepositoryInterface().getSimpleName();
+		SqlPackage sqlPackage=	repositoryInformation.getRepositoryInterface().getAnnotation(SqlPackage.class);
+		String configLoc=null!=sqlPackage?sqlPackage.value():"sql";
+		if(MarkdownUtil.markdownFileExist(configLoc,interfaceName+".md")){
+			MarkdownUtil.readMarkdownFile(configLoc,interfaceName+".md",false);
+		}
 		DataSourceKey dataSourceKey=repositoryInformation.getRepositoryInterface().getAnnotation(DataSourceKey.class);
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		ConfigInfo configInfo= new ConfigInfo();

@@ -18,7 +18,7 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.mybatis.common.util.StringUtils;
+import com.vonchange.mybatis.tpl.clazz.ClazzUtils;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.BindParameterWrapper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ import java.util.Map;
 
 class JdbcRepositoryQuery implements RepositoryQuery {
 	private static final Logger log = LoggerFactory.getLogger(JdbcRepositoryQuery.class);
-	private static final String PARAMETER_NEEDS_TO_BE_NAMED = "For queries with named parameters you need to provide names for method parameters. Use @Param for query method parameters(org.springframework.data.repository.query.Param), or when on Java 8+ use the javac flag -parameters.";
+	private static final String PARAMETER_NEEDS_TO_BE_NAMED = "For queries with named parameters you need to provide names for method parameters. Use @Param for query method parameters, or when on Java 8+ use the javac flag -parameters.";
 
 	private final JdbcQueryMethod queryMethod;
 	private final JdbcRepository operations;
@@ -108,7 +108,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			}
 			return operations.queryBigData(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getAbstractPageWork(),parameters.getParameter());
 		}
-		if(com.vonchange.jdbc.abstractjdbc.util.clazz.ClassUtils.isBaseType(queryMethod.getReturnedObjectType())){
+		if(ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())){
 			return operations.queryOneColumn(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
 		}
 		try {
@@ -149,10 +149,12 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
 			    String parameterName = p.getName();
-			    if(StringUtils.isBlank(parameterName)){
-			    	throw  new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED);
+			    if(null==parameterName){
+					parameterName=queryMethod.getParameterNameByMybatis(p.getIndex());
 				}
-				//String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
+			   if(null==parameterName){
+				    throw  new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED);
+			    }
 				map.put(parameterName, objects[p.getIndex()]);
 		});
 		bindParameterWrapper.setParameter(map);

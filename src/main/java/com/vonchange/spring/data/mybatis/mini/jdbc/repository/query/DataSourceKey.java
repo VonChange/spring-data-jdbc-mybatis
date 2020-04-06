@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 public @interface DataSourceKey {
 
 	/**
-	 * The mapping table name.
+	 * 数据源key
 	 */
 	String value() default "";
 }

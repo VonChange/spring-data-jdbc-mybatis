@@ -6,10 +6,10 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 @Inherited
-public @interface ConfigLocation {
+public @interface SqlPackage {
 
 	/**
-	 * The mapping table name.
+	 * sql package location
 	 */
 	String value() default "";
 }
