@@ -107,6 +107,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
         return logFullSql;
     }
 
+
     @Override
     protected boolean  readAllScopeOpen(){
         return isReadAllScopeOpen;

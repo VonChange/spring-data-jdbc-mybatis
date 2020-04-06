@@ -16,7 +16,6 @@
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
@@ -63,10 +62,6 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata repositoryMetadata,
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
         String interfaceName =repositoryMetadata.getRepositoryInterface().getSimpleName();
-		Class<?> domainType =repositoryMetadata.getDomainType();
-		if(!domainType.equals(BaseModel.class)){
-			EntityUtil.initEntityInfo(domainType);
-		}
 		SqlPackage sqlPackage=	repositoryMetadata.getRepositoryInterface().getAnnotation(SqlPackage.class);
 		DataSourceKey dataSourceKey=	repositoryMetadata.getRepositoryInterface().getAnnotation(DataSourceKey.class);
 		String configLoc=null!=sqlPackage?sqlPackage.value()+"."+interfaceName:"sql."+interfaceName;
