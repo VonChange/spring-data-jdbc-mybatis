@@ -38,13 +38,12 @@ spring data  jdbc mybatis-mini 实现
 
 1. sql写在markdown文件里 写起来舒服 
 2. 无需resultType resultMap 复杂指定(mybatis xml啰嗦的配置) 只需定义方法名
-
 3. 不允许查询sql放到@Select 和 @Query上(虽然也能实现) 保持mybatis风格写在文件里
 便于维护
 4. 无缓存 无根据方法名生成sql(需要你思考 不透明) 无条件构造器(EntityWrapper)
    类似的鸡肋功能 查询就该是sql 纯纯的jdbc
 5. 使用简单 约定大于配置 默认配置基本都满足 不用配置属性 
-6. 就很 6666666666666666666666666666666666666666
+
 
  
  
@@ -56,11 +55,11 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.0 1.5.x 使用版本1.7 -->
+  <!-- spring boot 2.x 是使用版本2.0 1.5.x 使用版本1.8 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.0</version>
+  <version>2.1</version>
 </dependency>
   <!-- 用于监控与管理 -->
 <dependency>
@@ -83,7 +82,6 @@ import org.springframework.data.mybatis.mini.jdbc.repository.query.ConfigLocatio
 import org.springframework.data.mybatis.mini.jdbc.repository.support.BaseRepository;
 import org.springframework.data.repository.query.Param;
 
-@ConfigLocation("sql.sql")
 public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
   @ReadDataSource
   List<UserBaseDO> findList(@Param("userName") String userName,
@@ -99,7 +97,8 @@ public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
 }
 ```
 
-> sql 包下sql.md 识别```开头结尾的 -- 定义的同名方法 参见[sql.md](sql.md)
+> 默认sql 包下同名吧UserBaseRepository.md 识别```开头结尾的 -- 定义的同名方法
+> 参见[UserBaseRepository.md](UserBaseRepository.md)
 
 
 
