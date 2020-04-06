@@ -44,7 +44,8 @@ spring data  jdbc mybatis-mini 实现
 1. 添加依赖 
 2. @EnableMybatisMini
 3. extends BaseRepository<UserBaseDO, Long> 或 extends
-   BaseQueryRepository(只查询)
+   BaseQueryRepository(只查询) 
+4. 使用例子demo项目[spring-data-mybatis-mini-demo](https://github.com/VonChange/spring-data-mybatis-mini-demo)
  
 
 
