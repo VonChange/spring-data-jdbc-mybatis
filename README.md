@@ -61,7 +61,7 @@ Add the Maven dependency:
   <artifactId>spring-data-mybatis-mini</artifactId>
   <version>2.1</version>
 </dependency>
-  <!-- 用于监控与管理 -->
+
 <dependency>
        <groupId>org.springframework.data</groupId>
        <artifactId>spring-data-commons</artifactId>
