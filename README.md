@@ -3,6 +3,7 @@ spring data  jdbc mybatis-mini 实现
 
 == Getting Started
 
+###### 做减法 只是对spring jdbc的一层简单封装
 1. 类似于mybatis plus 增加增删改(没有删除) 批量更新插入等基础方法
 2. 底层是spring jdbc 无缓存 但写法是常用的mybatis模版写法 无学习曲线
 3. 抛弃繁琐的xml 所有sql 写在markdown文件里 便于书写和阅读
@@ -26,14 +27,7 @@ spring data  jdbc mybatis-mini 实现
 3. 多数源也能实现但在微服务化潮流里尽量保证同一数据源(不提供说明支持方法)
 4. 读写分离 参数mybatis-mini.isReadExcludePrimary 默认不排除主库 设置成true
    除主库外读
-
-== 使用步骤
-
-1. 添加依赖 
-2. @EnableMybatisMini
-3. extends BaseRepository<UserBaseDO, Long> 或 extends
-   BaseQueryRepository(只查询)
- 
+   
 == 与mybatis 和 mybatis-plus jpa 比较
 
 1. sql写在markdown文件里 写起来舒服 便于阅读
@@ -43,6 +37,15 @@ spring data  jdbc mybatis-mini 实现
 4. 无缓存 无根据方法名生成sql(需要你思考 不透明) 无条件构造器(EntityWrapper)
    类似的鸡肋功能 查询就该是sql 纯纯的jdbc
 5. 使用简单 约定大于配置 默认配置基本都满足 不用配置属性 
+
+
+== 使用步骤
+
+1. 添加依赖 
+2. @EnableMybatisMini
+3. extends BaseRepository<UserBaseDO, Long> 或 extends
+   BaseQueryRepository(只查询)
+ 
 
 
  
