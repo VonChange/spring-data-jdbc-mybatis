@@ -75,8 +75,9 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 		String interfaceName =repositoryInformation.getRepositoryInterface().getSimpleName();
 		SqlPackage sqlPackage=	repositoryInformation.getRepositoryInterface().getAnnotation(SqlPackage.class);
 		String configLoc=null!=sqlPackage?sqlPackage.value():"sql";
-		MarkdownUtil.readMarkdownFile(configLoc,interfaceName+".md",false);
-
+		if(MarkdownUtil.markdownFileExist(configLoc,interfaceName+".md")){
+			MarkdownUtil.readMarkdownFile(configLoc,interfaceName+".md",false);
+		}
 		DataSourceKey dataSourceKey=repositoryInformation.getRepositoryInterface().getAnnotation(DataSourceKey.class);
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		ConfigInfo configInfo= new ConfigInfo();
