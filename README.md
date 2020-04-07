@@ -166,3 +166,12 @@ close=")">#{item}</foreach></if>
    ```
    
 3. in 查询List实体下的属性 {@and id in userList:id} 
+
+4.  like 
+
+ ```
+ {@and user_name like userName} 等于 and user_name like CONCAT('%',?,'%')  
+ {@and user_name like userName%} 等于 and user_name like  CONCAT(?,'%') 
+  {@and user_name like userName%} 等于 and user_name like CONCAT('%','test')   
+ 
+ ```
