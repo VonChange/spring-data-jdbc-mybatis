@@ -59,11 +59,11 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.0 1.5.x 使用版本1.8 -->
+  <!-- spring boot 2.x 是使用版本2.1.1 1.5.x 使用版本1.8.1 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.1</version>
+  <version>2.1.1</version>
 </dependency>
 
 <dependency>
