@@ -1,9 +1,14 @@
 # spring-data-mybatis-mini
 spring data  jdbc mybatis-mini 实现
 
+> 1. 动态sql写在 markdown里 容易书写和阅读
+
+> 2. 做减法 只是对spring jdbc的一层简单封装
+
+> 3. 简化 mybatis if test空和in查询写法
+
 == Getting Started
 
-###### 做减法 只是对spring jdbc的一层简单封装
 1. 类似于mybatis plus 增加增删改(没有删除) 批量更新插入等基础方法
 2. 底层是spring jdbc 无缓存 但写法是常用的mybatis模版写法 无学习曲线
 3. 抛弃繁琐的xml 所有sql 写在markdown文件里 便于书写和阅读
