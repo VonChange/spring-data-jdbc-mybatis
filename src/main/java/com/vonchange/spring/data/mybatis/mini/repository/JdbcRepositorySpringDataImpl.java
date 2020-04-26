@@ -20,9 +20,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
     private DataSourceInSql dataSourceInSql;
-
-    @Value("${mybatis-mini.isReadExcludePrimary:false}")
-    private boolean isReadExcludePrimary;
+    private ReadDataSources readDataSources;
     @Value("${mybatis-mini.isReadAllScopeOpen:false}")
     private boolean isReadAllScopeOpen;
     @Value("${mybatis-mini.batchSize:5000}")
@@ -33,6 +31,8 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private boolean logRead;
     @Value("${mybatis-mini.logFullSql:false}")
     private boolean logFullSql;
+    @Value("${mybatis-mini.mapOrm:true}")
+    private boolean isMapOrm;
 
     private static final String   DATA_SOURCE_NAME="dataSource";
     public JdbcRepositorySpringDataImpl(DataSource... dataSources){
@@ -44,22 +44,25 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     public void setDataSourceInSql(DataSourceInSql dataSourceInSql) {
         this.dataSourceInSql = dataSourceInSql;
     }
+    @Autowired(required = false)
+    public void setReadDataSources(ReadDataSources readDataSources) {
+        this.readDataSources = readDataSources;
+    }
 
     @Override
     public DataSourceWrapper getReadDataSource() {
-        if(null==dataSources||dataSources.length==0){
-            throw new MybatisMinRuntimeException("no dataSource");
+        DataSource[] dataSourcesRead;
+        if(null!=readDataSources&&null!=readDataSources.allReadDataSources()){
+            dataSourcesRead=readDataSources.allReadDataSources();
+        }else{
+            dataSourcesRead=dataSources;
         }
-        if(dataSources.length==1){
-            return  new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
+        if(null==dataSourcesRead||dataSourcesRead.length==0){
+            throw new MybatisMinRuntimeException("no dataSource");
         }
         List<DataSourceWrapper> dataSourceWrapperList = new ArrayList<>();
         int i=0;
-        for (DataSource dataSource: dataSources) {
-            if(isReadExcludePrimary&&i==0){
-                i++;
-                continue;
-            }
+        for (DataSource dataSource: dataSourcesRead) {
             dataSourceWrapperList.add(new DataSourceWrapper(dataSource,DATA_SOURCE_NAME+((i==0)?"":i)));
             i++;
         }
@@ -106,6 +109,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     protected boolean logFullSql() {
         return logFullSql;
     }
+
 
 
     @Override

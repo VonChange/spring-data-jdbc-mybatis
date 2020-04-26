@@ -22,13 +22,13 @@ spring data  jdbc mybatis-mini 实现
 10. 查询返回实体 不需要必须是DO 如果没特殊规范
     也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
 11. 支持批量更新（jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true）
-12. 支持mysql 本来也支持oracle的 但不打算再支持 
+12. 分页某些特性支持mysql 本来也支持oracle的 但不打算再支持 
 
 == 其他特性 无特殊需要可不用关心 
 
 1. 分页 可自定义同名+Count的sql 优化分页 
-2. 支持读写分离
-   根据业务逻辑添加@ReadDataSource在方法名上 默认配置多数据源随机取   
+2. 支持读写分离 根据业务逻辑添加@ReadDataSource在方法名上 默认配置多数据源随机取
+   可自定义
 3. 多数源也能实现但在微服务化潮流里尽量保证同一数据源(不提供说明支持方法)
 4. 读写分离 参数mybatis-mini.isReadExcludePrimary 默认不排除主库 设置成true
    除主库外读
@@ -50,7 +50,7 @@ spring data  jdbc mybatis-mini 实现
 2. @EnableMybatisMini
 3. extends BaseRepository<UserBaseDO, Long> 或 extends
    BaseQueryRepository(只查询) 
-4. 使用例子demo项目[spring-data-mybatis-mini-demo](https://github.com/VonChange/spring-data-mybatis-mini-demo)
+4. 使用例子demo项目[spring-data-mybatis-mini-demo](https://github.com/VonChange/spring-data-mybatis-mini-demo/blob/master/src/test/java/com/vonchange/nine/demo/dao/UserBaseRepositoryTest.java)
  
 
 
