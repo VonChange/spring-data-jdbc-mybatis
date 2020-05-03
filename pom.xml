@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-data-mybatis-mini</artifactId>
-    <version>2.2</version>
+    <version>2.2.1</version>
    <!-- SNAPSHOT-->
 	<name>spring data mybatis mini</name>
 	<description>Spring Data module for JDBC repositories.</description>
@@ -21,8 +21,12 @@
 		<mysql-connector-java.version>8.0.15</mysql-connector-java.version>
 	</properties>
 
-
 	<dependencies>
+		<dependency>
+			<groupId>com.vonchange.common</groupId>
+			<artifactId>mybatis-mini</artifactId>
+			<version>1.7.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
@@ -62,12 +66,6 @@
 			<artifactId>spring-core</artifactId>
 			<version>${spring.commons}</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.vonchange.common</groupId>
-			<artifactId>mybatis-mini</artifactId>
-			<version>1.7</version>
 		</dependency>
 	</dependencies>
 
