@@ -41,8 +41,8 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends T> ID insert(S instance) {
-		return (ID) entityOperations.insert(configInfo.getDataSourceWrapper(),instance);
+	public <S extends T> int insert(S instance) {
+		return  entityOperations.insert(configInfo.getDataSourceWrapper(),instance);
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	}
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends T> ID insertDuplicateKey(S entity) {
-		return (ID) entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(),entity);
+	public <S extends T> int insertDuplicateKey(S entity) {
+		return entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(),entity);
 	}
 	@Override
 	public <S extends T> int updateBatch(List<S> entitys) {
