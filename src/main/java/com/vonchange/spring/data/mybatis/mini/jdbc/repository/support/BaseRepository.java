@@ -38,7 +38,7 @@ public interface BaseRepository<T, ID extends Serializable> extends Repository<T
 	 * @return the saved entity; will never be {@literal null}.
 	 * @throws IllegalArgumentException in case the given {@literal entity} is {@literal null}.
 	 */
-	<S extends T> ID insert(S entity);
+	<S extends T> int insert(S entity);
 
 	<S extends T> int insertBatch(List<S> entitys);
 
@@ -49,7 +49,7 @@ public interface BaseRepository<T, ID extends Serializable> extends Repository<T
 	 * @param entity
 	 * @param <S>
 	 */
-	<S extends T> ID insertDuplicateKey(S entity);
+	<S extends T> int insertDuplicateKey(S entity);
 
 	<S extends T> int updateBatch(List<S> entitys);
 
