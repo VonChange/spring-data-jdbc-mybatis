@@ -54,7 +54,7 @@ close=")">#{item}</foreach></if>
 3. 多数源也能实现但在微服务化潮流里尽量保证同一数据源(不提供说明支持方法)
    
 
-== 使用步骤
+== 使用步骤基本同jpa
 
 1. 添加依赖 
 2. @EnableMybatisMini
@@ -74,11 +74,11 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.2.1 1.5.x 使用版本1.8.3 -->
+  <!-- spring boot 2.x 是使用版本2.2.2 1.5.x 使用版本1.8.4 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.2.1</version>
+  <version>2.2.2</version>
 </dependency>
 
 <dependency>
@@ -190,3 +190,35 @@ close=")">#{item}</foreach></if>
   {@and user_name like userName%} 等于 and user_name like CONCAT('%','test')   
  
  ```
+
+>  相关注解 
+
+1. @ColumnNot 非字段注解 
+
+2. InsertIfNull UpdateIfNull 插入或者更新为空时默认值 可使用函数
+
+3. UpdateNotNull updateAllField方法NULL值忽略
+
+4. ReadDataSource 指定某个方法读数据源 默认配置多数据源随机取 
+
+```
+ //自定义 读库数据源 不自定义默认所有你设置的数据源
+    //@Bean
+    public ReadDataSources initReadDataSources(){
+        return new ReadDataSources() {
+            @Override
+            public DataSource[] allReadDataSources() {
+                return new DataSource[]{mainDataSource(),mainDataSource(),readDataSource()};
+            }
+        };
+    }
+```
+
+> 批量更新插入
+
+1. jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true
+
+2. insertBatch updateBatch方法 无需关心List对象大小 
+
+3. 经测试比插入比sql拼接 快5倍 但更新差不多 简单数据插入1万耗时2s多点
+
