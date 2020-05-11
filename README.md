@@ -1,12 +1,15 @@
 # spring-data-mybatis-mini
-spring data  jdbc mybatis-mini 实现
+spring data jdbc mybatis-mini 实现 
+> 等同于spring data jdbc + mybatis 动态sql能力
 
-> 1. 抛弃繁琐的xml 只使用mybatis模版引擎即动态sql能力 sql写在markdown文件里
->    便于书写和阅读
+> 1. 抛弃繁琐的xml 只使用mybatis模版引擎即动态sql能力
+>    sql写在markdown文件里 便于书写和阅读
 
 > 2. 底层jdbc使用spring jdbc
 
-> 3. 简化mybatis动态sql写法 比如 
+> 3. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如 
+
+
 ```
 {@and id in idList} 等于
 <if test="null!=idList and idList.size>0"> and id in <foreach

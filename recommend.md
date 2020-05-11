@@ -7,7 +7,7 @@
 
 > 2. 底层jdbc使用spring jdbc
 
-> 3. 简化mybatis动态sql写法 当然可混用 比如
+> 3. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
 ```
 {@and id in idList} 等于
 <if test="null!=idList and idList.size>0"> and id in <foreach
