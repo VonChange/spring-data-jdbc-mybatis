@@ -40,7 +40,7 @@ close=")">#{item}</foreach></if>
    配合动态sql能力 减少学习成本
 7. 由于markdown 文件表述能力 无法像mybatis那样使用resultMap可以关联结果集映射
    我推荐的是如果没有复杂逻辑 多表join返回映射一个新的实体可直接透传到视图层VO
-   或者自己代码里拼接 麻烦点但可控 
+   或者自己代码里拼接 麻烦点但可控  后期会尝试写新的组件sqlHelper方式简化这些流程
 8. 比mybatis有简单的crud 比jpa使用jdbc+动态sql
    比mybatis-plus(越来越像hibernate,jpa 搞Criteria那套 还是mybatis吗
    sql还是要统一管理到文件)更简单 不使用xml 使用jdbc
