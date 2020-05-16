@@ -1,14 +1,21 @@
-# spring-data-mybatis-mini
-spring data jdbc mybatis-mini 实现 
-> 等同于spring data jdbc + mybatis 动态sql能力
+## spring-data-mybatis-mini
 
-> 1. 抛弃繁琐的xml 只使用mybatis模版引擎即动态sql能力 sql写在markdown文件里
->    更容易书写和阅读
+**等同于spring data jdbc + mybatis 动态sql能力**
 
-> 2. 底层jdbc使用spring jdbc
+**大道至简**
 
-> 3. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如 
+1. 抛弃繁琐的xml 只使用mybatis模版引擎即动态sql能力 sql写在markdown文件里
+   更容易书写和阅读 sql能统一管理查看
 
+2. 底层基于springJdbc 而不是mybatis 更直接纯粹
+
+3. 提供单表增删改(没有删除) 批量更新插入等基础方法 支持分页 读写分离
+
+4. mybatis最大优点就是sql模版引擎
+   我也有且仅有使用这部分功能(对于使用过mybatis的无学习成本)
+   但底层使用springJDBC才是王道
+
+5. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
 
 ```
 {@and id in idList} 等于
@@ -18,25 +25,32 @@ close=")">#{item}</foreach></if>
 ```
 ![例子](mini.png)
 
-== 与mybatis,mybatis-plus,jpa,hibernate 比较
+== 与mybatis,jpa,hibernate,mybatis-plus等 比较
 
-1. sql写在markdown文件里 写起来舒服 便于阅读
+
+1. 比mybatis,mybatis-plus 无繁琐的xml配置 sql写在markdown文件里 写起来更快速
+   还便于阅读
 2. 无需resultType resultMap 复杂指定(mybatis xml啰嗦的配置) 只需定义方法名
 3. 不允许查询sql放到@Select 和 @Query上 jpa复杂sql不容易书写还乱(虽然也能实现)
    保持mybatis风格写在文件里 统一管理 便于维护
 4. 无缓存 缓存很容易 但更新是个难题 大多使用mybatis的公司都不会开启一级,二级缓存
    使用不当容易引起脏读 不如使用 SpringCache 等上层方案 自己控制
-5. 不会像jpa根据方法名生成sql(需要你学习思考,复杂点名字老长,不透明)
+5. 无jpa根据方法名 (复杂点需要你学习思考,名字老长,不透明)
 6. 无hibernate条件构造器(EntityWrapper,Criteria Query) 查询就该是sql
    配合动态sql能力 减少学习成本
 7. 由于markdown 文件表述能力 无法像mybatis那样使用resultMap可以关联结果集映射
    我推荐的是如果没有复杂逻辑 多表join返回映射一个新的实体可直接透传到视图层VO
    或者自己代码里拼接 麻烦点但可控 
-8. 比较大多是无的功能 但细想这些都不是必须的甚至鸡肋 老老实实简单简单做个纯粹的ORM框架
+8. 比mybatis有简单的crud 比jpa使用jdbc+动态sql
+   比mybatis-plus(越来越像hibernate,jpa 搞Criteria那套 还是mybatis吗
+   sql还是要统一管理到文件)更简单 不使用xml 使用jdbc
+9. 比较大多是无的功能 但细想这些都不是必须的甚至鸡肋 老老实实简单简单做个纯粹的ORM框架
+
+   
 
 == Getting Started
 
-1. 提供单表增删改(没有删除) 批量更新插入等基础方法
+1. 提供单表增删改(没有物理删除) 批量更新插入等基础方法
 2. 抛弃繁琐的xml 所有sql 写在markdown文件里 便于书写和阅读
    默认位置sql包下repository接口名.md @ConfigLocation 可自定义位置
 3. 自定义更新 update/save/insert/delete 开头方法是更新操作 
@@ -44,22 +58,23 @@ close=")">#{item}</foreach></if>
 5. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
 6. 提供if判断和in查询简写方式(偷懒 >-<)
 7. 注解属于spring data jpa 体系的
-8. {@sql XX} XX markdown文件XX名的sql片段
+8. 支持sql片段 {@sql XX} XX markdown文件XX名的sql片段
 9. 查询返回实体 不需要必须是DO 如果没特殊规范
    也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
 10. 支持批量更新插入（jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true）
 11. 分页某些特性支持mysql,oracle 主支持mysql
 12. 使用简单 约定大于配置 默认配置基本都满足
+13. 支持LocalDateTime LocalTime jdk8更方便的时间类型
 
 == 其他特性 无特殊需要可不用关心 
 
 1. 分页 可自定义同名+Count的sql 优化分页 
 2. 支持读写分离 根据业务逻辑添加@ReadDataSource在方法名上 默认配置多数据源随机取
    可自定义
-3. 多数源也能实现但在微服务化潮流里尽量保证同一数据源(不提供说明支持方法)
+3. 多数源支持但在微服务化潮流里尽量保证同一数据源
    
 
-== 使用步骤基本同jpa
+== 使用步骤基本同jpa,spring data jdbc
 
 1. 添加依赖 
 2. @EnableMybatisMini

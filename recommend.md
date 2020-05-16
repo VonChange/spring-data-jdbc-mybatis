@@ -25,7 +25,7 @@ close=")">#{item}</foreach></if>
    使用不当容易引起脏读 不如使用 SpringCache 等上层方案 自己控制
 5. 不会像jpa根据方法名生成sql(需要你学习思考,复杂点名字老长,不透明)
 6. 无hibernate条件构造器(EntityWrapper,Criteria Query) 查询就该是sql
-   配合动态sql能力 减少学习成本
+   配合动态sql能力 减少学习成本(既可以这样又可以那样 )
 7. 由于markdown 文件表述能力 无法像mybatis那样使用resultMap可以关联结果集映射
    我推荐的是如果没有复杂逻辑 多表join返回映射一个新的实体可直接透传到视图层VO
    或者自己代码里拼接 麻烦点但可控 
