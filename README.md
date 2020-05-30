@@ -17,7 +17,7 @@
 5. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
 
 ```
-{@and id in idList} 等于
+[@and id in idList] 等于
 <if test="null!=idList and idList.size>0"> and id in <foreach
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
@@ -92,11 +92,11 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.2.2 低版本比如1.5.x 使用版本1.8.4 -->
+  <!-- spring boot 2.x 是使用版本2.2.3 低版本比如1.5.x 使用版本1.8.5 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
 </dependency>
 
 <dependency>
@@ -182,7 +182,7 @@ public class DemoApplication {
 
 > 偷懒简化 if test 和in查询 识别 {@开头
 
-1. {@and id in idList} 等于 
+>   \[@and id in idList] 等于
 
 ```
 <if test="null!=idList and idList.size>0"> and id in <foreach
@@ -191,21 +191,21 @@ close=")">#{item}</foreach></if>
   
   ```
   
-2. {@and user_name <> userName} 等于 
+>   \[@and user_name <> userName] 等于
 
 ```
 <if test="null!=userName and ''!=userName"> and user_name <>
 #{userName} </if>
    ```
    
-3. in 查询List实体下的属性 {@and id in userList:id} 
+3. in 查询List实体下的属性 \[@and id in userList:id]
 
 4.  like 
 
  ```
- {@and user_name like userName} 等于 and user_name like CONCAT('%',?,'%')  
- {@and user_name like userName%} 等于 and user_name like  CONCAT(?,'%') 
-  {@and user_name like userName%} 等于 and user_name like CONCAT('%','test')   
+ [@and user_name like userName] 等于 and user_name like CONCAT('%',?,'%')  
+ [@and user_name like userName%] 等于 and user_name like  CONCAT(?,'%') 
+  [@and user_name like userName%] 等于 and user_name like CONCAT('%','test')   
  
  ```
 

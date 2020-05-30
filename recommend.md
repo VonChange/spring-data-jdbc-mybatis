@@ -21,7 +21,7 @@
 5. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
 
 ```
-{@and id in idList} 等于
+[@and id in idList] 等于
 <if test="null!=idList and idList.size>0"> and id in <foreach
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
