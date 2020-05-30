@@ -56,7 +56,7 @@ close=")">#{item}</foreach></if>
 5. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
 6. 提供if判断和in查询简写方式(偷懒 >-<)
 7. 注解属于spring data jpa 体系的
-8. 支持sql片段 {@sql XX} XX markdown文件XX名的sql片段
+8. 支持sql片段 \[@sql XX] XX markdown文件XX名的sql片段
 9. 查询返回实体 不需要必须是DO 如果没特殊规范
    也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
 10. 支持批量更新插入（jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true）
@@ -224,6 +224,8 @@ AND C.DESCRIPTION LIKE  CONCAT('%',#{bean.description},'%')    or C.title like C
  </if>
 
 ```
+
+6. \[@sql XX] XX markdown文件XX名的sql片段
 
 >  相关注解 
 
