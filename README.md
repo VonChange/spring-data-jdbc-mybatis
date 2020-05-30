@@ -17,7 +17,7 @@
 5. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
 
 ```
-{@and id in idList} 等于
+[@and id in idList] 等于
 <if test="null!=idList and idList.size>0"> and id in <foreach
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
@@ -56,7 +56,7 @@ close=")">#{item}</foreach></if>
 5. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
 6. 提供if判断和in查询简写方式(偷懒 >-<)
 7. 注解属于spring data jpa 体系的
-8. 支持sql片段 {@sql XX} XX markdown文件XX名的sql片段
+8. 支持sql片段 \[@sql XX] XX markdown文件XX名的sql片段
 9. 查询返回实体 不需要必须是DO 如果没特殊规范
    也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
 10. 支持批量更新插入（jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true）
@@ -92,11 +92,11 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.2.2 低版本比如1.5.x 使用版本1.8.4 -->
+  <!-- spring boot 2.x 是使用版本2.2.3 低版本比如1.5.x 使用版本1.8.5 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
 </dependency>
 
 <dependency>
@@ -182,7 +182,7 @@ public class DemoApplication {
 
 > 偷懒简化 if test 和in查询 识别 {@开头
 
-1. {@and id in idList} 等于 
+>   \[@and id in idList] 等于
 
 ```
 <if test="null!=idList and idList.size>0"> and id in <foreach
@@ -191,23 +191,41 @@ close=")">#{item}</foreach></if>
   
   ```
   
-2. {@and user_name <> userName} 等于 
+>   \[@and user_name <> userName] 等于
 
 ```
 <if test="null!=userName and ''!=userName"> and user_name <>
 #{userName} </if>
    ```
    
-3. in 查询List实体下的属性 {@and id in userList:id} 
+3. in 查询List实体下的属性 \[@and id in userList:id]
 
 4.  like 
 
  ```
- {@and user_name like userName} 等于 and user_name like CONCAT('%',?,'%')  
- {@and user_name like userName%} 等于 and user_name like  CONCAT(?,'%') 
-  {@and user_name like userName%} 等于 and user_name like CONCAT('%','test')   
+ [@and user_name like userName] 等于 and user_name like CONCAT('%',?,'%')  
+ [@and user_name like userName%] 等于 and user_name like  CONCAT(?,'%') 
+ [@and user_name like userName%] 等于 and user_name like CONCAT('%','test')   
  
  ```
+ 
+5. 其他非4个分隔
+
+```
+[@AND C.DESCRIPTION LIKE #{bean.description:like}  or C.title like #{bean.description:like}]
+等于
+<if test="null!=bean.description and ''!=bean.description">
+AND C.DESCRIPTION LIKE  CONCAT('%',#{bean.description},'%')    or C.title like CONCAT('%',#{bean.description},'%')
+</if>
+ [@AND content -> '$.account' = #{bean.account}]
+ 等于
+ <if test="null!=bean.account and ''!=bean.account">
+ AND content -> '$.account' = #{bean.account}
+ </if>
+
+```
+
+6. \[@sql XX] XX markdown文件XX名的sql片段
 
 >  相关注解 
 

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
@@ -146,17 +147,16 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if(queryMethod.isBatchUpdate()){
 			return bindParameterWrapper;
 		}
-
-		queryMethod.getParameters().getBindableParameters().forEach(p -> {
-			    String parameterName = p.getName();
-			    if(null==parameterName){
-					parameterName=queryMethod.getParameterNameByMybatis(p.getIndex());
-				}
-			   if(null==parameterName){
-				    throw  new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED);
-			    }
-				map.put(parameterName, objects[p.getIndex()]);
-		});
+		for (Parameter p:queryMethod.getParameters().getBindableParameters()) {
+			String parameterName = p.getName();
+			if(null==parameterName){
+				parameterName=queryMethod.getParameterNameByMybatis(p.getIndex());
+			}
+			if(null==parameterName){
+				throw  new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED);
+			}
+			map.put(parameterName, objects[p.getIndex()]);
+		}
 		bindParameterWrapper.setParameter(map);
 		return bindParameterWrapper;
 	}

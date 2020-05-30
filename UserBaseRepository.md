@@ -33,9 +33,10 @@ SELECT user_name FROM user_base WHERE user_name = #{userName}
 ```
 -- findListByIds
 SELECT * FROM user_base 
-<where>
-<if test="null!=userName"> and user_name <> #{userName} </if>
-<if test="null!=idList and idList.size>0">  and id in <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">#{item}</foreach></if>
+<where> 
+[@and id in #{idList:in} and user_name like #{userName:like}]
+[@and user_name like userName%]
+[@and id in idList]
 <if test="null!=createTime">  and create_time < #{createTime}  </if>
 </where>
 
@@ -45,9 +46,9 @@ SELECT * FROM user_base
 ```
 -- findListByIds
 SELECT * FROM user_base <where> 
-{@and user_name <> userName}
-{@and id in idList}
-{@and create_time < createTime}
+[@and user_name <> userName]
+[@and id in idList]
+[@and create_time < createTime]
 </where>
 ```
 
