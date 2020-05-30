@@ -205,9 +205,25 @@ close=")">#{item}</foreach></if>
  ```
  [@and user_name like userName] 等于 and user_name like CONCAT('%',?,'%')  
  [@and user_name like userName%] 等于 and user_name like  CONCAT(?,'%') 
-  [@and user_name like userName%] 等于 and user_name like CONCAT('%','test')   
+ [@and user_name like userName%] 等于 and user_name like CONCAT('%','test')   
  
  ```
+ 
+5. 其他非4个分隔
+
+```
+[@AND C.DESCRIPTION LIKE #{bean.description:like}  or C.title like #{bean.description:like}]
+等于
+<if test="null!=bean.description and ''!=bean.description">
+AND C.DESCRIPTION LIKE  CONCAT('%',#{bean.description},'%')    or C.title like CONCAT('%',#{bean.description},'%')
+</if>
+ [@AND content -> '$.account' = #{bean.account}]
+ 等于
+ <if test="null!=bean.account and ''!=bean.account">
+ AND content -> '$.account' = #{bean.account}
+ </if>
+
+```
 
 >  相关注解 
 
