@@ -18,14 +18,12 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.BatchUpdate;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.ReadDataSource;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 
 /**
  * {QueryMethod} implementation that implements a method by executing the query from a { Query} annotation on
@@ -51,11 +49,7 @@ public class JdbcQueryMethod extends QueryMethod {
 	public boolean isBatchUpdate() {
 		return AnnotationUtils.findAnnotation(method, BatchUpdate.class) != null;
 	}
-	public String  getParameterNameByMybatis(int i){
-		Parameter parameter =method.getParameters()[i];
-		Param annotation = parameter.getAnnotation(Param.class);
-		return annotation == null ? null: annotation.value();
-	}
+
 
 
 

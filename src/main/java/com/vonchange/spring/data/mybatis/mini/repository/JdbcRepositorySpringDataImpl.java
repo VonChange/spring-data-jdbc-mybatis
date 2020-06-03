@@ -31,8 +31,6 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private boolean logRead;
     @Value("${mybatis-mini.logFullSql:false}")
     private boolean logFullSql;
-    @Value("${mybatis-mini.mapOrm:true}")
-    private boolean isMapOrm;
 
     private static final String   DATA_SOURCE_NAME="dataSource";
     public JdbcRepositorySpringDataImpl(DataSource... dataSources){

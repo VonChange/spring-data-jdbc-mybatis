@@ -147,11 +147,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			return bindParameterWrapper;
 		}
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
-			     String parameterName = p.getName().orElse(queryMethod.getParameterNameByMybatis(p.getIndex()));
-			     if(null==parameterName){
-					 throw  new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED);
-				 }
-				//String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
+				String parameterName = p.getName().orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
 				map.put(parameterName, objects[p.getIndex()]);
 		});
 		bindParameterWrapper.setParameter(map);

@@ -23,28 +23,22 @@ collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
 ```
 ![例子](mini.png)
+== why not spring data jdbc,jpa,hibernate,mybaits,mybatis-plus等
 
-== 与mybatis,jpa,hibernate,mybatis-plus等 比较
-
-1. 无需resultType resultMap 复杂指定(mybatis xml啰嗦的配置)
-   只需在markdown里定义方法名
-2. 不允许查询sql放到@Select 和 @Query上 jpa复杂sql不容易书写还乱(虽然也能实现)
-   保持mybatis风格写在文件里 统一管理 便于维护
-3. 无缓存 缓存很容易 但更新是个难题 大多使用mybatis的公司都不会开启一级,二级缓存
-   使用不当容易引起脏读 不如使用 SpringCache 等上层方案 自己控制
-4. 无jpa根据方法名 (复杂点需要你学习思考,名字老长,不透明)
-5. 永远不会提供类似hibernate Criteria,mybatis-plus EntityWrapper这种东西
-   查询就该是sql 配合动态sql能力 还有简化写法 减少学习和使用成本
-6. 由于markdown 文件表述能力 无法像mybatis那样使用resultMap可以关联结果集映射
-   我推荐的是如果没有复杂逻辑 多表join返回映射一个新的实体可直接透传到视图层VO
-   或者自己代码里拼接 麻烦点但可控 后期会尝试写新的组件sqlHelper方式简化这些流程
-7. 比mybatis有简单的crud  比jpa使用jdbc+动态sql
-   比mybatis-plus(越来越像hibernate,jpa 搞Criteria那套 还是mybatis吗
-   sql还是要统一管理到文件)更简单 不使用xml 使用jdbc
-8. 比较大多是无的功能 但细想这些都不是必须的甚至鸡肋 老老实实简单简单做个纯粹的ORM框架
-9. 最大优点就是简单 学习成本极低 入手简单
-
-   
+1. 基于spring data jdbc理念但扩展使用mybatis动态sql能力 对于复杂点查询支持更好
+2. 相比jpa 底层使用hibernate(当然也能sql) 只有sql 基于spring jdbc
+   无jpa根据方法名(复杂点需要你学习思考,名字老长,不透明) 简单没有黑魔法 学习成本低
+   sql写在markdown里,纯jdbc更易于调优
+3. 比价mybatis 没有cache,复杂join映射实体,无resultType,resultMap配置
+   扩展单表CRUD 只用他的动态sql能力的模版引擎和sql放到文件管理思想 去繁就简
+   取其优点抛弃鸡肋功能
+4. 相比mybatis-plus等扩展mybatis框架 他们做的越来越像hibernate,jpa
+   搞Criteria那套 基本脱离mybatis优点 
+5. 查询只提供一个选择 就是sql写在markdown文件里 不会提供类似hibernate Criteria
+   多种选择说是灵活但项目多种有多种实现写法 你会有打人的冲动 
+6. 缓存可以用SpringCache等上层方案 
+7. 查询只能映射单一实体(VO,DO,DTO均可) 但现在推荐减少JOIN 推荐代码里join 后期会尝试写新的组件sqlHelper方式简化
+ 
 
 == Getting Started
 
