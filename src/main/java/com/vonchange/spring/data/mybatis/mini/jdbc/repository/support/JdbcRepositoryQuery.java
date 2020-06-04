@@ -150,9 +150,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		for (Parameter p:queryMethod.getParameters().getBindableParameters()) {
 			String parameterName = p.getName();
 			if(null==parameterName){
-				parameterName=queryMethod.getParameterNameByMybatis(p.getIndex());
-			}
-			if(null==parameterName){
 				throw  new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED);
 			}
 			map.put(parameterName, objects[p.getIndex()]);
