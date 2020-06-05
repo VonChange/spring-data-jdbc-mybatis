@@ -86,7 +86,7 @@ Repositories in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.2.3 低版本比如1.5.x 使用版本1.8.5 -->
+  <!-- spring boot 2.x 是使用版本2.3.3 低版本比如1.5.x 使用版本1.9.1 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
