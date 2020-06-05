@@ -22,7 +22,7 @@
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
 ```
-![例子](mini.png)
+![例子](https://gitee.com/vonchange/spring-data-mybatis-mini/raw/master/mini.png)
 == why not spring data jdbc,jpa,hibernate,mybaits,mybatis-plus等
 
 1. 基于spring data jdbc理念但扩展使用mybatis动态sql能力 对于复杂点查询支持更好
