@@ -2,7 +2,7 @@
 
 **等同于spring data jdbc + mybatis 动态sql能力**
 
-**大道至简**
+**大道至简 麻雀虽小 五脏俱全**
 
 1. 抛弃繁琐的xml 只使用mybatis模版引擎即动态sql能力 sql写在markdown文件里
    更容易书写和阅读 sql能统一管理查看
