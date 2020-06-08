@@ -129,7 +129,7 @@ public interface UserBaseRepository extends BaseRepository<UserBaseDO, Long> {
 ```
 
 > 默认sql 包下同名吧UserBaseRepository.md 识别```开头结尾的 -- 定义的同名方法
-> 参见[UserBaseRepository.md](UserBaseRepository.md)
+> 参见[UserBaseRepository.md](https://github.com/VonChange/spring-data-mybatis-mini/blob/master/UserBaseRepository.md)
 
 
 
