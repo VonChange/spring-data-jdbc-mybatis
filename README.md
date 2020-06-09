@@ -37,7 +37,8 @@ close=")">#{item}</foreach></if>
 5. 查询只提供一个选择 就是sql写在markdown文件里 不会提供类似hibernate Criteria
    多种选择说是灵活但项目多种有多种实现写法 你会有打人的冲动 
 6. 缓存可以用SpringCache等上层方案 
-7. 查询只能映射单一实体(VO,DO,DTO均可) 但现在推荐减少JOIN 推荐代码里join 后期会尝试写新的组件sqlHelper方式简化
+7. 查询只能映射单一实体(VO,DO,DTO均可 支持继承) 但现在推荐减少JOIN 推荐代码里join
+   后期会尝试写新的组件sqlHelper方式简化
  
 
 == Getting Started
@@ -79,7 +80,7 @@ close=")">#{item}</foreach></if>
  
  
  Here is a quick teaser of an application using Spring Data
-Repositories in Java:
+mybatis mini in Java:
 
 === Maven configuration
 
@@ -106,6 +107,16 @@ Add the Maven dependency:
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.15</version>
 </dependency>
+```
+```
+//添加 EnableMybatisMini 注解 
+@EnableMybatisMini
+@SpringBootApplication 
+public class DemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+} 
 ```
 
 ``` 
@@ -162,19 +173,11 @@ public class MyService {
  }
 }
 
-//添加 EnableMybatisMini 注解 
-@EnableMybatisMini
-@SpringBootApplication 
-public class DemoApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
-    }
-} 
 ```
 
 
 
-> 偷懒简化 if test 和in查询 识别 {@开头
+> 偷懒简化 if test 和in查询 识别 \[@开头
 
 >   \[@and id in idList] 等于
 
