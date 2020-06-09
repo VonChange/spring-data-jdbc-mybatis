@@ -29,7 +29,7 @@ close=")">#{item}</foreach></if>
 2. 相比jpa 底层使用hibernate(当然也能sql) 只有sql 基于spring jdbc
    无jpa根据方法名(复杂点需要你学习思考,名字老长,不透明) 简单没有黑魔法 学习成本低
    sql写在markdown里,纯jdbc更易于调优
-3. 比价mybatis 没有cache,复杂join映射实体,无resultType,resultMap配置
+3. 相比mybatis 没有cache,复杂join映射实体,无resultType,resultMap配置
    扩展单表CRUD 只用他的动态sql能力的模版引擎和sql放到文件管理思想 去繁就简
    取其优点抛弃鸡肋功能
 4. 相比mybatis-plus等扩展mybatis框架 他们做的越来越像hibernate,jpa
