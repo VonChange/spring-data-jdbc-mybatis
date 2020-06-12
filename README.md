@@ -1,5 +1,5 @@
 ## spring-data-mybatis-mini
-[简体中文-more](README—zh.md) 
+[简体中文-more](README_zh.md) 
 
 **Is equivalent to spring data jdbc + mybatis template dynamic query**
 
