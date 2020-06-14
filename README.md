@@ -2,8 +2,10 @@
 [english](README_en.md)
 
 [![Gitter](https://badges.gitter.im/von_change/spring-data-mybatis-mini.svg)](https://gitter.im/von_change/spring-data-mybatis-mini?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-![](https://img.shields.io/github/stars/vonchange/spring-data-mybatis-mini.svg?style=social)
-![](https://gitee.com/vonchange/spring-data-mybatis-mini/badge/star.svg?theme=dark)
+[![](https://img.shields.io/github/stars/vonchange/spring-data-mybatis-mini.svg?style=social)
+](https://github.com/VonChange/spring-data-mybatis-mini)
+[![](https://gitee.com/vonchange/spring-data-mybatis-mini/badge/star.svg?theme=dark)
+](https://gitee.com/vonchange/spring-data-mybatis-mini)
 
 **等同于spring data jdbc + mybatis 动态sql能力**
 
