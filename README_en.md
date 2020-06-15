@@ -46,7 +46,7 @@ Add the Maven dependency:
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.2.3</version>
+  <version>2.3.3</version>
 </dependency>
 
 <dependency>
