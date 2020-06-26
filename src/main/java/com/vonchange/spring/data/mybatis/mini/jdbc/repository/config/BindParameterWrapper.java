@@ -8,6 +8,7 @@ import java.util.Map;
 public class BindParameterWrapper {
     private  Pageable pageable;
     private  AbstractPageWork abstractPageWork;
+    private  Class<?> abstractPageWorkClass;
     private Map<String,Object> parameter;
     private Object firstParam;
 
@@ -41,5 +42,13 @@ public class BindParameterWrapper {
 
     public void setParameter(Map<String, Object> parameter) {
         this.parameter = parameter;
+    }
+
+    public Class<?> getAbstractPageWorkClass() {
+        return abstractPageWorkClass;
+    }
+
+    public void setAbstractPageWorkClass(Class<?> abstractPageWorkClass) {
+        this.abstractPageWorkClass = abstractPageWorkClass;
     }
 }

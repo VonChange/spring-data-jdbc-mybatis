@@ -26,11 +26,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Parameter;
+import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +91,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			dataSourceWrapper=operations.getReadDataSource();
 		}
 		if (queryMethod.isBatchUpdate()){
-			return operations.batchUpdate(dataSourceWrapper,sqlId,(List<Object>)parameters.getFirstParam());
+			return operations.batchUpdate(dataSourceWrapper,sqlId,(List<Object>)parameters.getFirstParam(),queryMethod.getBatchSize());
 		}
 		if (configInfo.getMethod().startsWith("update")||configInfo.getMethod().startsWith("delete")) {
 			int updatedCount = operations.update(dataSourceWrapper,sqlId,parameters.getParameter());
@@ -99,16 +102,16 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if (configInfo.getMethod().startsWith("insert")||configInfo.getMethod().startsWith("save")) {
 			return operations.insert(dataSourceWrapper,sqlId,parameters.getParameter());
 		}
-
+        if(null!=parameters.getAbstractPageWork()){
+            operations.queryBigData(dataSourceWrapper,parameters.getAbstractPageWorkClass(),sqlId,parameters.getAbstractPageWork(),parameters.getParameter());
+        }
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
 			return operations.queryList(dataSourceWrapper,queryMethod.getReturnedObjectType(), sqlId,parameters.getParameter());
 		}
 		if(queryMethod.isPageQuery()){
-			if(null==parameters.getAbstractPageWork()){
-				return operations.queryPage(dataSourceWrapper,queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
-			}
-			return operations.queryBigData(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getAbstractPageWork(),parameters.getParameter());
+			return operations.queryPage(dataSourceWrapper,queryMethod.getReturnedObjectType(), sqlId,parameters.getPageable(),parameters.getParameter());
 		}
+
 		if(ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())){
 			return operations.queryOneColumn(dataSourceWrapper,queryMethod.getReturnedObjectType(),sqlId,parameters.getParameter());
 		}
@@ -130,17 +133,21 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 
 
 	private BindParameterWrapper bindParameter(Object[] objects) {
-
+		Parameters parameters= queryMethod.getParameters();
 		Map<String,Object> map = new HashMap<>();
 		BindParameterWrapper bindParameterWrapper = new BindParameterWrapper();
 		if(objects.length>0){
-			Class<?> type = queryMethod.getParameters().getParameter(0).getType();
-			if(ClassUtils.isAssignable(Pageable.class, type)){
-				Pageable pageable =(Pageable) objects[0];
-				bindParameterWrapper.setPageable(pageable);
+			if(parameters.getPageableIndex()>=0){
+				bindParameterWrapper.setPageable((Pageable)objects[parameters.getPageableIndex()]);
 			}
+			Class<?> type = queryMethod.getParameters().getParameter(0).getType();
 			if(ClassUtils.isAssignable(AbstractPageWork.class, type)){
 				bindParameterWrapper.setAbstractPageWork((AbstractPageWork) objects[0]);
+                Type superClass = objects[0].getClass().getGenericSuperclass();
+                if( superClass instanceof ParameterizedType){
+                    ParameterizedType pType = (ParameterizedType)superClass;
+                    bindParameterWrapper.setAbstractPageWorkClass((Class<?>) pType.getActualTypeArguments()[0] );
+                }
 			}
 			bindParameterWrapper.setFirstParam(objects[0]);
 		}
