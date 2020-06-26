@@ -37,9 +37,7 @@ public class JdbcQueryMethod extends QueryMethod {
 	private final Method method;
 
 	public JdbcQueryMethod(Method method, RepositoryMetadata metadata, ProjectionFactory factory) {
-
 		super(method, metadata, factory);
-
 		this.method = method;
 	}
 	public boolean isReadDataSource() {
@@ -49,6 +47,11 @@ public class JdbcQueryMethod extends QueryMethod {
 	public boolean isBatchUpdate() {
 		return AnnotationUtils.findAnnotation(method, BatchUpdate.class) != null;
 	}
+
+	public int getBatchSize() {
+		return AnnotationUtils.findAnnotation(method, BatchUpdate.class).size();
+	}
+
 
 
 

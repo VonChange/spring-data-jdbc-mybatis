@@ -6,5 +6,8 @@ import java.lang.annotation.*;
 @Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Documented
 public @interface BatchUpdate {
-
+    /**
+     * Batch Size
+     */
+    int size() default 5000;
 }

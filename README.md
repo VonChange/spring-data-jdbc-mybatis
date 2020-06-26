@@ -63,7 +63,7 @@ close=")">#{item}</foreach></if>
 9. 查询返回实体 不需要必须是DO 如果没特殊规范
    也可直接返回VO层实体(抛弃繁琐的DO->DTO->VO 偷懒轻喷)
 10. 支持批量更新插入（jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true）
-11. 分页某些特性支持mysql,oracle 主支持mysql
+11. 分页某些特性支持mysql,oracle 主支持mysql 可自定义方言实现其他数据库
 12. 使用简单 约定大于配置 默认配置基本都满足
 13. 支持LocalDateTime LocalTime jdk8更方便的时间类型
 
@@ -217,11 +217,10 @@ close=")">#{item}</foreach></if>
 5. 其他非4个分隔
 
 ```
-[@AND C.DESCRIPTION LIKE #{bean.description:like}  or C.title like #{bean.description:like}]
+[@and id in #{idList:in} and user_name like #{userName:like}]
 等于
-<if test="null!=bean.description and ''!=bean.description">
-AND C.DESCRIPTION LIKE  CONCAT('%',#{bean.description},'%')    or C.title like CONCAT('%',#{bean.description},'%')
-</if>
+<if test="@com.vonchange.mybatis.tpl.MyOgnl@isNotEmpty(idList) and @com.vonchange.mybatis.tpl.MyOgnl@isNotEmpty(userName) "> and id in <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">#{item}</foreach> and user_name like  CONCAT('%',#{userName},'%')  </if>
+
  [@AND content -> '$.account' = #{bean.account}]
  等于
  <if test="null!=bean.account and ''!=bean.account">
@@ -259,7 +258,32 @@ AND C.DESCRIPTION LIKE  CONCAT('%',#{bean.description},'%')    or C.title like C
 
 1. jdbc链接参数需加入rewriteBatchedStatements=true&allowMultiQueries=true
 
-2. insertBatch updateBatch方法 无需关心List对象大小 
+2. 提供insertBatch(默认第一行不为NULL的字段) 可在markdown里自定义sql
+   无需关心List对象大小
 
-3. 经测试比插入比sql拼接 快5倍 但更新差不多 简单数据插入1万耗时2s多点
+3. 经测试简单数据插入1万耗时1s以内
 
+4. 自定义实现(建议使用 更透明)
+
+```
+  
+  @BatchUpdate(size = 5000)
+  int batchInsert(List<UserBaseDO> list);
+```
+
+只需定义单条insert 语句
+
+```
+-- batchInsert
+insert into user_base(`user_name`,`mobile_phone`,create_time) values
+(#{userName},#{mobilePhone},#{createTime}) 
+
+```
+
+
+> 大数据量流式读取
+
+1. 使用场景: 不用编写复杂分包逻辑 可关联表查 大数据表 直接 select * from a
+   不用关心内存爆调 流的方式读取 
+   
+2. 使用例子

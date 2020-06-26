@@ -3,6 +3,8 @@ package com.vonchange.spring.data.mybatis.mini.repository;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
+import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.dialect.MySQLDialect;
 import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +33,26 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private boolean logRead;
     @Value("${mybatis-mini.logFullSql:false}")
     private boolean logFullSql;
+    @Value("${mybatis-mini.dialect:}")
+    private String dialect;
 
     private static final String   DATA_SOURCE_NAME="dataSource";
     public JdbcRepositorySpringDataImpl(DataSource... dataSources){
         this.dataSources=dataSources;
     }
 
-
+    @Override
+    protected Dialect getDefaultDialect() {
+        if("".equals(dialect)){
+            return new MySQLDialect();
+        }
+        try {
+            return (Dialect) Class.forName(dialect).getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            log.error("no dialect {}",dialect,e);
+        }
+        return new MySQLDialect();
+    }
     @Autowired(required = false)
     public void setDataSourceInSql(DataSourceInSql dataSourceInSql) {
         this.dataSourceInSql = dataSourceInSql;

@@ -39,9 +39,9 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 	 */
 	<S extends T> int insert(S entity);
 
-	<S extends T> int insertBatch(List<S> entitys);
+	<S extends T> int insertBatch(List<S> entitys,int batchSize);
 
-	<S extends T> int  insertBatchDuplicateKey(List<S> entitys);
+	<S extends T> int  insertBatchDuplicateKey(List<S> entitys,int batchSize);
 
 	/**
 	 * insert into  on duplication key
@@ -49,11 +49,6 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 	 * @param <S>
 	 */
 	<S extends T> int insertDuplicateKey(S entity);
-
-	<S extends T> int updateBatch(List<S> entitys);
-
-	<S extends T> int updateBatchAllField(List<S> entitys);
-
 
 	/**
 	 * 默认只更新不为空的字段
