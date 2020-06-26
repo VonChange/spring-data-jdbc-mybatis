@@ -283,7 +283,41 @@ insert into user_base(`user_name`,`mobile_phone`,create_time) values
 
 > 大数据量流式读取
 
-1. 使用场景: 不用编写复杂分包逻辑 可关联表查 大数据表 直接 select * from a
-   不用关心内存爆调 流的方式读取 
+1. 使用场景: 不用编写复杂分包逻辑,表数据大小,可关联表查 可直接 select * from 整个表
+   不用关心内存爆调 流的方式读取
    
-2. 使用例子
+2. 使用例子 
+
+> 定义方法
+```
+void findBigData(@Param("")AbstractPageWork<UserBaseDO> abstractPageWork,@Param("userName") String userName);
+```
+> 定义sql
+
+```
+-- findBigData
+select * from user_base
+<where> 
+[@and user_name like userName]
+</where>
+```
+> 使用demo
+
+```
+ AbstractPageWork<UserBaseDO> abstractPageWork = new AbstractPageWork<UserBaseDO>() {
+            @Override
+            protected void doPage(List<UserBaseDO> pageContentList, int pageNum, Map<String, Object> extData) {
+                pageContentList.forEach(userBaseDO -> {
+                    log.info("{}",userBaseDO.toString());
+                });
+
+            }
+
+            @Override
+            protected int getPageSize() {
+                return 500;
+            }
+        };
+       userBaseRepository.findBigData(abstractPageWork,"三");
+       log.info("{} {} {}",abstractPageWork.getSize(),abstractPageWork.getTotalPages(),abstractPageWork.getTotalElements());
+```
