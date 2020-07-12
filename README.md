@@ -55,7 +55,7 @@ close=")">#{item}</foreach></if>
 2. 抛弃繁琐的xml 所有sql 写在markdown文件里 便于书写和阅读
    默认位置sql包下repository接口名.md @ConfigLocation 可自定义位置
 3. 自定义更新 update/save/insert/delete 开头方法是更新操作 
-4. 支持分页 分页参数必须是第一个参数 
+4. 支持分页
 5. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
 6. 提供if判断和in查询简写方式(偷懒 >-<)
 7. 注解属于spring data jpa 体系的
