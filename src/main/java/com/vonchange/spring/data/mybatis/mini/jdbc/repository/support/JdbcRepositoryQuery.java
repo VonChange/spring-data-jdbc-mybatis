@@ -23,6 +23,7 @@ import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.BindParamet
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Parameters;
@@ -62,7 +63,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	 * @param queryMethod must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	JdbcRepositoryQuery(JdbcQueryMethod queryMethod, JdbcRepository operations, ConfigInfo configInfo) {
+	JdbcRepositoryQuery(JdbcQueryMethod queryMethod, @Qualifier("jdbcRepository") JdbcRepository operations, ConfigInfo configInfo) {
 
 		Assert.notNull(queryMethod, "Query method must not be null!");
 		Assert.notNull(operations, "NamedParameterJdbcOperations must not be null!");

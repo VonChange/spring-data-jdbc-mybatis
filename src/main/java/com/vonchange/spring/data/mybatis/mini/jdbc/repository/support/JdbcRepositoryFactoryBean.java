@@ -18,6 +18,7 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.repository.Repository;
@@ -41,7 +42,7 @@ import java.io.Serializable;
 public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> //
 		extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> implements ApplicationEventPublisherAware {
 
-	private JdbcRepository operations;
+	private JdbcRepository jdbcRepository;
 	private DataSourceWrapperHelper dataSourceWrapperHelper;
 
 	/**
@@ -69,7 +70,7 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	@Override
 	protected RepositoryFactorySupport doCreateRepositoryFactory() {
 		JdbcRepositoryFactory jdbcRepositoryFactory = new JdbcRepositoryFactory(
-				operations,dataSourceWrapperHelper);
+				jdbcRepository,dataSourceWrapperHelper);
 		return jdbcRepositoryFactory;
 	}
 
@@ -80,8 +81,8 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 		this.dataSourceWrapperHelper = dataSourceWrapperHelper;
 	}
 	@Autowired
-	public void setJdbcOperations(JdbcRepository operations) {
-		this.operations = operations;
+	public void setJdbcOperations(@Qualifier("jdbcRepository") JdbcRepository jdbcRepository) {
+		this.jdbcRepository = jdbcRepository;
 	}
 
 }

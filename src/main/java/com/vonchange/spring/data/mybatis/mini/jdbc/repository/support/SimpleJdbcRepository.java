@@ -17,6 +17,7 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
 	private final  JdbcRepository entityOperations;
 	private final ConfigInfo configInfo;
 
-	public SimpleJdbcRepository(JdbcRepository entityOperations, ConfigInfo configInfo) {
+	public SimpleJdbcRepository(@Qualifier("jdbcRepository")JdbcRepository entityOperations, ConfigInfo configInfo) {
 		this.entityOperations = entityOperations;
 		this.configInfo = configInfo;
 	}

@@ -22,6 +22,7 @@ import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.SqlPackage;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
@@ -52,7 +53,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	 *
 	 * @param operations must not be {@literal null}.
 	 */
-	public JdbcRepositoryFactory(JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {
+	public JdbcRepositoryFactory(@Qualifier("jdbcRepository")JdbcRepository operations, DataSourceWrapperHelper dataSourceWrapperHelper) {
 		this.operations = operations;
 		this.dataSourceWrapperHelper=dataSourceWrapperHelper;
 	}
