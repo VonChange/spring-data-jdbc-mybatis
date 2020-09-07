@@ -12,7 +12,7 @@ and create_time  < #{createTime}
 ```
 -- findList
 select * from user_base
-where {@sql findListWhereSql}
+where [@sql findListWhereSql]
 ```
 
 > sql 片段

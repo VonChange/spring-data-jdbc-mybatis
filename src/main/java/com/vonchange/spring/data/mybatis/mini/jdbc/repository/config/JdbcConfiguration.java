@@ -38,7 +38,7 @@ import javax.sql.DataSource;
 public class JdbcConfiguration {
 
 
-	@Bean
+	@Bean(name = "jdbcRepository")
 	public JdbcRepository initJdbcRepository(DataSource... dataSource){
 		return new JdbcRepositorySpringDataImpl(dataSource);
 	}

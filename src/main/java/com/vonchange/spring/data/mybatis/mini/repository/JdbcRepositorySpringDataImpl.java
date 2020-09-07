@@ -9,6 +9,7 @@ import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.sql.DataSource;
@@ -21,6 +22,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringDataImpl.class);
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
+    private DataSource dataSource;
     private DataSourceInSql dataSourceInSql;
     private ReadDataSources readDataSources;
     @Value("${mybatis-mini.isReadAllScopeOpen:false}")
@@ -35,6 +37,10 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private boolean logFullSql;
     @Value("${mybatis-mini.dialect:}")
     private String dialect;
+    @Autowired
+    public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     private static final String   DATA_SOURCE_NAME="dataSource";
     public JdbcRepositorySpringDataImpl(DataSource... dataSources){
@@ -89,7 +95,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
         if(null==dataSources||dataSources.length==0){
             throw new MybatisMinRuntimeException("no dataSource");
         }
-        return new DataSourceWrapper(dataSources[0],DATA_SOURCE_NAME);
+        return new DataSourceWrapper(dataSource,DATA_SOURCE_NAME);
     }
 
     @Override

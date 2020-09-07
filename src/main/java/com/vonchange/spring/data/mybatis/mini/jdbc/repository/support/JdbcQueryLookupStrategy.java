@@ -20,6 +20,7 @@ import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.DataSourceKey;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.SqlPackage;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -47,7 +48,7 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 	 * Creates a new {@link JdbcQueryLookupStrategy} for the given
 	 *
 	 */
-	JdbcQueryLookupStrategy(JdbcRepository operations,DataSourceWrapperHelper dataSourceWrapperHelper) {
+	JdbcQueryLookupStrategy(@Qualifier("jdbcRepository")JdbcRepository operations, DataSourceWrapperHelper dataSourceWrapperHelper) {
 
 		Assert.notNull(operations, "operations must not be null!");
 		this.operations = operations;
