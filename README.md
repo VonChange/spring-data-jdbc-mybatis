@@ -78,11 +78,11 @@ mybatis mini in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.3.4 低版本比如1.5.x 使用版本1.9.2 -->
+  <!-- spring boot 2.x 是使用版本2.3.5 低版本比如1.5.x 使用版本1.9.3 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.3.4</version>
+  <version>2.3.5</version>
 </dependency>
 
 <dependency>
