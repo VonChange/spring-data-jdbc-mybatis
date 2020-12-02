@@ -93,13 +93,13 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if (queryMethod.isBatchUpdate()){
 			return operations.batchUpdate(dataSourceWrapper,sqlId,(List<Object>)parameters.getFirstParam(),queryMethod.getBatchSize());
 		}
-		if (configInfo.getMethod().startsWith("update")||configInfo.getMethod().startsWith("delete")) {
+		if (queryMethod.isUpdateQuery()||configInfo.getMethod().startsWith("update")||configInfo.getMethod().startsWith("delete")) {
 			int updatedCount = operations.update(dataSourceWrapper,sqlId,parameters.getParameter());
 			Class<?> returnedObjectType = queryMethod.getReturnedObjectType();
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
 		}
-		if (configInfo.getMethod().startsWith("insert")||configInfo.getMethod().startsWith("save")) {
+		if (queryMethod.isInsertQuery()||configInfo.getMethod().startsWith("insert")||configInfo.getMethod().startsWith("save")) {
 			return operations.insert(dataSourceWrapper,sqlId,parameters.getParameter());
 		}
         if(null!=parameters.getAbstractPageWork()){

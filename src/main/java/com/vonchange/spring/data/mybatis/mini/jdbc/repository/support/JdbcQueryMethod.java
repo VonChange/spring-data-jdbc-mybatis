@@ -17,7 +17,9 @@ package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
 
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.BatchUpdate;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.Insert;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.ReadDataSource;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.Update;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -53,7 +55,12 @@ public class JdbcQueryMethod extends QueryMethod {
 	}
 
 
-
+	public boolean isUpdateQuery() {
+		return AnnotationUtils.findAnnotation(method, Update.class) != null;
+	}
+	public boolean isInsertQuery() {
+		return AnnotationUtils.findAnnotation(method, Insert.class) != null;
+	}
 
 
 }
