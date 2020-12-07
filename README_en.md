@@ -42,11 +42,11 @@ close=")">#{item}</foreach></if>
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x use 2.3.3,lower eg 1.5.x use 1.9.1 -->
+  <!-- spring boot 2.x use 2.3.6,lower eg 1.5.x use 1.9.4 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.3.3</version>
+  <version>2.3.6</version>
 </dependency>
 
 <dependency>
