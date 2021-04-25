@@ -43,6 +43,8 @@ public interface BaseRepository<T, ID> extends Repository<T, ID> {
 
 	<S extends T> int  insertBatchDuplicateKey(List<S> entitys,int batchSize);
 
+	<S extends T> int updateBatch(List<S> entitys,int batchSize);
+
 	/**
 	 * insert into  on duplication key
 	 * @param entity
