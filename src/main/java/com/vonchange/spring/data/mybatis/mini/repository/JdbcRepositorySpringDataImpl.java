@@ -98,10 +98,7 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
         return new DataSourceWrapper(dataSource,DATA_SOURCE_NAME);
     }
 
-    @Override
-    protected boolean needInitEntityInfo() {
-        return false;
-    }
+
     @Override
     protected DataSourceWrapper getDataSourceFromSql(String sql){
         if(null==dataSourceInSql){

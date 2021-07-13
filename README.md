@@ -37,7 +37,7 @@ close=")">#{item}</foreach></if>
 1. 提供单表增删改(没有物理删除) 批量更新插入等基础方法
 2. 抛弃繁琐的xml 所有sql 写在markdown文件里 便于书写和阅读
    默认位置sql包下repository接口名.md @ConfigLocation 可自定义位置
-3. 自定义更新 update/save/insert/delete 开头方法是更新操作 
+3. 自定义更新 @Update/@Insert或者update/save/insert/delete 开头方法是更新操作
 4. 支持分页
 5. 对于 " > "," < "," >= "," <= "," <> "无需转义(两边需有空格 我会自动替换转义)
 6. 提供if判断和in查询简写方式(偷懒 >-<)
@@ -78,11 +78,11 @@ mybatis mini in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.3.5 低版本比如1.5.x 使用版本1.9.34 -->
+  <!-- spring boot 2.x 是使用版本2.3.6 低版本比如1.5.x 使用版本1.9.4 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.3.5</version>
+  <version>2.3.6</version>
 </dependency>
 
 <dependency>
@@ -168,7 +168,7 @@ public class MyService {
 
 
 
-> 偷懒简化 if test 和in查询 识别 \[@开头
+> 偷懒简化 if test 和in查询 识别 \[@开头判空 \[@@开头不会判空
 
 >   \[@and id in idList] 等于
 
@@ -177,7 +177,16 @@ public class MyService {
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
   
-  ```
+```
+  
+>   \[@@and id in idList] 等于
+
+```
+and id in <foreach
+collection="idList" index="index" item="item" open="(" separator=","
+close=")">#{item}</foreach>
+  
+```
   
 >   \[@and user_name <> userName] 等于
 
@@ -223,6 +232,7 @@ close=")">#{item}</foreach></if>
 3. UpdateNotNull updateAllField方法NULL值忽略
 
 4. ReadDataSource 指定某个方法读数据源 默认配置多数据源随机取 
+5. Update 更新语句 Insert 插入语句返回ID
 
 ```
  //自定义 读库数据源 不自定义默认所有你设置的数据源
