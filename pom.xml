@@ -7,7 +7,7 @@
     <version>2.3.8</version>
    <!-- SNAPSHOT-->
 	<name>spring data mybatis mini</name>
-	<description>Spring Data module for JDBC repositories.</description>
+	<description>spring data jdbc with mybatis template dynamic query</description>
 	<url>https://github.com/VonChange/spring-data-mybatis-mini</url>
 	<parent>
 		<groupId>com.vonchange.common</groupId>
