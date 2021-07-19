@@ -6,7 +6,9 @@
 [![](https://img.shields.io/github/stars/vonchange/spring-data-mybatis-mini.svg?style=social)
 ](https://github.com/VonChange/spring-data-mybatis-mini)
 [![](https://gitee.com/vonchange/spring-data-mybatis-mini/badge/star.svg?theme=dark)
-](https://gitee.com/vonchange/spring-data-mybatis-mini)
+](https://gitee.com/vonchange/spring-data-mybatis-mini) 
+
+[博客](vonchange.com/doc/mini.html)
 
 **等同于spring data jdbc + mybatis 动态sql能力**
 
@@ -78,11 +80,11 @@ mybatis mini in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.3.6 低版本比如1.5.x 使用版本1.9.4 -->
+  <!-- spring boot 2.x 是使用版本2.3.6 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.3.6</version>
+  <version>2.3.8</version>
 </dependency>
 
 <dependency>
@@ -98,7 +100,20 @@ Add the Maven dependency:
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.15</version>
 </dependency>
+
 ```
+
+
+```
+<!-- 低版本比如1.5.x 使用版本low-1.9.6-->
+<dependency>
+  <groupId>com.vonchange.common</groupId>
+  <artifactId>spring-data-mybatis-mini-low</artifactId>
+  <version>1.9.6</version>
+</dependency>
+
+```
+
 ```
 //添加 EnableMybatisMini 注解 
 @EnableMybatisMini
