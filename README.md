@@ -8,7 +8,7 @@
 [![](https://gitee.com/vonchange/spring-data-mybatis-mini/badge/star.svg?theme=dark)
 ](https://gitee.com/vonchange/spring-data-mybatis-mini) 
 
-[博客](vonchange.com/doc/mini.html)
+[博客](http://www.vonchange.com/doc/mini.html)
 
 **等同于spring data jdbc + mybatis 动态sql能力**
 
