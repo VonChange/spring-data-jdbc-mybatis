@@ -1,5 +1,5 @@
 ## spring-data-mybatis-mini
-[english](README_en.md)
+[english](README_en.md) [博客](http://www.vonchange.com/doc/mini.html)
 
 ![](https://img.shields.io/maven-central/v/com.vonchange.common/spring-data-mybatis-mini.svg?label=Maven%20Central)
 [![Gitter](https://badges.gitter.im/von_change/spring-data-mybatis-mini.svg)](https://gitter.im/von_change/spring-data-mybatis-mini?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -8,7 +8,7 @@
 [![](https://gitee.com/vonchange/spring-data-mybatis-mini/badge/star.svg?theme=dark)
 ](https://gitee.com/vonchange/spring-data-mybatis-mini) 
 
-[博客](http://www.vonchange.com/doc/mini.html)
+
 
 **等同于spring data jdbc + mybatis 动态sql能力**
 
