@@ -14,17 +14,18 @@
 
 **大道至简 极致效率 麻雀虽小 五脏俱全**
 
+
 1. 抛弃繁琐的xml 只使用mybatis模版引擎即动态sql能力 sql写在markdown文件里
    更容易书写和阅读 sql能统一管理查看
 
-2. 底层基于springJdbc 而不是mybatis,底层使用hibernate 更直接纯粹
+2. 底层基于springJdbc 而不是mybatis,相当于底层直接使用jdbc 更高效
 
-3. 提供单表增删改(没有删除) 批量更新插入等基础方法 支持分页 多数据源 读写分离
+3. 提供单表增删改 批量更新插入等基础方法 支持分页 多数据源 读写分离
 
-4. mybatis最大优点就是sql模版引擎
-   我也有且仅有使用这部分功能(对于使用过mybatis的无学习成本) 但底层使用springJDBC
-   更简单直接 
-5. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
+5. mybatis最大优点就是sql模版引擎
+  我也有且仅有使用这部分功能(对于使用过mybatis的无学习成本) 但底层使用springJDBC
+  更简单直接
+6. 简化mybatis动态sql写法(可混用-写法还是mybatis那套) 比如
 
 ```
 [@and id in idList] 等于
