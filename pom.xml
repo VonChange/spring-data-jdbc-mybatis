@@ -4,8 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-data-mybatis-mini</artifactId>
-    <version>2.3.8</version>
-   <!-- SNAPSHOT-->
+	<packaging>pom</packaging>
+	<version>2.3.8</version>
+	<modules>
+		<module>spring-data-mybatis-mini</module>
+	</modules>
+	<!-- SNAPSHOT-->
 	<name>spring data mybatis mini</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>
 	<url>https://github.com/VonChange/spring-data-mybatis-mini</url>
