@@ -25,23 +25,26 @@ public class ConvertMap {
         throw new IllegalStateException("Utility class");
     }
 
-     public static  <T> Map<String,Object> toMap(T entity,Class<?> clazz) throws IntrospectionException {
-         BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
-         PropertyDescriptor[] propertyDescriptors =  beanInfo.getPropertyDescriptors();
-         String propertyName;
-         Object value;
-         Map<String,Object> map = new HashMap<>();
-         for (PropertyDescriptor property: propertyDescriptors) {
-             if(!ClazzUtils.isBaseType(property.getPropertyType())){
-                 continue;
-             }
-             propertyName = property.getName();
-             value= Constant.BeanUtil.getProperty(entity, propertyName);
-                     //property.getValue(propertyName);
-             map.put(propertyName,value);
-         }
-         return map;
-     }
+    public static  <T> Map<String,Object> toMap(T entity,Class<?> clazz) throws IntrospectionException {
+        if(entity instanceof Map){
+            return (Map<String, Object>) entity;
+        }
+        BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+        PropertyDescriptor[] propertyDescriptors =  beanInfo.getPropertyDescriptors();
+        String propertyName;
+        Object value;
+        Map<String,Object> map = new HashMap<>();
+        for (PropertyDescriptor property: propertyDescriptors) {
+            if(!ClazzUtils.isBaseType(property.getPropertyType())){
+                continue;
+            }
+            propertyName = property.getName();
+            value= Constant.BeanUtil.getProperty(entity, propertyName);
+            //property.getValue(propertyName);
+            map.put(propertyName,value);
+        }
+        return map;
+    }
 
     /**
      *  Map to JavaBean
@@ -83,7 +86,7 @@ public class ConvertMap {
         return entity;
     }
     public static <T> T convertMap(Class type, Map<String,Object> map) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-         return  convertMap(null,type,map);
+        return  convertMap(null,type,map);
     }
 
 

@@ -1,3 +1,4 @@
+
 package com.vonchange.mybatis.common.util.bean;
 
 import com.vonchange.mybatis.common.util.ConvertUtil;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class BeanUtil {
     private static final Logger log = LoggerFactory.getLogger(BeanUtil.class);
@@ -21,6 +23,9 @@ public class BeanUtil {
     }
     public Object getProperty(Object entity,String property) {
         try {
+            if(entity instanceof Map){
+                return ((Map) entity).get(property);
+            }
             return getPropertyT(entity, property);
         } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
             log.error("",e);
