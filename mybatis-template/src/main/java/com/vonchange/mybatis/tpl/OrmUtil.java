@@ -1,7 +1,7 @@
 package com.vonchange.mybatis.tpl;
 
 
-import com.vonchange.mybatis.common.util.StringUtils;
+import com.vonchange.common.util.StringUtils;
 
 /**
  * Orm field

@@ -1,8 +1,8 @@
 package com.vonchange.nine.demo.config;
 
 
-import com.vonchange.mybatis.common.util.ConvertUtil;
-import com.vonchange.mybatis.common.util.StringUtils;
+import com.vonchange.common.util.ConvertUtil;
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.mybatis.config.Constant;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.LikeTemplate;

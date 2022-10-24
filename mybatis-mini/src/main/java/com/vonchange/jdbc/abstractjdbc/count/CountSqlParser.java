@@ -25,7 +25,7 @@
 package com.vonchange.jdbc.abstractjdbc.count;
 
 
-import com.vonchange.mybatis.common.util.StringUtils;
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.jsqlparser.expression.Alias;
 import com.vonchange.jsqlparser.expression.Expression;
 import com.vonchange.jsqlparser.expression.Function;

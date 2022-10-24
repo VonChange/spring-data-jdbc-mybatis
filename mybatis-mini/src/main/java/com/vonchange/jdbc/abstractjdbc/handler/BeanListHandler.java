@@ -16,9 +16,9 @@
  */
 package com.vonchange.jdbc.abstractjdbc.handler;
 
+import com.vonchange.common.util.ClazzUtils;
+import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
-import com.vonchange.mybatis.common.util.ConvertUtil;
-import com.vonchange.mybatis.tpl.clazz.ClazzUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -82,7 +82,7 @@ public class BeanListHandler<T> implements ResultSetExtractor<List<T>> {
         }
         return new ArrayList<>();
     }
-
+    @SuppressWarnings("unchecked")
     private List<T> toBeanList(ResultSet rs, Class<? extends T> type) throws SQLException, IntrospectionException, IllegalAccessException, InvocationTargetException {
         List<T> results = new ArrayList<>();
         if (!rs.next()) {
@@ -94,7 +94,7 @@ public class BeanListHandler<T> implements ResultSetExtractor<List<T>> {
         }
         T entity;
         do {
-            entity= (T) (base?ConvertUtil.toObject(rs.getObject(1),type):ConvertMap.convertMap(type,ConvertMap.newMap(HandlerUtil.rowToMap(rs))));
+            entity= (T) (base? ConvertUtil.toObject(rs.getObject(1),type):ConvertMap.convertMap(type,ConvertMap.newMap(HandlerUtil.rowToMap(rs))));
             results.add(entity);
         } while (rs.next());
         return results;

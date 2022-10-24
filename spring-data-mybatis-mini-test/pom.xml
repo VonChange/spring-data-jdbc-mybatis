@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.vonchange.common</groupId>
-    <artifactId>spring-data-mybatis-mini-demo</artifactId>
+    <artifactId>spring-data-mybatis-mini-test</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-data-mybatis-mini-demo</name>
-    <description>spring-data-mybatis-mini-demo 测试</description>
+    <name>spring-data-mybatis-mini-test</name>
+    <description>spring-data-mybatis-mini-test 测试</description>
     <properties>
         <spring.mybatis.mini>2.3.9</spring.mybatis.mini>
         <!--   <spring.mybatis.mini>1.6-SNAPSHOT</spring.mybatis.mini>-->

@@ -1,9 +1,9 @@
 package com.vonchange.jdbc.abstractjdbc.util.markdown;
 
 
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
-import com.vonchange.mybatis.common.util.StringUtils;
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 
 
 public class MarkdownDataUtil{

@@ -12,6 +12,10 @@
 		<module>mybatis-mini</module>
 		<module>common-util</module>
 		<module>spring-data-mybatis-mini-test</module>
+		<module>mybatis-sql-extend</module>
+		<module>spring-data-mybatis-mini-low</module>
+		<module>spring-data-mybatis-mini-low-test</module>
+		<module>mybatis-sql-extend-test</module>
 	</modules>
 	<!-- SNAPSHOT-->
 	<name>mini parant pom</name>

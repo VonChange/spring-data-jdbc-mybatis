@@ -17,10 +17,10 @@
 package com.vonchange.jdbc.abstractjdbc.handler;
 
 
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
-import com.vonchange.mybatis.common.util.StringUtils;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;

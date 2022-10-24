@@ -15,10 +15,10 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
+import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.mybatis.tpl.clazz.ClazzUtils;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.BindParameterWrapper;
 import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.ConfigInfo;
 import org.slf4j.Logger;

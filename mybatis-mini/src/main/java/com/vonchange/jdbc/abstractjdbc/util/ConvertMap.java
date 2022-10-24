@@ -1,12 +1,12 @@
 package com.vonchange.jdbc.abstractjdbc.util;
 
 
-import com.vonchange.mybatis.common.util.ConvertUtil;
+import com.vonchange.common.util.ClazzUtils;
+import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.mybatis.config.Constant;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.OrmUtil;
-import com.vonchange.mybatis.tpl.clazz.ClazzUtils;
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 
@@ -25,6 +25,7 @@ public class ConvertMap {
         throw new IllegalStateException("Utility class");
     }
 
+    @SuppressWarnings("unchecked")
     public static  <T> Map<String,Object> toMap(T entity,Class<?> clazz) throws IntrospectionException {
         if(entity instanceof Map){
             return (Map<String, Object>) entity;
@@ -58,7 +59,7 @@ public class ConvertMap {
             try {
                 entity = (T) type.newInstance();
             }catch (InstantiationException e){
-                throw new  MybatisMinRuntimeException("java.lang.InstantiationException "+type.getName()+" need no-arguments constructor");
+                throw new MybatisMinRuntimeException("java.lang.InstantiationException "+type.getName()+" need no-arguments constructor");
             }
         }
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);

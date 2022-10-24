@@ -5,7 +5,7 @@ import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

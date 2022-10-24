@@ -1,0 +1,34 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: demo
+  datasource:
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://127.0.0.1:3306/nine_user?autoReconnect=true&rewriteBatchedStatements=true&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=CTT
+      username: root
+      password: 123456
+      connection-timeout: 20000
+      minimum-idle: 5
+      maximum-pool-size: 500
+      idle-timeout: 60000
+      max-lifetime: 600000
+      leak-detection-threshold: 20000
+  jpa:
+    database: MySQL
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+
+logback:
+  aliyun:
+   endpoint: cn-hangzhou.log.aliyuncs.com
+
+
+
+
+
+

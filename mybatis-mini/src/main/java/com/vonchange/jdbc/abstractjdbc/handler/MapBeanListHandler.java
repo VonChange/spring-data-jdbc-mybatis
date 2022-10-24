@@ -17,9 +17,9 @@
 package com.vonchange.jdbc.abstractjdbc.handler;
 
 
+import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
-import com.vonchange.mybatis.common.util.ConvertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;

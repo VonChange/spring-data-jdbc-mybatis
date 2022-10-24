@@ -13,6 +13,12 @@
     <version>2.3.9</version>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.vonchange.common</groupId>
+            <artifactId>mybatis-sql-extend</artifactId>
+            <version>2.3.9</version>
+        </dependency>
         <dependency>
             <groupId>com.vonchange.common</groupId>
             <artifactId>mybati</artifactId>

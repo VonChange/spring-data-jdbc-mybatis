@@ -1,6 +1,7 @@
 package com.vonchange.jdbc.abstractjdbc.util.sql;
 
-import com.vonchange.mybatis.common.util.time.TimeUtil;
+
+import com.vonchange.common.util.time.TimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

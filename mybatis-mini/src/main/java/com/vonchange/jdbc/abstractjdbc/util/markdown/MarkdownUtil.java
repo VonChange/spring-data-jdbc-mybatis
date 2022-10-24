@@ -1,13 +1,13 @@
 package com.vonchange.jdbc.abstractjdbc.util.markdown;
 
 
+import com.vonchange.common.util.FileUtil;
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.abstractjdbc.config.Constants;
 import com.vonchange.jdbc.abstractjdbc.util.markdown.bean.MdWithInnerIdTemp;
 import com.vonchange.jdbc.abstractjdbc.util.markdown.bean.SqlInfo;
-import com.vonchange.mybatis.common.util.FileUtil;
-import com.vonchange.mybatis.common.util.StringUtils;
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;

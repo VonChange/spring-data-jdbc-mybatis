@@ -1,7 +1,7 @@
 package com.vonchange.jdbc.abstractjdbc.exception;
 
 
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 
 /**
  *不允许使用数据库字段!

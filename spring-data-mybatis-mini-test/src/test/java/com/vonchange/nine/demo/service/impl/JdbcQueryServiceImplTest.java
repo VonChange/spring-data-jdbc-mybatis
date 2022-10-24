@@ -1,7 +1,7 @@
 package com.vonchange.nine.demo.service.impl;
 
+import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.mybatis.common.util.map.MyHashMap;
 import com.vonchange.nine.demo.domain.UserBaseDO;
 import org.junit.Test;
 import org.junit.runner.RunWith;

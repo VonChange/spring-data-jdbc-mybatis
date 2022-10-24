@@ -1,13 +1,14 @@
 package com.vonchange.mybatis.tpl;
 
-import com.vonchange.mybatis.common.util.StringUtils;
+
+import com.vonchange.common.util.ClazzUtils;
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.mybatis.tpl.annotation.ColumnNot;
 import com.vonchange.mybatis.tpl.annotation.InsertIfNull;
 import com.vonchange.mybatis.tpl.annotation.InsertReturn;
 import com.vonchange.mybatis.tpl.annotation.UpdateDuplicateKeyIgnore;
 import com.vonchange.mybatis.tpl.annotation.UpdateIfNull;
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
-import com.vonchange.mybatis.tpl.clazz.ClazzUtils;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 import org.slf4j.Logger;

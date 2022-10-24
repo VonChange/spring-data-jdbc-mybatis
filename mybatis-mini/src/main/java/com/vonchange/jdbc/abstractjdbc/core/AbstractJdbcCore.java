@@ -1,6 +1,8 @@
 package com.vonchange.jdbc.abstractjdbc.core;
 
 
+import com.vonchange.common.util.ConvertUtil;
+import com.vonchange.common.util.StringUtils;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.abstractjdbc.config.Constants;
 import com.vonchange.jdbc.abstractjdbc.count.CountSqlParser;
@@ -24,13 +26,11 @@ import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
 import com.vonchange.jdbc.abstractjdbc.util.markdown.MarkdownUtil;
 import com.vonchange.jdbc.abstractjdbc.util.markdown.bean.SqlInfo;
 import com.vonchange.jdbc.abstractjdbc.util.sql.SqlFill;
-import com.vonchange.mybatis.common.util.ConvertUtil;
-import com.vonchange.mybatis.common.util.StringUtils;
 import com.vonchange.mybatis.config.Constant;
 import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.MybatisTpl;
-import com.vonchange.mybatis.tpl.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
