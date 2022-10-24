@@ -52,8 +52,28 @@ close=")">#{item}</foreach></if>
         return super.createSqlSource(configuration, sqlInXml, parameterType);
     }
 }
+
+```
+```
+    @Select("@UserMapper.findList")
+    List<UserBaseDO> findList(@Param("userName") String userName,
+                              @Param("createTime") LocalDateTime createTime);
+```
+> UserMapper.md 文件
+```
+-- findList
+select * from user_base
+[@sql findListWhereSql]
 ```
 
+> sql 片段
+```
+-- findListWhereSql
+ <where>
+[@@and user_name like userName] 
+[@and create_time  < createTime]
+</where>
+```
 ```
 -- 配置
 mybatis:
