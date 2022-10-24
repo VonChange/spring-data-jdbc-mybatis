@@ -69,7 +69,7 @@ select * from user_base
 > sql 片段
 ```
 -- findListWhereSql
- <where>
+<where>
 [@@and user_name like userName] 
 [@and create_time  < createTime]
 </where>
