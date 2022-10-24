@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: h2
   application:
     name: demo
   datasource:

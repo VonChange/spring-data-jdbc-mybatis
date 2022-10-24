@@ -8,11 +8,10 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
+// mybatis plus 扩展 MybatisXMLLanguageDriver 配置 mybatis-plus.configuration.default-scripting-language
 public class SimpleLanguageDriver extends XMLLanguageDriver implements LanguageDriver {
-
     @Override
     public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
-
         String sqlInXml = MybatisSqlLanguageUtil.sqlInXml("mapper",script,new MySQLDialect());
         return super.createSqlSource(configuration, sqlInXml, parameterType);
     }

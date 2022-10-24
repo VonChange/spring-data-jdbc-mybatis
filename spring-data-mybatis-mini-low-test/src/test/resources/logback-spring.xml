@@ -23,7 +23,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="test">
+    <springProfile name="h2">
         <logger name="org.springframework.web.client" level="info" additivity="false">
             <appender-ref ref="STDOUT"/>
         </logger>

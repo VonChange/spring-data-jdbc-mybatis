@@ -1,8 +1,8 @@
 spring:
   profiles:
-    active: local
+    active: h2
   application:
-    name: demo
+    name: mybatis-sql-eztend
   datasource:
     hikari:
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,11 +22,6 @@ mybatis:
     map-underscore-to-camel-case: true
 
 
-
-
-logback:
-  aliyun:
-   endpoint: cn-hangzhou.log.aliyuncs.com
 
 
 
