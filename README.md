@@ -9,7 +9,6 @@
 ](https://gitee.com/vonchange/spring-data-mybatis-mini) 
 
 
-
 **等同于spring data jdbc + mybatis 动态sql能力**
 
 **大道至简 极致效率 麻雀虽小 五脏俱全**
@@ -34,6 +33,36 @@ collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
 ```
 ![例子](https://gitee.com/vonchange/spring-data-mybatis-mini/raw/master/mini.png)
+
+== 新增融合mybatis-spring-boot实现 只简化mybatis动态sql写法和sql写在markdown文件里
+```
+-- 依赖 详情见mybatis-sql-extend-test模块
+    <dependency>
+        <groupId>com.vonchange.common</groupId>
+        <artifactId>mybatis-sql-extend</artifactId>
+        <version>${spring.mybatis.mini}</version>
+    </dependency>
+```
+```
+  public class SimpleLanguageDriver extends XMLLanguageDriver implements LanguageDriver {
+   @Override
+    public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
+
+        String sqlInXml = MybatisSqlLanguageUtil.sqlInXml("mapper",script,new MySQLDialect());
+        return super.createSqlSource(configuration, sqlInXml, parameterType);
+    }
+}
+```
+
+```
+-- 配置
+mybatis:
+  default-scripting-language-driver: com.vonchange.mybatis.test.config.SimpleLanguageDriver
+  configuration:
+    map-underscore-to-camel-case: true
+ 
+```
+
 
 == Getting Started
 
