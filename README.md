@@ -34,7 +34,8 @@ close=")">#{item}</foreach></if>
 ```
 ![例子](https://gitee.com/vonchange/spring-data-mybatis-mini/raw/master/mini.png)
 
-== 新增融合mybatis-spring-boot实现 只简化mybatis动态sql写法和sql写在markdown文件里
+== 新增mybatis-spring-boot实现只简化mybatis动态sql写法和sql写在markdown文件里
+
 ```
 -- 依赖 详情见mybatis-sql-extend-test模块
     <dependency>
