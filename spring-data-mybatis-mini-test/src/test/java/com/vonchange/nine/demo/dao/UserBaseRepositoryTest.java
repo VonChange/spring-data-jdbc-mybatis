@@ -93,7 +93,7 @@ public class UserBaseRepositoryTest {
     }
     @Test
     public void findListByPage() {
-        Pageable pageable = new PageRequest(0,3);
+        Pageable pageable = PageRequest.of(0,10);
                 //PageRequest.of(0,3);
         Page<UserBaseDO> personRepositoryBy = userBaseRepository.findList(pageable,"张三日子",null);
         log.info("\n {}",personRepositoryBy.toString());
