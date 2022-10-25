@@ -26,6 +26,58 @@ collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
 ```
 ![例子](https://gitee.com/vonchange/spring-data-mybatis-mini/raw/master/mini.png)
+
+
+
+== 新增mybatis-spring-boot实现只简化mybatis动态sql写法和sql写在markdown文件里
+
+```
+-- 依赖 详情见mybatis-sql-extend-test模块
+    <dependency>
+        <groupId>com.vonchange.common</groupId>
+        <artifactId>mybatis-sql-extend</artifactId>
+        <version>${spring.mybatis.mini}</version>
+    </dependency>
+```
+```
+// mybatis plus 扩展 MybatisXMLLanguageDriver 配置 mybatis-plus.configuration.default-scripting-language
+public class SimpleLanguageDriver extends XMLLanguageDriver implements LanguageDriver {
+    @Override
+    public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
+        String sqlInXml = MybatisSqlLanguageUtil.sqlInXml("mapper",script,new MySQLDialect());
+        return super.createSqlSource(configuration, sqlInXml, parameterType);
+    }
+}
+```
+```
+    @Select("@UserMapper.findList")
+    List<UserBaseDO> findList(@Param("userName") String userName,
+                              @Param("createTime") LocalDateTime createTime);
+```
+> UserMapper.md 文件
+```
+-- findList
+select * from user_base
+[@sql findListWhereSql]
+```
+
+> sql 片段
+```
+-- findListWhereSql
+<where>
+[@@and user_name like userName] 
+[@and create_time  < createTime]
+</where>
+```
+```
+-- 配置
+mybatis:
+  default-scripting-language-driver: com.vonchange.mybatis.test.config.SimpleLanguageDriver
+  configuration:
+    map-underscore-to-camel-case: true
+ 
+```
+
 == why not spring data jdbc,jpa,hibernate,mybaits,mybatis-plus等
 
 1. 基于spring data jdbc理念但扩展使用mybatis动态sql能力 对于复杂点查询支持更好
