@@ -3,7 +3,7 @@ spring:
     hikari:
       driver-class-name: org.h2.Driver
       #jdbc-url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1
-      jdbc-url: jdbc:h2:mem:db_users;MODE=MYSQL;INIT=RUNSCRIPT FROM './src/main/resources/db-init.sql'
+      jdbc-url: jdbc:h2:mem:db_users;MODE=MYSQL;INIT=RUNSCRIPT FROM 'classpath:db-init.sql'
       username: root
       password: 123456
 

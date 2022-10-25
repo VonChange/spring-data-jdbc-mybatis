@@ -130,11 +130,11 @@ mybatis mini in Java:
 Add the Maven dependency:
 
 ```
-  <!-- spring boot 2.x 是使用版本2.3.6 -->
+  <!-- spring boot 2.x 使用版本 -->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini</artifactId>
-  <version>2.3.8</version>
+  <version>${spring.mybatis.mini}</version>
 </dependency>
 
 <dependency>
@@ -155,11 +155,11 @@ Add the Maven dependency:
 
 
 ```
-<!-- 低版本比如1.5.x 使用版本low-1.9.6-->
+<!-- 低版本比如1.5.x 使用版本-->
 <dependency>
   <groupId>com.vonchange.common</groupId>
   <artifactId>spring-data-mybatis-mini-low</artifactId>
-  <version>1.9.6</version>
+  <version>${spring.mybatis.mini}</version>
 </dependency>
 
 ```

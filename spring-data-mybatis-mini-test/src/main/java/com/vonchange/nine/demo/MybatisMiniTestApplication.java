@@ -10,11 +10,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 @EnableMybatisMini(basePackages ="com.vonchange.nine.demo.dao")
 @EnableJpaRepositories(basePackages = "com.vonchange.nine.demo.jpa")
-public class DemoApplication {
+public class MybatisMiniTestApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(MybatisMiniTestApplication.class, args);
     }
 
 }

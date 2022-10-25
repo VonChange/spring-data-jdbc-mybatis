@@ -18,14 +18,62 @@
    mybatis) eg:
 
 ```
-[@and id in idList] 等于
+[@and id in idList] equal
 <if test="null!=idList and idList.size>0"> and id in <foreach
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
 ```
 ![例子](mini.png)
 
+== mybatis-sql-extend extend mybatis-spring-boot only Simplify the
+dynamic SQL usage of mybatis and SQL written in markdown file easier to
+write and read
 
+```
+-- depend see mybatis-sql-extend-test
+    <dependency>
+        <groupId>com.vonchange.common</groupId>
+        <artifactId>mybatis-sql-extend</artifactId>
+        <version>${spring.mybatis.mini}</version>
+    </dependency>
+```
+```
+public class SimpleLanguageDriver extends XMLLanguageDriver implements LanguageDriver {
+    @Override
+    public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
+        String sqlInXml = MybatisSqlLanguageUtil.sqlInXml("mapper",script,new MySQLDialect());
+        return super.createSqlSource(configuration, sqlInXml, parameterType);
+    }
+}
+```
+```
+    @Select("@UserMapper.findList")
+    List<UserBaseDO> findList(@Param("userName") String userName,
+                              @Param("createTime") LocalDateTime createTime);
+```
+> UserMapper.md 
+```
+-- findList
+select * from user_base
+[@sql findListWhereSql]
+```
+
+> sql 
+```
+-- findListWhereSql
+<where>
+[@@and user_name like userName] 
+[@and create_time  < createTime]
+</where>
+```
+```
+-- config
+mybatis:
+  default-scripting-language-driver: com.vonchange.mybatis.test.config.SimpleLanguageDriver
+  configuration:
+    map-underscore-to-camel-case: true
+ 
+```
 == Getting Started
 
 1. Add the Maven dependency
