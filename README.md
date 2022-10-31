@@ -54,11 +54,9 @@ public class SimpleLanguageDriver extends XMLLanguageDriver implements LanguageD
     }
 }
 ```
-```
-    @Select("@UserMapper.findList")
-    List<UserBaseDO> findList(@Param("userName") String userName,
-                              @Param("createTime") LocalDateTime createTime);
-```
+
+![例子](https://image.yonghuivip.com/20221031/04adfc916c414c2e976403a6cbbeec9d/sqlextend.png)
+
 > UserMapper.md 文件
 ```
 -- findList

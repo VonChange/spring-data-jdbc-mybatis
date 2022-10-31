@@ -9,6 +9,17 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
+    @Select(" </script> "+
+            "select * from user_base\n" +
+            " <where>\n" +
+            "and user_name like CONCAT('%',#{userName},'%') \n" +
+            "<if test=\"null!=createTime\"> \n" +
+            "[@and create_time  < createTime]\n" +
+            "</if>\n" +
+            "</where>"+
+            " </script> ")
+    List<UserBaseDO> findListOrg(@Param("userName") String userName,
+                              @Param("createTime") LocalDateTime createTime);
 
     @Select("@UserMapper.findList")
     List<UserBaseDO> findList(@Param("userName") String userName,
