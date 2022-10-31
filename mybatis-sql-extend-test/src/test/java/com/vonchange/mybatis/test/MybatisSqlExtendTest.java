@@ -28,4 +28,12 @@ public class MybatisSqlExtendTest {
             log.info("\n {}", JsonUtil.toJson(userBaseDO));
         });
     }
+
+    @Test
+    public void  sqlExtendTestOrg(){
+        List<UserBaseDO> userBaseDOList = userMapper.findListOrg("test", LocalDateTime.now().plusHours(1L));
+        userBaseDOList.forEach(userBaseDO -> {
+            log.info("\n {}", JsonUtil.toJson(userBaseDO));
+        });
+    }
 }

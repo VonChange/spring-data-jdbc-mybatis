@@ -32,7 +32,7 @@
 collection="idList" index="index" item="item" open="(" separator=","
 close=")">#{item}</foreach></if>
 ```
-![例子](https://gitee.com/vonchange/spring-data-mybatis-mini/raw/master/mini.png)
+![例子](https://image.yonghuivip.com/20221025/879d22fb92a1463f8360a2b12f14ede4/mini.png)
 
 == 新增mybatis-spring-boot实现只简化mybatis动态sql写法和sql写在markdown文件里
 
@@ -55,7 +55,7 @@ public class SimpleLanguageDriver extends XMLLanguageDriver implements LanguageD
 }
 ```
 
-![例子](https://image.yonghuivip.com/20221031/04adfc916c414c2e976403a6cbbeec9d/sqlextend.png)
+![例子](https://image.yonghuivip.com/20221031/4a9e97a668f84bbcbf8b8214630efb4d/sql.png)
 
 > UserMapper.md 文件
 ```
