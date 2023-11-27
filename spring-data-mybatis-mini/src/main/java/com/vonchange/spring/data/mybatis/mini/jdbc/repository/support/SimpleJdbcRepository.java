@@ -26,63 +26,60 @@ import java.util.List;
  * @author Oliver Gierke
  */
 
-public class SimpleJdbcRepository<T, ID> implements BaseRepository<T,ID> {
+public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
 
-
-	private final  JdbcRepository entityOperations;
+	private final JdbcRepository entityOperations;
 	private final ConfigInfo configInfo;
 
-	public SimpleJdbcRepository(@Qualifier("jdbcRepository")JdbcRepository entityOperations, ConfigInfo configInfo) {
+	public SimpleJdbcRepository(@Qualifier("jdbcRepository") JdbcRepository entityOperations, ConfigInfo configInfo) {
 		this.entityOperations = entityOperations;
 		this.configInfo = configInfo;
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.springframework.data.repository.CrudRepository#save(S)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <S extends T> int insert(S instance) {
-		return  entityOperations.insert(configInfo.getDataSourceWrapper(),instance);
+		return entityOperations.insert(configInfo.getDataSourceWrapper(), instance);
 	}
 
 	@Override
-	public <S extends T> int insertBatch(List<S> entitys,int batchSize) {
-		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(),entitys,batchSize);
+	public <S extends T> int insertBatch(List<S> entitys, int batchSize) {
+		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entitys, batchSize);
 	}
 
 	@Override
 	public <S extends T> int updateBatch(List<S> entitys, int batchSize) {
-		return entityOperations.updateBatch(entitys,batchSize);
+		return entityOperations.updateBatch(entitys, batchSize);
 	}
 
 	@Override
-	public <S extends T> int  insertBatchDuplicateKey(List<S> entitys,int batchSize){
-		return entityOperations.insertBatchDuplicateKey(configInfo.getDataSourceWrapper(),entitys,batchSize);
+	public <S extends T> int insertBatchDuplicateKey(List<S> entitys, int batchSize) {
+		return entityOperations.insertBatchDuplicateKey(configInfo.getDataSourceWrapper(), entitys, batchSize);
 	}
+
 	@Override
-	@SuppressWarnings("unchecked")
 	public <S extends T> int insertDuplicateKey(S entity) {
-		return entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(),entity);
+		return entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(), entity);
 	}
-
 
 	@Override
 	public <S extends T> int update(S entity) {
-		return entityOperations.update(configInfo.getDataSourceWrapper(),entity);
+		return entityOperations.update(configInfo.getDataSourceWrapper(), entity);
 	}
 
 	@Override
 	public <S extends T> int updateAllField(S entity) {
-		return entityOperations.updateAllField(configInfo.getDataSourceWrapper(),entity);
+		return entityOperations.updateAllField(configInfo.getDataSourceWrapper(), entity);
 	}
-
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public T findById(ID id) {
-		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(),configInfo.getType(),id);
+		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(), configInfo.getType(), id);
 	}
 
 }

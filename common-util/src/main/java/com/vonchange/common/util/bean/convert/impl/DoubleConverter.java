@@ -25,11 +25,9 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
 import com.vonchange.common.util.StringUtils;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
 
 /**
  * Converts given object to <code>Double</code>.
@@ -37,11 +35,12 @@ import com.vonchange.common.util.bean.convert.TypeConverter;
  * <ul>
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
- * <li>object is converted to string, trimmed, and then converted if possible.</li>
+ * <li>object is converted to string, trimmed, and then converted if
+ * possible.</li>
  * </ul>
  * Number string may start with plus and minus sign.
  */
-public class DoubleConverter extends TypeConvertCommon<Double> implements TypeConverter<Double> {
+public class DoubleConverter extends TypeConvertCommon<Double> {
 
 	public Double convert(final Object value) {
 		if (value == null) {
@@ -52,7 +51,7 @@ public class DoubleConverter extends TypeConvertCommon<Double> implements TypeCo
 			return (Double) value;
 		}
 		if (value instanceof Number) {
-			return Double.valueOf(((Number)value).doubleValue());
+			return Double.valueOf(((Number) value).doubleValue());
 		}
 		if (value instanceof Boolean) {
 			return ((Boolean) value).booleanValue() ? Double.valueOf(1) : Double.valueOf(0);

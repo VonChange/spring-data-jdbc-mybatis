@@ -25,11 +25,9 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
 import com.vonchange.common.util.StringUtils;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
 
 /**
  * Converts given object to <code>Character</code>.
@@ -38,11 +36,13 @@ import com.vonchange.common.util.bean.convert.TypeConverter;
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
  * <li><code>Number</code> is converted to <code>char</code> value</li>
- * <li>finally, <code>toString()</code> value of length 1 is converted to <code>char</code></li>
- * <li>if string is longer, and made of digits, try to convert it to int first</li>
+ * <li>finally, <code>toString()</code> value of length 1 is converted to
+ * <code>char</code></li>
+ * <li>if string is longer, and made of digits, try to convert it to int
+ * first</li>
  * </ul>
  */
-public class CharacterConverter extends TypeConvertCommon<Character> implements TypeConverter<Character> {
+public class CharacterConverter extends TypeConvertCommon<Character> {
 
 	public Character convert(final Object value) {
 		if (value == null) {

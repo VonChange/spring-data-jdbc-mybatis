@@ -25,7 +25,6 @@
 
 package com.vonchange.common.util.bean.convert;
 
-
 import com.vonchange.common.util.bean.convert.impl.BigDecimalConverter;
 import com.vonchange.common.util.bean.convert.impl.BigIntegerConverter;
 import com.vonchange.common.util.bean.convert.impl.BooleanConverter;
@@ -40,6 +39,7 @@ import com.vonchange.common.util.bean.convert.impl.LocalDateConverter;
 import com.vonchange.common.util.bean.convert.impl.LocalDateTimeConverter;
 import com.vonchange.common.util.bean.convert.impl.LocalTimeConverter;
 import com.vonchange.common.util.bean.convert.impl.LongConverter;
+import com.vonchange.common.util.bean.convert.impl.NumberConverter;
 import com.vonchange.common.util.bean.convert.impl.ShortConverter;
 import com.vonchange.common.util.bean.convert.impl.StringConverter;
 
@@ -58,24 +58,25 @@ import java.util.Map;
 public class Converter {
 
 	private static final Converter CONVERTER = new Converter();
-	private static  Map<Class<?>,TypeConverter> convertMap= new HashMap<>();
-	static{
-		convertMap.put(Boolean.class,new BooleanConverter());
-		convertMap.put(BigDecimal.class,new BigDecimalConverter());
-		convertMap.put(BigInteger.class,new BigIntegerConverter());
-		convertMap.put(Byte.class,new ByteConverter());
-		convertMap.put(Character.class,new CharacterConverter());
-		convertMap.put(Double.class,new DoubleConverter());
-		convertMap.put(Float.class,new FloatConverter());
-		convertMap.put(Integer.class,new IntegerConverter());
-		convertMap.put(Long.class,new LongConverter());
-		convertMap.put(Short.class,new ShortConverter());
-		convertMap.put(String.class,new StringConverter());
-		convertMap.put(LocalDate.class,new LocalDateConverter());
-		convertMap.put(LocalDateTime.class,new LocalDateTimeConverter());
-		convertMap.put(LocalTime.class,new LocalTimeConverter());
-		convertMap.put(Date.class,new DateConverter());
-		convertMap.put(byte[].class,new ByteArrayConverter());
+	private static Map<Class<?>, TypeConverter<?>> convertMap = new HashMap<>();
+	static {
+		convertMap.put(Boolean.class, new BooleanConverter());
+		convertMap.put(BigDecimal.class, new BigDecimalConverter());
+		convertMap.put(BigInteger.class, new BigIntegerConverter());
+		convertMap.put(Byte.class, new ByteConverter());
+		convertMap.put(Character.class, new CharacterConverter());
+		convertMap.put(Double.class, new DoubleConverter());
+		convertMap.put(Float.class, new FloatConverter());
+		convertMap.put(Integer.class, new IntegerConverter());
+		convertMap.put(Long.class, new LongConverter());
+		convertMap.put(Short.class, new ShortConverter());
+		convertMap.put(Number.class,new NumberConverter());
+		convertMap.put(String.class, new StringConverter());
+		convertMap.put(LocalDate.class, new LocalDateConverter());
+		convertMap.put(LocalDateTime.class, new LocalDateTimeConverter());
+		convertMap.put(LocalTime.class, new LocalTimeConverter());
+		convertMap.put(Date.class, new DateConverter());
+		convertMap.put(byte[].class, new ByteArrayConverter());
 	}
 
 	/**
@@ -85,18 +86,21 @@ public class Converter {
 		return CONVERTER;
 	}
 
-	public static boolean hasConvertKey(Class<?> type){
+	public static boolean hasConvertKey(Class<?> type) {
 		return convertMap.containsKey(type);
 	}
+
 	@SuppressWarnings("unchecked")
-    public static <T> TypeConverter<T> getConvert(Class<?> type) {
-       /* for (Map.Entry<Class<?>,TypeConverter> entry:convertMap.entrySet()) {
-            if(entry.getKey().isAssignableFrom(type)){
-                return entry.getValue();
-            }
-        }*/
-        return convertMap.get(type);
-    }
+	public static <T> TypeConverter<T> getConvert(Class<?> type) {
+		/*
+		 * for (Map.Entry<Class<?>,TypeConverter> entry:convertMap.entrySet()) {
+		 * if(entry.getKey().isAssignableFrom(type)){
+		 * return entry.getValue();
+		 * }
+		 * }
+		 */
+		return (TypeConverter<T>) convertMap.get(type);
+	}
 	// ---------------------------------------------------------------- boolean
 
 	/**
@@ -105,8 +109,6 @@ public class Converter {
 	public Boolean toBoolean(final Object value) {
 		return (Boolean) getConvert(Boolean.class).convert(value);
 	}
-
-
 
 	/**
 	 * Converts value to <code>Boolean</code>. Returns default value
@@ -421,8 +423,6 @@ public class Converter {
 
 	// ---------------------------------------------------------------- array
 
-
-
 	// ---------------------------------------------------------------- string
 
 	/**
@@ -443,7 +443,6 @@ public class Converter {
 		}
 		return result;
 	}
-
 
 	// ---------------------------------------------------------------- bigs
 
@@ -503,6 +502,7 @@ public class Converter {
 		}
 		return result;
 	}
+
 	/**
 	 * Converts value to <code>LocalDateTime</code>.
 	 */
@@ -521,7 +521,6 @@ public class Converter {
 		}
 		return result;
 	}
-
 
 	/**
 	 * Converts value to <code>LocalTime</code>.
@@ -555,6 +554,16 @@ public class Converter {
 	 */
 	public Date toDate(final Object value, final Date defaultValue) {
 		final Date result = toDate(value);
+		if (result == null) {
+			return defaultValue;
+		}
+		return result;
+	}
+	public Number toNumber(Object value){
+		return (Number) getConvert(Number.class).convert(value);
+	}
+	public Number toNumber(Object value, final Number defaultValue) {
+		final Number result = toNumber(value);
 		if (result == null) {
 			return defaultValue;
 		}

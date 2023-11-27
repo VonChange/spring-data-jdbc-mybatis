@@ -16,7 +16,8 @@
 		<module>spring-data-mybatis-mini-low</module>
 		<module>spring-data-mybatis-mini-low-test</module>
 		<module>mybatis-sql-extend-test</module>
-	</modules>
+        <module>batch-update-test</module>
+    </modules>
 	<!-- SNAPSHOT-->
 	<name>mini parant pom</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>

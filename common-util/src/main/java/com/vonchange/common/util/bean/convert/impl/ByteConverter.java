@@ -25,11 +25,9 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
 import com.vonchange.common.util.StringUtils;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
 
 /**
  * Converts given object to <code>Byte</code>.
@@ -37,11 +35,12 @@ import com.vonchange.common.util.bean.convert.TypeConverter;
  * <ul>
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
- * <li>object is converted to string, trimmed, and then converted if possible.</li>
+ * <li>object is converted to string, trimmed, and then converted if
+ * possible.</li>
  * </ul>
  * Number string may start with plus and minus sign.
  */
-public class ByteConverter extends TypeConvertCommon<Byte> implements TypeConverter<Byte> {
+public class ByteConverter extends TypeConvertCommon<Byte> {
 
 	@Override
 	public Byte convert(final Object value) {
@@ -52,7 +51,7 @@ public class ByteConverter extends TypeConvertCommon<Byte> implements TypeConver
 			return (Byte) value;
 		}
 		if (value instanceof Number) {
-			return Byte.valueOf(((Number)value).byteValue());
+			return Byte.valueOf(((Number) value).byteValue());
 		}
 		if (value instanceof Boolean) {
 			return ((Boolean) value).booleanValue() ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0);

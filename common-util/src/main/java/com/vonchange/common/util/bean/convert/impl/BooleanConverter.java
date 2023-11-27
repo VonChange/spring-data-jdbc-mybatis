@@ -25,11 +25,6 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-
 import static com.vonchange.common.util.StringPool.FALSE;
 import static com.vonchange.common.util.StringPool.N;
 import static com.vonchange.common.util.StringPool.NO;
@@ -41,18 +36,22 @@ import static com.vonchange.common.util.StringPool.Y;
 import static com.vonchange.common.util.StringPool.YES;
 import static com.vonchange.common.util.StringPool.ZERO;
 
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+
 /**
  * Converts given object to <code>Boolean</code>.
  * Conversion rules:
  * <ul>
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
- * <li>object is converted to string, trimmed. Then common boolean strings are matched:
+ * <li>object is converted to string, trimmed. Then common boolean strings are
+ * matched:
  * "yes", "y", "true", "on", "1" for <code>true</code>; and opposite values
  * for <code>false</code>.</li>
  * </ul>
  */
-public class BooleanConverter extends TypeConvertCommon<Boolean> implements TypeConverter<Boolean> {
+public class BooleanConverter extends TypeConvertCommon<Boolean> {
 
 	public Boolean convert(final Object value) {
 		if (value == null) {

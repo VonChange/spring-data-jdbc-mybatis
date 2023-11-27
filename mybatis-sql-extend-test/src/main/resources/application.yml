@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: h2
+    active: local
   application:
     name: mybatis-sql-eztend
   datasource:

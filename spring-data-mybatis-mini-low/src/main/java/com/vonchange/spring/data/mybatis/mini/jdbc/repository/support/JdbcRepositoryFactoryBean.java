@@ -15,22 +15,24 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
+import java.io.Serializable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 
-import java.io.Serializable;
+import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.config.DataSourceWrapperHelper;
 
 //import org.springframework.data.jdbc.core.DefaultDataAccessStrategy;
 
 /**
- * Special adapter for Springs {@link org.springframework.beans.factory.FactoryBean} interface to allow easy setup of
+ * Special adapter for Springs
+ * {@link org.springframework.beans.factory.FactoryBean} interface to allow easy
+ * setup of
  * repository factories via Spring configuration.
  *
  * @author Jens Schauder
@@ -40,13 +42,14 @@ import java.io.Serializable;
  * @author Mark Paluch
  */
 public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> //
-		extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> implements ApplicationEventPublisherAware {
+		extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> {
 
 	private JdbcRepository jdbcRepository;
 	private DataSourceWrapperHelper dataSourceWrapperHelper;
 
 	/**
-	 * Creates a new {@link JdbcRepositoryFactoryBean} for the given repository interface.
+	 * Creates a new {@link JdbcRepositoryFactoryBean} for the given repository
+	 * interface.
 	 *
 	 * @param repositoryInterface must not be {@literal null}.
 	 */
@@ -56,7 +59,11 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport#setApplicationEventPublisher(org.springframework.context.ApplicationEventPublisher)
+	 * 
+	 * @see
+	 * org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport
+	 * #setApplicationEventPublisher(org.springframework.context.
+	 * ApplicationEventPublisher)
 	 */
 	@Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
@@ -70,16 +77,15 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	@Override
 	protected RepositoryFactorySupport doCreateRepositoryFactory() {
 		JdbcRepositoryFactory jdbcRepositoryFactory = new JdbcRepositoryFactory(
-				jdbcRepository,dataSourceWrapperHelper);
+				jdbcRepository, dataSourceWrapperHelper);
 		return jdbcRepositoryFactory;
 	}
-
-
 
 	@Autowired
 	public void setDataSourceWrapperHelper(DataSourceWrapperHelper dataSourceWrapperHelper) {
 		this.dataSourceWrapperHelper = dataSourceWrapperHelper;
 	}
+
 	@Autowired
 	public void setJdbcOperations(@Qualifier("jdbcRepository") JdbcRepository jdbcRepository) {
 		this.jdbcRepository = jdbcRepository;

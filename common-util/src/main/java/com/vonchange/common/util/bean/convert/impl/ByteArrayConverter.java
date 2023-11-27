@@ -1,20 +1,17 @@
 package com.vonchange.common.util.bean.convert.impl;
 
-
-import com.vonchange.common.util.StringUtils;
-import com.vonchange.common.util.bean.convert.Converter;
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements TypeConverter<byte[]> {
-	public static final char[] NUMBER_DELIMITERS = new char[] {',', ';', '\n'};
+import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.bean.convert.Converter;
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 
+public class ByteArrayConverter extends TypeConvertCommon<byte[]> {
+	public static final char[] NUMBER_DELIMITERS = new char[] { ',', ';', '\n' };
 
 	@Override
 	public byte[] convert(final Object value) {
@@ -22,7 +19,7 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 			return null;
 		}
 
-		final Class valueClass = value.getClass();
+		final Class<?> valueClass = value.getClass();
 
 		if (!valueClass.isArray()) {
 			// source is not an array
@@ -38,21 +35,21 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 	 */
 	protected byte convertType(final Object value) {
 		return Converter.get().toByte(value);
-		//return typeConverterManager.convertType(value, byte.class).byteValue();
+		// return typeConverterManager.convertType(value, byte.class).byteValue();
 	}
 
 	/**
 	 * Creates an array with single element.
 	 */
 	protected byte[] convertToSingleElementArray(final Object value) {
-		return new byte[] {convertType(value)};
+		return new byte[] { convertType(value) };
 	}
 
 	/**
 	 * Converts non-array value to array. Detects various
 	 * types and collections, iterates them to make conversion
 	 * and to create target array.
- 	 */
+	 */
 	protected byte[] convertValueToArray(final Object value) {
 		if (value instanceof Blob) {
 			final Blob blob = (Blob) value;
@@ -68,7 +65,7 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 		}
 
 		if (value instanceof Collection) {
-			final Collection collection = (Collection) value;
+			final Collection<?> collection = (Collection<?>) value;
 			final byte[] target = new byte[collection.size()];
 
 			int i = 0;
@@ -81,7 +78,7 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 		}
 
 		if (value instanceof Iterable) {
-			final Iterable iterable = (Iterable) value;
+			final Iterable<?> iterable = (Iterable<?>) value;
 
 			final ArrayList<Byte> byteArrayList = new ArrayList<>();
 
@@ -113,7 +110,7 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 	 * Converts array value to array.
 	 */
 	protected byte[] convertArrayToArray(final Object value) {
-		final Class valueComponentType = value.getClass().getComponentType();
+		final Class<?> valueComponentType = value.getClass().getComponentType();
 
 		final byte[] result;
 
@@ -132,11 +129,10 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 		return result;
 	}
 
-
 	/**
 	 * Converts primitive array to target array.
 	 */
-	protected byte[] convertPrimitiveArrayToArray(final Object value, final Class primitiveComponentType) {
+	protected byte[] convertPrimitiveArrayToArray(final Object value, final Class<?> primitiveComponentType) {
 		byte[] result = null;
 
 		if (primitiveComponentType == byte.class) {
@@ -149,43 +145,37 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> implements Typ
 			for (int i = 0; i < array.length; i++) {
 				result[i] = (byte) array[i];
 			}
-		}
-		else if (primitiveComponentType == long.class) {
+		} else if (primitiveComponentType == long.class) {
 			final long[] array = (long[]) value;
 			result = new byte[array.length];
 			for (int i = 0; i < array.length; i++) {
 				result[i] = (byte) array[i];
 			}
-		}
-		else if (primitiveComponentType == float.class) {
+		} else if (primitiveComponentType == float.class) {
 			final float[] array = (float[]) value;
 			result = new byte[array.length];
 			for (int i = 0; i < array.length; i++) {
 				result[i] = (byte) array[i];
 			}
-		}
-		else if (primitiveComponentType == double.class) {
+		} else if (primitiveComponentType == double.class) {
 			final double[] array = (double[]) value;
 			result = new byte[array.length];
 			for (int i = 0; i < array.length; i++) {
 				result[i] = (byte) array[i];
 			}
-		}
-		else if (primitiveComponentType == short.class) {
+		} else if (primitiveComponentType == short.class) {
 			final short[] array = (short[]) value;
 			result = new byte[array.length];
 			for (int i = 0; i < array.length; i++) {
 				result[i] = (byte) array[i];
 			}
-		}
-		else if (primitiveComponentType == char.class) {
+		} else if (primitiveComponentType == char.class) {
 			final char[] array = (char[]) value;
 			result = new byte[array.length];
 			for (int i = 0; i < array.length; i++) {
 				result[i] = (byte) array[i];
 			}
-		}
-		else if (primitiveComponentType == boolean.class) {
+		} else if (primitiveComponentType == boolean.class) {
 			final boolean[] array = (boolean[]) value;
 			result = new byte[array.length];
 			for (int i = 0; i < array.length; i++) {

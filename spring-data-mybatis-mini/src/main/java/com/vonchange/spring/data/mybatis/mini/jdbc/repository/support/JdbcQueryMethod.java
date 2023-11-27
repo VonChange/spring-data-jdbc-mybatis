@@ -15,20 +15,21 @@
  */
 package com.vonchange.spring.data.mybatis.mini.jdbc.repository.support;
 
+import java.lang.reflect.Method;
 
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.BatchUpdate;
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.Insert;
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.ReadDataSource;
-import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.Update;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
 
-import java.lang.reflect.Method;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.BatchUpdate;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.Insert;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.ReadDataSource;
+import com.vonchange.spring.data.mybatis.mini.jdbc.repository.query.Update;
 
 /**
- * {QueryMethod} implementation that implements a method by executing the query from a { Query} annotation on
+ * {QueryMethod} implementation that implements a method by executing the query
+ * from a { Query} annotation on
  * that method. Binds method arguments to named parameters in the SQL statement.
  *
  * @author Jens Schauder
@@ -42,6 +43,7 @@ public class JdbcQueryMethod extends QueryMethod {
 		super(method, metadata, factory);
 		this.method = method;
 	}
+
 	public boolean isReadDataSource() {
 		return AnnotationUtils.findAnnotation(method, ReadDataSource.class) != null;
 	}
@@ -51,16 +53,16 @@ public class JdbcQueryMethod extends QueryMethod {
 	}
 
 	public int getBatchSize() {
-		return AnnotationUtils.findAnnotation(method, BatchUpdate.class).size();
+		BatchUpdate annotation = AnnotationUtils.findAnnotation(method, BatchUpdate.class);
+		return null != annotation ? annotation.size() : 1000;
 	}
-
 
 	public boolean isUpdateQuery() {
 		return AnnotationUtils.findAnnotation(method, Update.class) != null;
 	}
+
 	public boolean isInsertQuery() {
 		return AnnotationUtils.findAnnotation(method, Insert.class) != null;
 	}
-
 
 }

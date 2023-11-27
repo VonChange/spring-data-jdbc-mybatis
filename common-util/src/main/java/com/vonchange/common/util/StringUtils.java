@@ -31,6 +31,7 @@ public class StringUtils {
         String uuid = UUID.randomUUID().toString();
         return remove(uuid, "-");
     }
+
     public static String remove(String s, String sub) {
         int c = 0;
         int sublen = sub.length();
@@ -46,7 +47,7 @@ public class StringUtils {
                 do {
                     sb.append(s, c, i);
                     c = i + sublen;
-                } while((i = s.indexOf(sub, c)) != -1);
+                } while ((i = s.indexOf(sub, c)) != -1);
 
                 if (c < s.length()) {
                     sb.append(s, c, s.length());
@@ -56,6 +57,7 @@ public class StringUtils {
             }
         }
     }
+
     public static boolean isBlank(final CharSequence cs) {
         int strLen;
         if (cs == null || (strLen = cs.length()) == 0) {
@@ -72,6 +74,7 @@ public class StringUtils {
     public static boolean isNotBlank(final CharSequence cs) {
         return !isBlank(cs);
     }
+
     /**
      * 简单模板实现 String str = "I'm not a {0}, age is {1,number,short}", height is
      * {2,number,#.#};
@@ -84,26 +87,29 @@ public class StringUtils {
         MessageFormat temp = new MessageFormat(pattern);
         return temp.format(arguments);
     }
+
     public static String strNums(String str, String split, int num) {
-        if(num==0){
+        if (num == 0) {
             return "";
         }
         StringBuilder fullStr = new StringBuilder();
         for (int i = 0; i < num; i++) {
             fullStr.append(str).append(split);
         }
-        return fullStr.substring(0, fullStr.length()-split.length());
+        return fullStr.substring(0, fullStr.length() - split.length());
     }
+
     public static String strList(List<String> strs, String split) {
-        if(null==strs||strs.isEmpty()){
+        if (null == strs || strs.isEmpty()) {
             return "";
         }
         StringBuilder fullStr = new StringBuilder();
         for (String string : strs) {
             fullStr.append(string).append(split);
         }
-        return fullStr.substring(0, fullStr.length()-split.length());
+        return fullStr.substring(0, fullStr.length() - split.length());
     }
+
     public static Boolean isNull(Object obj) {
         if (null == obj) {
             return true;
@@ -115,19 +121,20 @@ public class StringUtils {
         return false;
     }
 
-    public static final char UNDERLINE='_';
-    public static String camelToUnderline(String param){
-        if (param==null||"".equals(param.trim())){
+    public static final char UNDERLINE = '_';
+
+    public static String camelToUnderline(String param) {
+        if (param == null || "".equals(param.trim())) {
             return "";
         }
-        int len=param.length();
-        StringBuilder sb=new StringBuilder(len);
+        int len = param.length();
+        StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
-            char c=param.charAt(i);
-            if (Character.isUpperCase(c)){
+            char c = param.charAt(i);
+            if (Character.isUpperCase(c)) {
                 sb.append(UNDERLINE);
                 sb.append(Character.toLowerCase(c));
-            }else{
+            } else {
                 sb.append(c);
             }
         }
@@ -136,6 +143,7 @@ public class StringUtils {
 
     /**
      * 正则表达式 实现
+     * 
      * @param tplStr
      * @param data
      */
@@ -153,17 +161,20 @@ public class StringUtils {
             }
             replaceStrList.add(value);
         }
-        tplStr= replaceEach(tplStr, patternList.toArray(new String[patternList.size()]), replaceStrList.toArray(new String[replaceStrList.size()]));
+        tplStr = replaceEach(tplStr, patternList.toArray(new String[patternList.size()]),
+                replaceStrList.toArray(new String[replaceStrList.size()]));
         return tplStr;
     }
 
-    /*public static String tpl(String tplStr, Map<String, Object> data) {
-        StringTemplateParser stp = new StringTemplateParser();
-
-        return stp.parse(tplStr,macroName -> {
-                return ConvertUtil.toString(data.get(macroName));
-        });
-    }*/
+    /*
+     * public static String tpl(String tplStr, Map<String, Object> data) {
+     * StringTemplateParser stp = new StringTemplateParser();
+     * 
+     * return stp.parse(tplStr,macroName -> {
+     * return ConvertUtil.toString(data.get(macroName));
+     * });
+     * }
+     */
 
     public static String capitalize(final String str) {
         int strLen;
@@ -182,6 +193,25 @@ public class StringUtils {
                 .append(str.substring(1))
                 .toString();
     }
+
+    public static String lowerFirst(final String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+
+        final char firstChar = str.charAt(0);
+        if (Character.isLowerCase(firstChar)) {
+            // already capitalized
+            return str;
+        }
+
+        return new StringBuilder(strLen)
+                .append(Character.toLowerCase(firstChar))
+                .append(str.substring(1))
+                .toString();
+    }
+
     public static boolean equals(final CharSequence cs1, final CharSequence cs2) {
         if (cs1 == cs2) {
             return true;
@@ -198,11 +228,14 @@ public class StringUtils {
     public static String replaceEach(final String text, final String[] searchList, final String[] replacementList) {
         return replaceEach(text, searchList, replacementList, false, 0);
     }
+
     private static String replaceEach(
-            final String text, final String[] searchList, final String[] replacementList, final boolean repeat, final int timeToLive) {
+            final String text, final String[] searchList, final String[] replacementList, final boolean repeat,
+            final int timeToLive) {
 
         // mchyzer Performance note: This creates very few new objects (one major goal)
-        // let me know if there are performance requests, we can create a harness to measure
+        // let me know if there are performance requests, we can create a harness to
+        // measure
 
         if (text == null || text.isEmpty() || searchList == null ||
                 searchList.length == 0 || replacementList == null || replacementList.length == 0) {
@@ -262,10 +295,12 @@ public class StringUtils {
 
         int start = 0;
 
-        // get a good guess on the size of the result buffer so it doesn't have to double if it goes over a bit
+        // get a good guess on the size of the result buffer so it doesn't have to
+        // double if it goes over a bit
         int increase = 0;
 
-        // count the replacement text elements that are larger than their corresponding text being replaced
+        // count the replacement text elements that are larger than their corresponding
+        // text being replaced
         for (int i = 0; i < searchList.length; i++) {
             if (searchList[i] == null || replacementList[i] == null) {
                 continue;
@@ -325,9 +360,11 @@ public class StringUtils {
 
         return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
     }
+
     public static boolean endsWith(final CharSequence str, final CharSequence suffix) {
         return endsWith(str, suffix, false);
     }
+
     private static boolean endsWith(final CharSequence str, final CharSequence suffix, final boolean ignoreCase) {
         if (str == null || suffix == null) {
             return str == null && suffix == null;
@@ -346,10 +383,11 @@ public class StringUtils {
             return s.charAt(0) == c;
         }
     }
+
     public static boolean containsOnlyDigitsAndSigns(CharSequence string) {
         int size = string.length();
 
-        for(int i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i) {
             char c = string.charAt(i);
             if (!isDigit(c) && c != '-' && c != '+') {
                 return false;
@@ -358,17 +396,19 @@ public class StringUtils {
 
         return true;
     }
+
     public static boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }
+
     public static String[] split(final String src, final String delimiter) {
-        int maxparts = (src.length() / delimiter.length()) + 2;		// one more for the last
+        int maxparts = (src.length() / delimiter.length()) + 2; // one more for the last
         int[] positions = new int[maxparts];
         int dellen = delimiter.length();
 
         int i, j = 0;
         int count = 0;
-        positions[0] = - dellen;
+        positions[0] = -dellen;
         while ((i = src.indexOf(delimiter, j)) != -1) {
             count++;
             positions[count] = i;
@@ -404,30 +444,31 @@ public class StringUtils {
      * characters. Delimiter may contains any number of character and it is
      * always surrounded by two strings.
      *
-     * @param src    source to examine
-     * @param d      string with delimiter characters
+     * @param src source to examine
+     * @param d   string with delimiter characters
      *
      * @return array of tokens
      */
     public static String[] splitc(final String src, final String d) {
         if ((d.length() == 0) || (src.length() == 0)) {
-            return new String[] {src};
+            return new String[] { src };
         }
         return splitc(src, d.toCharArray());
     }
+
     /**
      * Splits a string in several parts (tokens) that are separated by delimiter
      * characters. Delimiter may contains any number of character and it is
      * always surrounded by two strings.
      *
-     * @param src			source to examine
-     * @param delimiters	char array with delimiter characters
+     * @param src        source to examine
+     * @param delimiters char array with delimiter characters
      *
      * @return array of tokens
      */
     public static String[] splitc(final String src, final char[] delimiters) {
-        if ((delimiters.length == 0) || (src.length() == 0) ) {
-            return new String[] {src};
+        if ((delimiters.length == 0) || (src.length() == 0)) {
+            return new String[] { src };
         }
         char[] srcc = src.toCharArray();
 
@@ -439,14 +480,14 @@ public class StringUtils {
 
         start[0] = 0;
         int s = 0, e;
-        if (CharUtil.equalsOne(srcc[0], delimiters)) {	// string starts with delimiter
+        if (CharUtil.equalsOne(srcc[0], delimiters)) { // string starts with delimiter
             end[0] = 0;
             count++;
             s = CharUtil.findFirstDiff(srcc, 1, delimiters);
-            if (s == -1) {							// nothing after delimiters
-                return new String[] {EMPTY, EMPTY};
+            if (s == -1) { // nothing after delimiters
+                return new String[] { EMPTY, EMPTY };
             }
-            start[1] = s;							// new start
+            start[1] = s; // new start
         }
         while (true) {
             // find new end
@@ -473,12 +514,14 @@ public class StringUtils {
         }
         return result;
     }
-/*    public static void main(String[] args) {
-
-        String template = "Hello ${foo}. Today is ${dayName}.";
-        // prepare data
-        Map<String, Object> map = new HashMap<>();
-        map.put("foo", "Jodd");
-        map.put("dayName", "Sunday");
-    }*/
+    /*
+     * public static void main(String[] args) {
+     * 
+     * String template = "Hello ${foo}. Today is ${dayName}.";
+     * // prepare data
+     * Map<String, Object> map = new HashMap<>();
+     * map.put("foo", "Jodd");
+     * map.put("dayName", "Sunday");
+     * }
+     */
 }

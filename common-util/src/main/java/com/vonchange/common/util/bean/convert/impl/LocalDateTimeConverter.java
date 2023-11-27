@@ -25,13 +25,6 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
-import com.vonchange.common.util.StringUtils;
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-import com.vonchange.common.util.time.TimeUtil;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +32,12 @@ import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
-public class LocalDateTimeConverter extends TypeConvertCommon<LocalDateTime> implements TypeConverter<LocalDateTime> {
+import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+import com.vonchange.common.util.time.TimeUtil;
+
+public class LocalDateTimeConverter extends TypeConvertCommon<LocalDateTime> {
 	@Override
 	public LocalDateTime convert(Object value) {
 		if (value == null) {
@@ -53,13 +51,13 @@ public class LocalDateTimeConverter extends TypeConvertCommon<LocalDateTime> imp
 			return TimeUtil.fromCalendar((Calendar) value);
 		}
 		if (value instanceof Timestamp) {
-			return TimeUtil.fromMilliseconds(((Timestamp)value).getTime());
+			return TimeUtil.fromMilliseconds(((Timestamp) value).getTime());
 		}
 		if (value instanceof Date) {
 			return TimeUtil.fromDate((Date) value);
 		}
 		if (value instanceof Number) {
-			return TimeUtil.fromMilliseconds(((Number)value).longValue());
+			return TimeUtil.fromMilliseconds(((Number) value).longValue());
 		}
 		if (value instanceof LocalTime) {
 			throw new TypeConversionException("Can't convert to date just from time: " + value);

@@ -25,13 +25,6 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
-import com.vonchange.common.util.StringUtils;
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-import com.vonchange.common.util.time.TimeUtil;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +32,12 @@ import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
-public class LocalDateConverter extends TypeConvertCommon<LocalDate> implements TypeConverter<LocalDate> {
+import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+import com.vonchange.common.util.time.TimeUtil;
+
+public class LocalDateConverter extends TypeConvertCommon<LocalDate> {
 	@Override
 	public LocalDate convert(Object value) {
 		if (value == null) {
@@ -47,22 +45,22 @@ public class LocalDateConverter extends TypeConvertCommon<LocalDate> implements 
 		}
 
 		if (value instanceof LocalDateTime) {
-			return ((LocalDateTime)value).toLocalDate();
+			return ((LocalDateTime) value).toLocalDate();
 		}
 		if (value instanceof Calendar) {
 			return TimeUtil.fromCalendar((Calendar) value).toLocalDate();
 		}
 		if (value instanceof Timestamp) {
-			return TimeUtil.fromMilliseconds(((Timestamp)value).getTime()).toLocalDate();
+			return TimeUtil.fromMilliseconds(((Timestamp) value).getTime()).toLocalDate();
 		}
 		if (value instanceof Date) {
-			if(value instanceof java.sql.Date){
+			if (value instanceof java.sql.Date) {
 				return ((java.sql.Date) value).toLocalDate();
 			}
 			return TimeUtil.fromDate((Date) value).toLocalDate();
 		}
 		if (value instanceof Number) {
-			return TimeUtil.fromMilliseconds(((Number)value).longValue()).toLocalDate();
+			return TimeUtil.fromMilliseconds(((Number) value).longValue()).toLocalDate();
 		}
 		if (value instanceof LocalTime) {
 			throw new TypeConversionException("Can't convert to date just from time: " + value);

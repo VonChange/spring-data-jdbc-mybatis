@@ -3,14 +3,14 @@ package com.vonchange.common.util.map;
 import java.util.Map;
 
 /**
- *支持链式调用的HashMap
+ * 支持链式调用的HashMap
+ * 
  * @author von_change@163.com
- *  2015-6-14 下午10:37:59
+ *         2015-6-14 下午10:37:59
  * @param <K>
  * @param <V>
  */
-public class HashMap<K, V> extends java.util.HashMap<K, V> implements Map<K, V> {
-
+public class HashMap<K, V> extends java.util.HashMap<K, V> {
 
 	public HashMap() {
 		super();

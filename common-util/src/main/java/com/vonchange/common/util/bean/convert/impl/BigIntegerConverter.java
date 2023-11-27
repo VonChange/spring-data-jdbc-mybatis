@@ -25,12 +25,10 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
+import java.math.BigInteger;
 
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-
-import java.math.BigInteger;
 
 /**
  * Converts given object to <code>BigInteger</code>.
@@ -38,10 +36,11 @@ import java.math.BigInteger;
  * <ul>
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
- * <li>object is converted to string, trimmed, and then converted if possible</li>
+ * <li>object is converted to string, trimmed, and then converted if
+ * possible</li>
  * </ul>
  */
-public class BigIntegerConverter extends TypeConvertCommon<BigInteger> implements TypeConverter<BigInteger> {
+public class BigIntegerConverter extends TypeConvertCommon<BigInteger> {
 
 	public BigInteger convert(final Object value) {
 		if (value == null) {
@@ -52,7 +51,7 @@ public class BigIntegerConverter extends TypeConvertCommon<BigInteger> implement
 			return (BigInteger) value;
 		}
 		if (value instanceof Number) {
-			return new BigInteger(String.valueOf(((Number)value).longValue()));
+			return new BigInteger(String.valueOf(((Number) value).longValue()));
 		}
 		try {
 			return new BigInteger(value.toString().trim());

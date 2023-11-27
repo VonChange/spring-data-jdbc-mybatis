@@ -53,6 +53,9 @@ public class EntityUtil {
 
     private static  void initEntity(Class<?> clazz) {
         logger.debug("初始化 {}", clazz.getName());
+        if(ClazzUtils.isBaseType(clazz)){
+            return;
+        }
         EntityInfo entity = new EntityInfo();
         Table table=clazz.getAnnotation(Table.class);
         String tableName=null;

@@ -16,24 +16,27 @@
  */
 package com.vonchange.jdbc.abstractjdbc.handler;
 
-
-import java.sql.SQLException;
-
 /**
- *bean处理器
+ * bean处理器
+ * 
  * @author von_change@163.com
- * 2015-6-14 下午10:12:33
+ *         2015-6-14 下午10:12:33
  */
 public class BeanProcessor {
 	/**
 	 * 创建bean
+	 * 
 	 * @param rs
 	 * @return T
 	 * @throws SQLException
 	 */
-	//@SuppressWarnings("unchecked")
-	/*public <T> T createBean(ResultSet rs,  Class<T> c) throws SQLException, IntrospectionException, IllegalAccessException, InvocationTargetException {
-		return (T) ConvertMap.convertMap(c,ConvertMap.newMap(HandlerUtil.rowToMap(rs)));
-	}*/
+	// @SuppressWarnings("unchecked")
+	/*
+	 * public <T> T createBean(ResultSet rs, Class<T> c) throws SQLException,
+	 * IntrospectionException, IllegalAccessException, InvocationTargetException {
+	 * return (T)
+	 * ConvertMap.convertMap(c,ConvertMap.newMap(HandlerUtil.rowToMap(rs)));
+	 * }
+	 */
 
 }

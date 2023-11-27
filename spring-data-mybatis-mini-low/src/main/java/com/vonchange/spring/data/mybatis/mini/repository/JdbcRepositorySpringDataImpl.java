@@ -1,24 +1,24 @@
 package com.vonchange.spring.data.mybatis.mini.repository;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
-import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.dialect.MySQLDialect;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
+import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.dialect.MySQLDialect;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 
-
-public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql implements JdbcRepository {
+public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
     private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringDataImpl.class);
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
@@ -37,32 +37,36 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     private boolean logFullSql;
     @Value("${mybatis-mini.dialect:}")
     private String dialect;
+
     @Autowired
     public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    private static final String   DATA_SOURCE_NAME="dataSource";
-    public JdbcRepositorySpringDataImpl(DataSource... dataSources){
-        this.dataSources=dataSources;
+    private static final String DATA_SOURCE_NAME = "dataSource";
+
+    public JdbcRepositorySpringDataImpl(DataSource... dataSources) {
+        this.dataSources = dataSources;
     }
 
     @Override
     protected Dialect getDefaultDialect() {
-        if("".equals(dialect)){
+        if ("".equals(dialect)) {
             return new MySQLDialect();
         }
         try {
             return (Dialect) Class.forName(dialect).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            log.error("no dialect {}",dialect,e);
+            log.error("no dialect {}", dialect, e);
         }
         return new MySQLDialect();
     }
+
     @Autowired(required = false)
     public void setDataSourceInSql(DataSourceInSql dataSourceInSql) {
         this.dataSourceInSql = dataSourceInSql;
     }
+
     @Autowired(required = false)
     public void setReadDataSources(ReadDataSources readDataSources) {
         this.readDataSources = readDataSources;
@@ -71,44 +75,47 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
     @Override
     public DataSourceWrapper getReadDataSource() {
         DataSource[] dataSourcesRead;
-        if(null!=readDataSources&&null!=readDataSources.allReadDataSources()){
-            dataSourcesRead=readDataSources.allReadDataSources();
-        }else{
-            dataSourcesRead=dataSources;
+        if (null != readDataSources && null != readDataSources.allReadDataSources()) {
+            dataSourcesRead = readDataSources.allReadDataSources();
+        } else {
+            dataSourcesRead = dataSources;
         }
-        if(null==dataSourcesRead||dataSourcesRead.length==0){
+        if (null == dataSourcesRead || dataSourcesRead.length == 0) {
             throw new MybatisMinRuntimeException("no dataSource");
         }
         List<DataSourceWrapper> dataSourceWrapperList = new ArrayList<>();
-        int i=0;
-        for (DataSource dataSource: dataSourcesRead) {
-            dataSourceWrapperList.add(new DataSourceWrapper(dataSource,DATA_SOURCE_NAME+((i==0)?"":i)));
+        int i = 0;
+        for (DataSource dataSource : dataSourcesRead) {
+            dataSourceWrapperList.add(new DataSourceWrapper(dataSource, DATA_SOURCE_NAME + ((i == 0) ? "" : i)));
             i++;
         }
-        int random =RANDOM.nextInt(dataSourceWrapperList.size());
-        log.debug("dataSource read random {}",random);
+        int random = RANDOM.nextInt(dataSourceWrapperList.size());
+        log.debug("dataSource read random {}", random);
         return dataSourceWrapperList.get(random);
     }
 
     @Override
     protected DataSourceWrapper getWriteDataSource() {
-        if(null==dataSources||dataSources.length==0){
+        if (null == dataSources || dataSources.length == 0) {
             throw new MybatisMinRuntimeException("no dataSource");
         }
-        return new DataSourceWrapper(dataSource,DATA_SOURCE_NAME);
+        return new DataSourceWrapper(dataSource, DATA_SOURCE_NAME);
     }
 
-   /* @Override
-    protected boolean needInitEntityInfo() {
-        return false;
-    }*/
+    /*
+     * @Override
+     * protected boolean needInitEntityInfo() {
+     * return false;
+     * }
+     */
     @Override
-    protected DataSourceWrapper getDataSourceFromSql(String sql){
-        if(null==dataSourceInSql){
+    protected DataSourceWrapper getDataSourceFromSql(String sql) {
+        if (null == dataSourceInSql) {
             return null;
         }
         return dataSourceInSql.getDataSourceFromSql(sql);
     }
+
     @Override
     protected int batchSize() {
         return batchSize;
@@ -129,10 +136,8 @@ public    class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql
         return logFullSql;
     }
 
-
-
     @Override
-    protected boolean  readAllScopeOpen(){
+    protected boolean readAllScopeOpen() {
         return isReadAllScopeOpen;
     }
 }

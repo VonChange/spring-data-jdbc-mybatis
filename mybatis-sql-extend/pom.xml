@@ -11,11 +11,7 @@
     <artifactId>mybatis-sql-extend</artifactId>
     <version>2.3.9</version>
     <dependencies>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.2.3</version>
-      </dependency>
+     
 
         <dependency>
             <groupId>com.vonchange.common</groupId>

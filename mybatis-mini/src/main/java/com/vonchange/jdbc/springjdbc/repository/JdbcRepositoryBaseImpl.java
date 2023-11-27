@@ -1,24 +1,24 @@
 package com.vonchange.jdbc.springjdbc.repository;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-
 import javax.sql.DataSource;
 
+import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 
-public    class JdbcRepositoryBaseImpl extends AbstractJbdcRepositoryMysql implements JdbcRepository {
+public class JdbcRepositoryBaseImpl extends AbstractJbdcRepositoryMysql {
     private DataSource dataSource;
-    public JdbcRepositoryBaseImpl(DataSource dataSource){
-        this.dataSource=dataSource;
+
+    public JdbcRepositoryBaseImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
+
     @Override
     public DataSourceWrapper getReadDataSource() {
-        return new DataSourceWrapper(dataSource,"dataSource");
+        return new DataSourceWrapper(dataSource, "dataSource");
     }
 
     @Override
     protected DataSourceWrapper getWriteDataSource() {
-        return new DataSourceWrapper(dataSource,"dataSource");
+        return new DataSourceWrapper(dataSource, "dataSource");
     }
 
     @Override
@@ -40,8 +40,5 @@ public    class JdbcRepositoryBaseImpl extends AbstractJbdcRepositoryMysql imple
     protected boolean logFullSql() {
         return false;
     }
-
-
-
 
 }

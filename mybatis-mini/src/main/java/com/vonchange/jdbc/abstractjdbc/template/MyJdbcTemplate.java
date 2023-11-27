@@ -24,13 +24,17 @@ public class MyJdbcTemplate extends JdbcTemplate {
 
     /**
      * Construct a new JdbcTemplate, given a DataSource to obtain connections from.
-     * <p>Note: This will not trigger initialization of the exception translator.
+     * <p>
+     * Note: This will not trigger initialization of the exception translator.
+     * 
      * @param dataSource the JDBC DataSource to obtain connections from
      */
     public MyJdbcTemplate(DataSource dataSource) {
-       super(dataSource);
+        super(dataSource);
     }
-    protected <T> int insert(final PreparedStatementCreator psc, final PreparedStatementSetter pss, final ResultSetExtractor<T> rse) throws DataAccessException {
+
+    protected <T> int insert(final PreparedStatementCreator psc, final PreparedStatementSetter pss,
+            final ResultSetExtractor<T> rse) throws DataAccessException {
 
         logger.debug("Executing prepared SQL update");
         return execute(psc, new PreparedStatementCallback<Integer>() {
@@ -42,10 +46,12 @@ public class MyJdbcTemplate extends JdbcTemplate {
                     }
                     int result = ps.executeUpdate();
                     ResultSet resultSet = ps.getGeneratedKeys();
-                     rse.extractData(resultSet);
-                   /* if (logger.isDebugEnabled()) {
-                        logger.debug("generatedKeys : " + generatedKeys);
-                    }*/
+                    rse.extractData(resultSet);
+                    /*
+                     * if (logger.isDebugEnabled()) {
+                     * logger.debug("generatedKeys : " + generatedKeys);
+                     * }
+                     */
                     return result;
                 } finally {
                     if (pss instanceof ParameterDisposer) {
@@ -56,38 +62,42 @@ public class MyJdbcTemplate extends JdbcTemplate {
         });
     }
 
-    private <T> int insert(String sql,List<String> columnReturn, PreparedStatementSetter pss, ResultSetExtractor<T> rse) throws DataAccessException {
-         return insert(new InsertPreparedStatementCreator(sql,columnReturn), pss, rse);
+    private <T> int insert(String sql, List<String> columnReturn, PreparedStatementSetter pss,
+            ResultSetExtractor<T> rse) throws DataAccessException {
+        return insert(new InsertPreparedStatementCreator(sql, columnReturn), pss, rse);
     }
-
 
     public <T> int insert(String sql, List<String> columnReturn, ResultSetExtractor<T> rse, Object... params) {
-         return insert(sql,columnReturn, newArgPreparedStatementSetter(params), rse);
+        return insert(sql, columnReturn, newArgPreparedStatementSetter(params), rse);
     }
+
     private static class InsertPreparedStatementCreator implements PreparedStatementCreator, SqlProvider {
 
         private final String sql;
-        private final List<String> columnReturn;
+        // private final List<String> columnReturn;
 
-        public InsertPreparedStatementCreator(String sql,List<String> columnReturn) {
+        public InsertPreparedStatementCreator(String sql, List<String> columnReturn) {
             Assert.notNull(sql, "SQL must not be null");
             this.sql = sql;
-            this.columnReturn=columnReturn;
+            // this.columnReturn = columnReturn;
         }
 
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-          /*  if(null==columnReturn||columnReturn.isEmpty()){
-                return con.prepareStatement(this.sql,  Statement.RETURN_GENERATED_KEYS);
-            }*/
-            return con.prepareStatement(this.sql,  Statement.RETURN_GENERATED_KEYS);
-            //return con.prepareStatement(this.sql, columnReturn.toArray(new String[0]));
+            /*
+             * if(null==columnReturn||columnReturn.isEmpty()){
+             * return con.prepareStatement(this.sql, Statement.RETURN_GENERATED_KEYS);
+             * }
+             */
+            return con.prepareStatement(this.sql, Statement.RETURN_GENERATED_KEYS);
+            // return con.prepareStatement(this.sql, columnReturn.toArray(new String[0]));
         }
+
         public String getSql() {
             return this.sql;
         }
     }
 
-    private int fetchSizeBigData=0;
+    private int fetchSizeBigData = 0;
 
     public int getFetchSizeBigData() {
         return fetchSizeBigData;
@@ -97,24 +107,25 @@ public class MyJdbcTemplate extends JdbcTemplate {
         this.fetchSizeBigData = fetchSizeBigData;
     }
 
-    public <T> T  queryBigData(String sql, ResultSetExtractor<T> rse, Object... args) throws DataAccessException {
+    public <T> T queryBigData(String sql, ResultSetExtractor<T> rse, Object... args) throws DataAccessException {
         return queryBigData(sql, newArgPreparedStatementSetter(args), rse);
     }
-    public <T> T queryBigData(String sql, PreparedStatementSetter pss, ResultSetExtractor<T> rse) throws DataAccessException {
-        int fetchSize = getFetchSizeBigData();
-        return query(new BigDataPreparedStatementCreator(sql,fetchSize), pss, rse);
-    }
 
+    public <T> T queryBigData(String sql, PreparedStatementSetter pss, ResultSetExtractor<T> rse)
+            throws DataAccessException {
+        int fetchSize = getFetchSizeBigData();
+        return query(new BigDataPreparedStatementCreator(sql, fetchSize), pss, rse);
+    }
 
     private static class BigDataPreparedStatementCreator implements PreparedStatementCreator, SqlProvider {
 
         private final String sql;
-        private final  int fetchSize;
+        private final int fetchSize;
 
-        public BigDataPreparedStatementCreator(String sql,int fetchSize) {
+        public BigDataPreparedStatementCreator(String sql, int fetchSize) {
             Assert.notNull(sql, "SQL must not be null");
             this.sql = sql;
-            this.fetchSize=fetchSize;
+            this.fetchSize = fetchSize;
         }
 
         @Override

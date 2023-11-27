@@ -1,6 +1,5 @@
 package com.vonchange.jdbc.abstractjdbc.util;
 
-
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.mybatis.config.Constant;
@@ -26,58 +25,60 @@ public class ConvertMap {
     }
 
     @SuppressWarnings("unchecked")
-    public static  <T> Map<String,Object> toMap(T entity,Class<?> clazz) throws IntrospectionException {
-        if(entity instanceof Map){
+    public static <T> Map<String, Object> toMap(T entity, Class<?> clazz) throws IntrospectionException {
+        if (entity instanceof Map) {
             return (Map<String, Object>) entity;
         }
         BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
-        PropertyDescriptor[] propertyDescriptors =  beanInfo.getPropertyDescriptors();
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         String propertyName;
         Object value;
-        Map<String,Object> map = new HashMap<>();
-        for (PropertyDescriptor property: propertyDescriptors) {
-            if(!ClazzUtils.isBaseType(property.getPropertyType())){
+        Map<String, Object> map = new HashMap<>();
+        for (PropertyDescriptor property : propertyDescriptors) {
+            if (!ClazzUtils.isBaseType(property.getPropertyType())) {
                 continue;
             }
             propertyName = property.getName();
-            value= Constant.BeanUtil.getProperty(entity, propertyName);
-            //property.getValue(propertyName);
-            map.put(propertyName,value);
+            value = Constant.BeanUtil.getProperty(entity, propertyName);
+            // property.getValue(propertyName);
+            map.put(propertyName, value);
         }
         return map;
     }
 
     /**
-     *  Map to JavaBean
+     * Map to JavaBean
      */
     @SuppressWarnings("unchecked")
-    public static <T> T convertMap(T entity,Class type, Map<String,Object> map) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-        if(null!=entity){
-            type=entity.getClass();
+    public static <T> T convertMap(T entity, Class<?> type, Map<String, Object> map)
+            throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+        if (null != entity) {
+            type = entity.getClass();
         }
-        if(null==entity){
+        if (null == entity) {
             try {
                 entity = (T) type.newInstance();
-            }catch (InstantiationException e){
-                throw new MybatisMinRuntimeException("java.lang.InstantiationException "+type.getName()+" need no-arguments constructor");
+            } catch (InstantiationException e) {
+                throw new MybatisMinRuntimeException(
+                        "java.lang.InstantiationException " + type.getName() + " need no-arguments constructor");
             }
         }
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
-        if(null!=entityInfo){
+        if (null != entityInfo) {
             Map<String, EntityField> fieldInfoMap = entityInfo.getFieldMap();
-            for (Map.Entry<String,EntityField> entry:fieldInfoMap.entrySet()) {
+            for (Map.Entry<String, EntityField> entry : fieldInfoMap.entrySet()) {
                 String columnNameLower = entry.getValue().getColumnName().toLowerCase();
                 String fieldNameLower = entry.getValue().getFieldName().toLowerCase();
                 Object value = null;
-                if(map.containsKey(fieldNameLower)){
+                if (map.containsKey(fieldNameLower)) {
                     value = map.get(fieldNameLower);
                 }
-                if(map.containsKey(columnNameLower)){
+                if (map.containsKey(columnNameLower)) {
                     value = map.get(columnNameLower);
                 }
-                if (null!=value) {
+                if (null != value) {
                     value = ConvertUtil.toObject(value, entry.getValue().getType());
-                    //Constant.BeanUtil.setProperty(entity,entry.getValue().getFieldName(),value);
+                    // Constant.BeanUtil.setProperty(entity,entry.getValue().getFieldName(),value);
                     Method writeMethod = entry.getValue().getWriteMethod();
                     writeMethod.invoke(entity, value);
                 }
@@ -86,25 +87,25 @@ public class ConvertMap {
         }
         return entity;
     }
-    public static <T> T convertMap(Class type, Map<String,Object> map) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-        return  convertMap(null,type,map);
+
+    public static <T> T convertMap(Class<?> type, Map<String, Object> map)
+            throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+        return convertMap(null, type, map);
     }
 
-
-    public static Map<String,Object> newMap(Map<String,Object> map){
-        if(null==map||map.isEmpty()){
-            return  new LinkedHashMap<>();
+    public static Map<String, Object> newMap(Map<String, Object> map) {
+        if (null == map || map.isEmpty()) {
+            return new LinkedHashMap<>();
         }
-        Map<String,Object> newMap=new LinkedHashMap<>();
+        Map<String, Object> newMap = new LinkedHashMap<>();
         String key;
-        for (Map.Entry<String,Object> entry: map.entrySet()) {
-            key=entry.getKey();
-            newMap.put(key.toLowerCase(),entry.getValue());
-            key= OrmUtil.toFiled(entry.getKey());
-            newMap.put(key.toLowerCase(),entry.getValue());
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            key = entry.getKey();
+            newMap.put(key.toLowerCase(), entry.getValue());
+            key = OrmUtil.toFiled(entry.getKey());
+            newMap.put(key.toLowerCase(), entry.getValue());
         }
         return newMap;
     }
-
 
 }

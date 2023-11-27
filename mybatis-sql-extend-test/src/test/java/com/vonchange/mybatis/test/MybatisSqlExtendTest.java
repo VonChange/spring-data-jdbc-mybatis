@@ -23,7 +23,16 @@ public class MybatisSqlExtendTest {
 
     @Test
     public void  sqlExtendTest(){
+        System.err.println("XXXXXX");
         List<UserBaseDO> userBaseDOList = userMapper.findList("test", LocalDateTime.now().plusHours(1L));
+        userBaseDOList.forEach(userBaseDO -> {
+            log.info("\n {}", JsonUtil.toJson(userBaseDO));
+        });
+        userBaseDOList = userMapper.findList("test", LocalDateTime.now().plusHours(1L));
+        userBaseDOList.forEach(userBaseDO -> {
+            log.info("\n {}", JsonUtil.toJson(userBaseDO));
+        });
+        userBaseDOList = userMapper.findList("test", LocalDateTime.now().plusHours(1L));
         userBaseDOList.forEach(userBaseDO -> {
             log.info("\n {}", JsonUtil.toJson(userBaseDO));
         });
@@ -35,5 +44,12 @@ public class MybatisSqlExtendTest {
         userBaseDOList.forEach(userBaseDO -> {
             log.info("\n {}", JsonUtil.toJson(userBaseDO));
         });
+    }
+
+    @Test
+    public void  insert(){
+        UserBaseDO userBaseDO = new UserBaseDO();
+       int  result  = userMapper.insert(userBaseDO);
+        System.out.println(result);
     }
 }

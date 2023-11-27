@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends BaseCrdMapper<UserBaseDO,Long>{
     @Select(" <script> "+
             "select * from user_base\n" +
             " <where>\n" +
@@ -24,4 +24,6 @@ public interface UserMapper {
     @Select("@UserMapper.findList")
     List<UserBaseDO> findList(@Param("userName") String userName,
                               @Param("createTime") LocalDateTime createTime);
+
+
 }

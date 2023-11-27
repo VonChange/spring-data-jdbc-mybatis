@@ -25,13 +25,11 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
+import java.sql.Clob;
+import java.sql.SQLException;
 
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-
-import java.sql.Clob;
-import java.sql.SQLException;
 
 /**
  * Converts given object to <code>String</code>.
@@ -41,25 +39,26 @@ import java.sql.SQLException;
  * <li>for <code>CharSequence</code> type returns toString value</li>
  * <li><code>Class</code> returns cass name</li>
  * <li><code>char[]</code> is used for creating string</li>
- * <li>arrays are converted to comma-separated list of <code>toString</code> values</li>
+ * <li>arrays are converted to comma-separated list of <code>toString</code>
+ * values</li>
  * <li><code>Clob</code> is converted</li>
  * <li>finally, <code>toString()</code> value is returned.</li>
  * </ul>
  */
-public class StringConverter extends TypeConvertCommon<String> implements TypeConverter<String> {
+public class StringConverter extends TypeConvertCommon<String> {
 
 	@Override
 	public String convert(final Object value) {
 		if (value == null) {
 			return null;
 		}
-		
-		if (value instanceof CharSequence) {	// for speed
+
+		if (value instanceof CharSequence) { // for speed
 			return value.toString();
 		}
-		Class type = value.getClass();
+		Class<?> type = value.getClass();
 		if (type == Class.class) {
-			return ((Class) value).getName();
+			return ((Class<?>) value).getName();
 		}
 
 		if (value instanceof Clob) {

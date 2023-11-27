@@ -5,11 +5,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Map;
 
-public class BindParameterWrapper {
-    private  Pageable pageable;
-    private  AbstractPageWork abstractPageWork;
-    private  Class<?> abstractPageWorkClass;
-    private Map<String,Object> parameter;
+public class BindParameterWrapper<T> {
+    private Pageable pageable;
+    private AbstractPageWork<T> abstractPageWork;
+    private Class<? extends T> abstractPageWorkClass;
+    private Map<String, Object> parameter;
     private Object firstParam;
 
     public Object getFirstParam() {
@@ -20,11 +20,11 @@ public class BindParameterWrapper {
         this.firstParam = firstParam;
     }
 
-    public AbstractPageWork getAbstractPageWork() {
+    public AbstractPageWork<T> getAbstractPageWork() {
         return abstractPageWork;
     }
 
-    public void setAbstractPageWork(AbstractPageWork abstractPageWork) {
+    public void setAbstractPageWork(AbstractPageWork<T> abstractPageWork) {
         this.abstractPageWork = abstractPageWork;
     }
 
@@ -44,11 +44,11 @@ public class BindParameterWrapper {
         this.parameter = parameter;
     }
 
-    public Class<?> getAbstractPageWorkClass() {
+    public Class<? extends T> getAbstractPageWorkClass() {
         return abstractPageWorkClass;
     }
 
-    public void setAbstractPageWorkClass(Class<?> abstractPageWorkClass) {
+    public void setAbstractPageWorkClass(Class<? extends T> abstractPageWorkClass) {
         this.abstractPageWorkClass = abstractPageWorkClass;
     }
 }

@@ -25,11 +25,9 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
 import com.vonchange.common.util.StringUtils;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
 
 /**
  * Converts given object to <code>Float</code>.
@@ -37,11 +35,12 @@ import com.vonchange.common.util.bean.convert.TypeConverter;
  * <ul>
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
- * <li>object is converted to string, trimmed, and then converted if possible.</li>
+ * <li>object is converted to string, trimmed, and then converted if
+ * possible.</li>
  * </ul>
  * Number string may start with plus and minus sign.
  */
-public class FloatConverter extends TypeConvertCommon<Float> implements TypeConverter<Float> {
+public class FloatConverter extends TypeConvertCommon<Float> {
 
 	public Float convert(final Object value) {
 		if (value == null) {
@@ -52,7 +51,7 @@ public class FloatConverter extends TypeConvertCommon<Float> implements TypeConv
 			return (Float) value;
 		}
 		if (value instanceof Number) {
-			return Float.valueOf(((Number)value).floatValue());
+			return Float.valueOf(((Number) value).floatValue());
 		}
 		if (value instanceof Boolean) {
 			return ((Boolean) value).booleanValue() ? Float.valueOf(1) : Float.valueOf(0);

@@ -1,10 +1,10 @@
 package com.vonchange.common.util;
 
-
 import com.vonchange.common.util.bean.convert.Converter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,7 +28,7 @@ public class ConvertUtil {
 			if (NULLSTR.equals(value)) {
 				return null;
 			}
-			if("".equals(value)){
+			if ("".equals(value)) {
 				return null;
 			}
 		}
@@ -43,6 +43,9 @@ public class ConvertUtil {
 	public static String toString(Object value) {
 		if (null == value) {
 			return null;
+		}
+		if (value instanceof byte[]) {
+			return new String((byte[]) value, Charset.defaultCharset());
 		}
 		return Converter.get().toString(value);
 	}
@@ -71,21 +74,24 @@ public class ConvertUtil {
 		value = toNull(value);
 		return Converter.get().toShort(value);
 	}
-
+	public static Number toNumber(Object value) {
+		value = toNull(value);
+		return Converter.get().toNumber(value);
+	}
 	public static Byte toByte(Object value) {
 		value = toNull(value);
 		return Converter.get().toByte(value);
 	}
-	public static  Character toCharacter(Object value){
+
+	public static Character toCharacter(Object value) {
 		value = toNull(value);
 		return Converter.get().toCharacter(value);
 	}
-	public static BigInteger toBigInteger(Object value){
+
+	public static BigInteger toBigInteger(Object value) {
 		value = toNull(value);
 		return Converter.get().toBigInteger(value);
 	}
-
-
 
 	public static BigDecimal toBigDecimal(Object value) {
 		value = toNull(value);
@@ -96,6 +102,7 @@ public class ConvertUtil {
 		value = toNull(value);
 		return Converter.get().toLocalDateTime(value);
 	}
+
 	public static LocalDate toLocalDate(Object value) {
 		value = toNull(value);
 		return Converter.get().toLocalDate(value);
@@ -116,11 +123,12 @@ public class ConvertUtil {
 		if (null == value) {
 			return null;
 		}
-		if(value.getClass().isAssignableFrom(targetType)){
+		if (value.getClass().isAssignableFrom(targetType)) {
 			return (T) value;
 		}
-		return toObjectDetail(value,targetType);
+		return toObjectDetail(value, targetType);
 	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> T toObjectDetail(Object value, Class<?> targetType) {
 		if (null == value) {
@@ -130,53 +138,54 @@ public class ConvertUtil {
 		if (targetType.isAssignableFrom(String.class)) {
 			return (T) ConvertUtil.toString(value);
 		}
-		if (targetType.isAssignableFrom(Integer.class)||targetType.isAssignableFrom(int.class)) {
-			return  (T)ConvertUtil.toInteger(value);
+		if (targetType.isAssignableFrom(Integer.class) || targetType.isAssignableFrom(int.class)) {
+			return (T) ConvertUtil.toInteger(value);
 		}
-		if (targetType.isAssignableFrom(Long.class)||targetType.isAssignableFrom(long.class)) {
-			return  (T)ConvertUtil.toLong(value);
+		if (targetType.isAssignableFrom(Long.class) || targetType.isAssignableFrom(long.class)) {
+			return (T) ConvertUtil.toLong(value);
 		}
 		if (targetType.isAssignableFrom(BigDecimal.class)) {
-			return  (T)ConvertUtil.toBigDecimal(value);
+			return (T) ConvertUtil.toBigDecimal(value);
 		}
-		if (targetType.isAssignableFrom(Boolean.class)||targetType.isAssignableFrom(boolean.class)) {
-			return  (T)ConvertUtil.toBoolean(value);
+		if (targetType.isAssignableFrom(Boolean.class) || targetType.isAssignableFrom(boolean.class)) {
+			return (T) ConvertUtil.toBoolean(value);
 		}
-		if (targetType.isAssignableFrom(Float.class)||targetType.isAssignableFrom(float.class)) {
-			return  (T)ConvertUtil.toFloat(value);
+		if (targetType.isAssignableFrom(Float.class) || targetType.isAssignableFrom(float.class)) {
+			return (T) ConvertUtil.toFloat(value);
 		}
-		if (targetType.isAssignableFrom(Double.class)||targetType.isAssignableFrom(double.class)) {
-			return  (T)ConvertUtil.toDouble(value);
+		if (targetType.isAssignableFrom(Double.class) || targetType.isAssignableFrom(double.class)) {
+			return (T) ConvertUtil.toDouble(value);
 		}
-		if (targetType.isAssignableFrom(Short.class)||targetType.isAssignableFrom(short.class)) {
-			return  (T)ConvertUtil.toShort(value);
+		if (targetType.isAssignableFrom(Short.class) || targetType.isAssignableFrom(short.class)) {
+			return (T) ConvertUtil.toShort(value);
 		}
-		if (targetType.isAssignableFrom(Byte.class)||targetType.isAssignableFrom(byte.class)) {
-			return  (T)ConvertUtil.toByte(value);
+		if (targetType.isAssignableFrom(Byte.class) || targetType.isAssignableFrom(byte.class)) {
+			return (T) ConvertUtil.toByte(value);
 		}
-		if (targetType.isAssignableFrom(Character.class)||targetType.isAssignableFrom(char.class)) {
-			return  (T)ConvertUtil.toCharacter(value);
+		if (targetType.isAssignableFrom(Character.class) || targetType.isAssignableFrom(char.class)) {
+			return (T) ConvertUtil.toCharacter(value);
 		}
 		if (targetType.isAssignableFrom(BigInteger.class)) {
-			return  (T)ConvertUtil.toBigInteger(value);
+			return (T) ConvertUtil.toBigInteger(value);
 		}
 		if (targetType.isAssignableFrom(Date.class)) {
-			return  (T)ConvertUtil.toDate(value);
+			return (T) ConvertUtil.toDate(value);
 		}
 		if (targetType.isAssignableFrom(LocalDateTime.class)) {
-			return  (T)ConvertUtil.toLocalDateTime(value);
+			return (T) ConvertUtil.toLocalDateTime(value);
 		}
 		if (targetType.isAssignableFrom(LocalDate.class)) {
-			return  (T)ConvertUtil.toLocalDate(value);
+			return (T) ConvertUtil.toLocalDate(value);
 		}
 		if (targetType.isAssignableFrom(LocalTime.class)) {
-			return  (T)ConvertUtil.toLocalTime(value);
+			return (T) ConvertUtil.toLocalTime(value);
 		}
 		if (targetType.isEnum()) {
 			Class type = targetType;
 			return (T) Enum.valueOf(type, value.toString());
+			// ClazzUtils.cast(targetType, ) ;
 		}
-		return  (T)value;
+		return (T) value;
 	}
 
 }

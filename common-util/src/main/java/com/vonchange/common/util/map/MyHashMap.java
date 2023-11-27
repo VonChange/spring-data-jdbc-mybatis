@@ -2,13 +2,12 @@ package com.vonchange.common.util.map;
 
 import java.util.Map;
 
-
 /**
- *支持链式调用的HashMap<String, Object>
+ * 支持链式调用的HashMap<String, Object>
+ * 
  * @author vonchange@163.com
  */
-public class MyHashMap extends HashMap<String, Object> implements Map<String, Object>{
-
+public class MyHashMap extends HashMap<String, Object> {
 
 	public MyHashMap() {
 	}
@@ -21,15 +20,18 @@ public class MyHashMap extends HashMap<String, Object> implements Map<String, Ob
 			this.set(entry.getKey(), entry.getValue());
 		}
 	}
-    @Override
+
+	@Override
 	public MyHashMap set(String key, Object value) {
 		super.put(key, value);
 		return this;
 	}
-	public MyHashMap setAll(Map<String,Object> map) {
+
+	public MyHashMap setAll(Map<String, Object> map) {
 		super.putAll(map);
 		return this;
 	}
+
 	public MyHashMap put(String key, Object value) {
 		return this.set(key, value);
 	}

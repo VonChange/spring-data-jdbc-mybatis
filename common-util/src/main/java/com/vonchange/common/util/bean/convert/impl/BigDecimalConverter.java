@@ -25,10 +25,8 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
 
 import java.math.BigDecimal;
 
@@ -38,17 +36,18 @@ import java.math.BigDecimal;
  * <ul>
  * <li><code>null</code> value is returned as <code>null</code></li>
  * <li>object of destination type is simply casted</li>
- * <li>object is converted to string, trimmed, and then converted if possible</li>
+ * <li>object is converted to string, trimmed, and then converted if
+ * possible</li>
  * </ul>
  */
-public class BigDecimalConverter extends TypeConvertCommon<BigDecimal> implements TypeConverter<BigDecimal> {
+public class BigDecimalConverter extends TypeConvertCommon<BigDecimal> {
 
 	@Override
 	public BigDecimal convert(final Object value) {
 		if (value == null) {
 			return null;
 		}
-		
+
 		if (value instanceof BigDecimal) {
 			return (BigDecimal) value;
 		}

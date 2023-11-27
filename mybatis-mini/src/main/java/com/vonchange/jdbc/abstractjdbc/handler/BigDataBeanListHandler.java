@@ -16,7 +16,6 @@
  */
 package com.vonchange.jdbc.abstractjdbc.handler;
 
-
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
@@ -42,16 +41,14 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
      * The Class of beans produced by this handler.
      */
     private final Class<? extends T> type;
-    private AbstractPageWork abstractPageWork;
-
+    private AbstractPageWork<T> abstractPageWork;
 
     /**
      * Creates a new instance of BeanListHandler.
      *
      * @param type The Class that objects returned from <core>handle()</core>
-     * are created from.
+     *             are created from.
      */
-
 
     /**
      * Creates a new instance of BeanListHandler.
@@ -60,7 +57,7 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
      *             are created from.
      *             to use when converting rows into beans.
      */
-    public BigDataBeanListHandler(Class<? extends T> type, AbstractPageWork abstractPageWork, String sql) {
+    public BigDataBeanListHandler(Class<? extends T> type, AbstractPageWork<T> abstractPageWork, String sql) {
         this.type = type;
         this.abstractPageWork = abstractPageWork;
     }
@@ -77,14 +74,16 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
     public Integer extractData(ResultSet rs) throws SQLException {
         int pageSize = abstractPageWork.getPageSize();
         try {
-              this.toBeanList(rs, type, pageSize);
-        } catch (IntrospectionException  | IllegalAccessException | InvocationTargetException e) {
+            this.toBeanList(rs, type, pageSize);
+        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
             logger.error("Exception ", e);
         }
         return 1;
     }
+
     @SuppressWarnings("unchecked")
-    private void toBeanList(ResultSet rs, Class<? extends T> type, int pageSize) throws SQLException, IntrospectionException, IllegalAccessException, InvocationTargetException {
+    private void toBeanList(ResultSet rs, Class<? extends T> type, int pageSize)
+            throws SQLException, IntrospectionException, IllegalAccessException, InvocationTargetException {
         List<T> result = new ArrayList<>();
         Map<String, Object> extData = new HashMap<>();
         if (!rs.next()) {
@@ -92,17 +91,18 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
             abstractPageWork.setSize(pageSize);
             abstractPageWork.setTotalElements(0L);
             abstractPageWork.setTotalPages(0);
-            return ;
+            return;
         }
         int pageItem = 0;
         int pageNum = 0;
         long count = 0;
-        boolean base=false;
-        if(ClazzUtils.isBaseType(type)){
-            base=true;
+        boolean base = false;
+        if (ClazzUtils.isBaseType(type)) {
+            base = true;
         }
         do {
-            result.add((T) (base? ConvertUtil.toObject(rs.getObject(1),type):ConvertMap.convertMap(type,ConvertMap.newMap(HandlerUtil.rowToMap(rs)))));
+            result.add((T) (base ? ConvertUtil.toObject(rs.getObject(1), type)
+                    : ConvertMap.convertMap(type, ConvertMap.newMap(HandlerUtil.rowToMap(rs)))));
             pageItem++;
             count++;
             if (pageItem == pageSize) {

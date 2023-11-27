@@ -25,13 +25,6 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-
-import com.vonchange.common.util.StringUtils;
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.bean.convert.TypeConverter;
-import com.vonchange.common.util.time.TimeUtil;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +32,12 @@ import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
-public class LocalTimeConverter extends TypeConvertCommon<LocalTime> implements TypeConverter<LocalTime> {
+import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+import com.vonchange.common.util.time.TimeUtil;
+
+public class LocalTimeConverter extends TypeConvertCommon<LocalTime> {
 	@Override
 	public LocalTime convert(Object value) {
 		if (value == null) {
@@ -47,19 +45,19 @@ public class LocalTimeConverter extends TypeConvertCommon<LocalTime> implements 
 		}
 
 		if (value instanceof LocalDateTime) {
-			return ((LocalDateTime)value).toLocalTime();
+			return ((LocalDateTime) value).toLocalTime();
 		}
 		if (value instanceof Calendar) {
 			return TimeUtil.fromCalendar((Calendar) value).toLocalTime();
 		}
 		if (value instanceof Timestamp) {
-			return TimeUtil.fromMilliseconds(((Timestamp)value).getTime()).toLocalTime();
+			return TimeUtil.fromMilliseconds(((Timestamp) value).getTime()).toLocalTime();
 		}
 		if (value instanceof Date) {
 			return TimeUtil.fromDate((Date) value).toLocalTime();
 		}
 		if (value instanceof Number) {
-			return TimeUtil.fromMilliseconds(((Number)value).longValue()).toLocalTime();
+			return TimeUtil.fromMilliseconds(((Number) value).longValue()).toLocalTime();
 		}
 		if (value instanceof LocalDate) {
 			throw new TypeConversionException("Can't convert to time just from date: " + value);
