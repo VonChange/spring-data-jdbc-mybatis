@@ -17,7 +17,7 @@
 package com.vonchange.jdbc.abstractjdbc.handler;
 
 
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
 import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
@@ -69,7 +69,7 @@ public class BeanInsertHandler<T> implements ResultSetExtractor<T> {
 
 	private T toBean(ResultSet rs, T entity) throws SQLException {
 		String genColumn = EntityUtil.getEntityInfo(entity.getClass()).getGenColumn();
-		if(StringUtils.isBlank(genColumn)){
+		if(UtilAll.UString.isBlank(genColumn)){
 			throw new MybatisMinRuntimeException("实体类未设置主键注解@Id");
 		}
 		try {

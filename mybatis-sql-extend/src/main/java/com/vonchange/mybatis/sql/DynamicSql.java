@@ -1,11 +1,11 @@
 package com.vonchange.mybatis.sql;
 
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.LikeTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,21 +20,11 @@ public class DynamicSql {
         throw new IllegalStateException("Utility class");
     }
 
-    private static Logger logger = LoggerFactory.getLogger(DynamicSql.class);
-    private static final String PALCEHOLDERA = "#'{'{0}'}'";
+    private static Logger log = LoggerFactory.getLogger(DynamicSql.class);
+    private static final String PALCEHOLDERA = "#'{'{}'}'";
+
 
     public static String dynamicSql(String sql, Dialect dialect) {
-        if (sql.contains("[@")) {
-            return dynamicSqlDo(sql, dialect);
-        }
-        // 未来版本不再支持
-        if (sql.contains("{@")) {
-            return dynamicSqlOld(sql, dialect);
-        }
-        return sql;
-    }
-
-    private static String dynamicSqlDo(String sql, Dialect dialect) {
         String startSym = "[@";
         String endSym = "]";
         int len = sql.length();
@@ -60,39 +50,10 @@ public class DynamicSql {
             newSql.append(new StringBuffer(getModel(model, dialect)));
             i = ndx2 + endLen;
         }
-        logger.debug("自定义语言\n{}", newSql);
+        log.debug("new sql \n{}", newSql);
         return newSql.toString();
     }
 
-    private static String dynamicSqlOld(String sql, Dialect dialect) {
-        String startSym = "{@";
-        String endSym = "}";
-        int len = sql.length();
-        int startLen = startSym.length();
-        int endLen = endSym.length();
-        int i = 0;
-        StringBuilder newSql = new StringBuilder();
-        String model;
-        while (i < len) {
-            int ndx = sql.indexOf(startSym, i);
-            if (ndx == -1) {
-                newSql.append(i == 0 ? sql : sql.substring(i));
-                break;
-            }
-            newSql.append(sql.substring(i, ndx));
-            ndx += startLen;
-            // newSql
-            int ndx2 = sql.indexOf(endSym, ndx);
-            if (ndx2 == -1) {
-                throw new IllegalArgumentException("无结尾 } 符号 at: " + (ndx - startLen));
-            }
-            model = sql.substring(ndx, ndx2);
-            newSql.append(new StringBuffer(getModel(model, dialect)));
-            i = ndx2 + endLen;
-        }
-        logger.debug("自定义语言\n{}", newSql);
-        return newSql.toString();
-    }
 
     private static String getModel(String model, Dialect dialect) {
         if (model.contains("#{")) {
@@ -120,10 +81,10 @@ public class DynamicSql {
         }
         StringBuilder sb = new StringBuilder();
         for (String param : sqlParamResult.getParam()) {
-            sb.append(format("@com.vonchange.mybatis.tpl.MyOgnl@isNotEmpty({0}) and ", param));
+            sb.append(format("@com.vonchange.mybatis.tpl.MyOgnl@isNotEmpty({}) and ", param));
         }
-        String ifStr = format("<if test=\"{0}\">", sb.substring(0, sb.length() - 4));
-        return format("{0} {1} </if>", ifStr, sqlParamResult.getNewSql());
+        String ifStr = format("<if test=\"{}\">", sb.substring(0, sb.length() - 4));
+        return format("{} {} </if>", ifStr, sqlParamResult.getNewSql());
 
     }
 
@@ -234,13 +195,13 @@ public class DynamicSql {
             ifNullFlag = false;
             link = link.substring(1);
         }
-        String content = format(" {0} {1} {2} {3} ", link, analyeNamed.getColumn(), analyeNamed.getCondition(), named);
+        String content = format(" {} {} {} {} ", link, analyeNamed.getColumn(), analyeNamed.getCondition(), named);
         if (!ifNullFlag) {
             return content.substring(1);
         }
-        String ifStr = format("<if test=\"@com.vonchange.mybatis.tpl.MyOgnl@isNotEmpty({0})\">",
+        String ifStr = format("<if test=\"@com.vonchange.mybatis.tpl.MyOgnl@isNotEmpty({})\">",
                 analyeNamed.getNamedFull());
-        return format("{0} {1} </if>", ifStr, content);
+        return format("{} {} </if>", ifStr, content);
     }
 
     private static String like(AnalyeNamed analyeNamed, Dialect dialect) {
@@ -271,15 +232,14 @@ public class DynamicSql {
     }
 
     public static String in(String named, String itemProperty) {
-        String str = "<foreach collection=\"{0}\" index=\"index\" item=\"item\" open=\"(\" separator=\",\" close=\")\">"
+        String str = "<foreach collection=\"{}\" index=\"index\" item=\"item\" open=\"(\" separator=\",\" close=\")\">"
                 +
-                "#'{'item{1}'}'" +
+                "#'{'item{}'}'" +
                 "</foreach>";
         return format(str, named, itemProperty);
     }
 
     public static String format(String pattern, Object... arguments) {
-        MessageFormat temp = new MessageFormat(pattern);
-        return temp.format(arguments);
+        return UtilAll.UString.format(pattern,arguments);
     }
 }

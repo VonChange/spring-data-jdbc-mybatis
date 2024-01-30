@@ -14,14 +14,8 @@ public class EntityField {
 	private Boolean isBaseType = false;
 	private Boolean isColumn = false;
 	private Boolean isId = false;
-	// private String function;
-	// private Boolean ignoreDupUpdate;
+
 	private Boolean updateNotNull;
-	private String insertIfNull;
-	private String insertIfNullFunc;
-	private String updateIfNull;
-	private String updateIfNullFunc;
-	private Boolean ignoreDupUpdate;
 	private Method writeMethod;
 
 	public String getFieldName() {
@@ -44,13 +38,6 @@ public class EntityField {
 		return columnName;
 	}
 
-	public Boolean getIgnoreDupUpdate() {
-		return ignoreDupUpdate;
-	}
-
-	public void setIgnoreDupUpdate(Boolean ignoreDupUpdate) {
-		this.ignoreDupUpdate = ignoreDupUpdate;
-	}
 
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
@@ -88,37 +75,8 @@ public class EntityField {
 		this.updateNotNull = updateNotNull;
 	}
 
-	public String getInsertIfNull() {
-		return insertIfNull;
-	}
 
-	public void setInsertIfNull(String insertIfNull) {
-		this.insertIfNull = insertIfNull;
-	}
 
-	public String getInsertIfNullFunc() {
-		return insertIfNullFunc;
-	}
-
-	public void setInsertIfNullFunc(String insertIfNullFunc) {
-		this.insertIfNullFunc = insertIfNullFunc;
-	}
-
-	public String getUpdateIfNull() {
-		return updateIfNull;
-	}
-
-	public void setUpdateIfNull(String updateIfNull) {
-		this.updateIfNull = updateIfNull;
-	}
-
-	public String getUpdateIfNullFunc() {
-		return updateIfNullFunc;
-	}
-
-	public void setUpdateIfNullFunc(String updateIfNullFunc) {
-		this.updateIfNullFunc = updateIfNullFunc;
-	}
 
 	public Class<?> getType() {
 		return type;

@@ -1,7 +1,6 @@
 package com.vonchange.common.util.bean.convert.impl;
 
-import com.vonchange.common.util.DateUtil;
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 import com.vonchange.common.util.exception.ParseException;
@@ -36,7 +35,7 @@ public class DateConverter extends TypeConvertCommon<Date> {
 			return new Date(((Number) value).longValue());
 		}
 		final String stringValue = value.toString().trim();
-		if(StringUtils.containsOnlyDigits(stringValue)){
+		if(UtilAll.UString.containsOnlyDigits(stringValue)){
 			try {
 				long milliseconds = Long.parseLong(stringValue);
 				return new Date(milliseconds);
@@ -46,7 +45,7 @@ public class DateConverter extends TypeConvertCommon<Date> {
 		}
 	    Date result;
 		try {
-			result=	DateUtil.parseDate(stringValue,
+			result=	UtilAll.UDate.parseDate(stringValue,
 					"yyyy-MM-dd HH:mm:ss","yyyy-MM-dd","yyyy-MM-ddTHH:mm:ssZ");
 		} catch (ParseException e) {
 			throw new TypeConversionException(value, e);

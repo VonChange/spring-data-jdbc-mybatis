@@ -21,11 +21,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
-/**
- * @author Jens Schauder
- * @author Oliver Gierke
- */
-
 public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
 
 	private final JdbcRepository entityOperations;
@@ -49,21 +44,6 @@ public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
 	@Override
 	public <S extends T> int insertBatch(List<S> entitys, int batchSize) {
 		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entitys, batchSize);
-	}
-
-	@Override
-	public <S extends T> int updateBatch(List<S> entitys, int batchSize) {
-		return entityOperations.updateBatch(entitys, batchSize);
-	}
-
-	@Override
-	public <S extends T> int insertBatchDuplicateKey(List<S> entitys, int batchSize) {
-		return entityOperations.insertBatchDuplicateKey(configInfo.getDataSourceWrapper(), entitys, batchSize);
-	}
-
-	@Override
-	public <S extends T> int insertDuplicateKey(S entity) {
-		return entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(), entity);
 	}
 
 	@Override

@@ -1,14 +1,14 @@
 package com.vonchange.common.util.bean.convert.impl;
 
+import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.bean.convert.Converter;
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.vonchange.common.util.StringUtils;
-import com.vonchange.common.util.bean.convert.Converter;
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 
 public class ByteArrayConverter extends TypeConvertCommon<byte[]> {
 	public static final char[] NUMBER_DELIMITERS = new char[] { ',', ';', '\n' };
@@ -98,7 +98,7 @@ public class ByteArrayConverter extends TypeConvertCommon<byte[]> {
 		}
 
 		if (value instanceof CharSequence) {
-			final String[] strings = StringUtils.splitc(value.toString(), NUMBER_DELIMITERS);
+			final String[] strings = UtilAll.UString.splitc(value.toString(), NUMBER_DELIMITERS);
 			return convertArrayToArray(strings);
 		}
 

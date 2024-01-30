@@ -2,7 +2,7 @@ package com.vonchange.jdbc.abstractjdbc.util;
 
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.mybatis.config.Constant;
+import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.OrmUtil;
@@ -14,9 +14,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConvertMap {
@@ -39,7 +39,7 @@ public class ConvertMap {
                 continue;
             }
             propertyName = property.getName();
-            value = Constant.BeanUtil.getProperty(entity, propertyName);
+            value = BeanUtil.getProperty(entity, propertyName);
             // property.getValue(propertyName);
             map.put(propertyName, value);
         }
@@ -65,10 +65,10 @@ public class ConvertMap {
         }
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
         if (null != entityInfo) {
-            Map<String, EntityField> fieldInfoMap = entityInfo.getFieldMap();
-            for (Map.Entry<String, EntityField> entry : fieldInfoMap.entrySet()) {
-                String columnNameLower = entry.getValue().getColumnName().toLowerCase();
-                String fieldNameLower = entry.getValue().getFieldName().toLowerCase();
+            List<EntityField> entityFieldList = entityInfo.getEntityFields();
+            for (EntityField entityField : entityFieldList) {
+                String columnNameLower = entityField.getColumnName().toLowerCase();
+                String fieldNameLower = entityField.getFieldName().toLowerCase();
                 Object value = null;
                 if (map.containsKey(fieldNameLower)) {
                     value = map.get(fieldNameLower);
@@ -77,10 +77,8 @@ public class ConvertMap {
                     value = map.get(columnNameLower);
                 }
                 if (null != value) {
-                    value = ConvertUtil.toObject(value, entry.getValue().getType());
-                    // Constant.BeanUtil.setProperty(entity,entry.getValue().getFieldName(),value);
-                    Method writeMethod = entry.getValue().getWriteMethod();
-                    writeMethod.invoke(entity, value);
+                    value = ConvertUtil.toObject(value, entityField.getType());
+                    BeanUtil.setProperty(entity,entityField.getFieldName(),value);
                 }
             }
             return entity;

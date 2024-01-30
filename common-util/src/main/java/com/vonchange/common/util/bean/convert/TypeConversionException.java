@@ -26,12 +26,10 @@
 package com.vonchange.common.util.bean.convert;
 
 
-import com.vonchange.common.util.exception.UncheckedException;
-
 /**
  * Type conversion exception.
  */
-public class TypeConversionException extends UncheckedException {
+public class TypeConversionException extends RuntimeException {
 
 	public TypeConversionException(final Throwable t) {
 		super(t);

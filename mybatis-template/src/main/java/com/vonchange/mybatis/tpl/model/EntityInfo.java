@@ -1,7 +1,6 @@
 package com.vonchange.mybatis.tpl.model;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *  实体信息
@@ -13,10 +12,9 @@ public class EntityInfo {
 	private String idFieldName;
 	private String idColumnName;
 	private String idType;
-	//private List<String> fieldReturns;
 	private  List<String> columnReturns;
 	private String genColumn;
-	private Map<String, EntityField> fieldMap;
+	private List<EntityField> entityFields;
 
 	public String getEntityName() {
 		return entityName;
@@ -60,15 +58,13 @@ public class EntityInfo {
 		this.idType = idType;
 	}
 
-	public Map<String, EntityField> getFieldMap() {
-		return fieldMap;
+	public List<EntityField> getEntityFields() {
+		return entityFields;
 	}
 
-	public void setFieldMap(Map<String, EntityField> fieldMap) {
-		this.fieldMap = fieldMap;
+	public void setEntityFields(List<EntityField> entityFields) {
+		this.entityFields = entityFields;
 	}
-
-
 
 	public List<String> getColumnReturns() {
 		return columnReturns;

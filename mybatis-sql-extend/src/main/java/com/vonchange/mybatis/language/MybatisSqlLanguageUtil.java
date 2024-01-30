@@ -1,8 +1,9 @@
 package com.vonchange.mybatis.language;
 
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.MarkdownUtil;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.markdown.MarkdownUtil;
+
 import com.vonchange.mybatis.sql.DynamicSql;
 
 
@@ -18,12 +19,12 @@ public class MybatisSqlLanguageUtil {
         if (script.startsWith("@")) {
             long a=System.currentTimeMillis();
             String sqlId = script.substring(1);
-            sqlInXml = MarkdownUtil.getSql(null==prePackage?sqlId:(prePackage+"."+sqlId));
+            sqlInXml = MarkdownUtil.getContent(null==prePackage?sqlId:(prePackage+"."+sqlId));
             sqlInXml = DynamicSql.dynamicSql(sqlInXml, dialect);
             sqlInXml = sqlInXml.trim();
             if (sqlInXml.contains("</")) {
                 sqlInXml = "<script>" + sqlInXml + "</script>";
-                sqlInXml = StringUtils.replaceEach(sqlInXml, new String[]{" > ", " < ", " >= ", " <= ", " <> "},
+                sqlInXml = UtilAll.UString.replaceEach(sqlInXml, new String[]{" > ", " < ", " >= ", " <= ", " <> "},
                         new String[]{" &gt; ", " &lt; ", " &gt;= ", " &lt;= ", " &lt;&gt; "});
             }
             System.err.println("sqlInXml time"+(System.currentTimeMillis()-a));

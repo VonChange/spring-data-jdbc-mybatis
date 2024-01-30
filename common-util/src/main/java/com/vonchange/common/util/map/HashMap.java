@@ -10,7 +10,7 @@ import java.util.Map;
  * @param <K>
  * @param <V>
  */
-public class HashMap<K, V> extends java.util.HashMap<K, V> {
+public class HashMap<K, V> extends java.util.HashMap<K, V> implements VMap<K,V>{
 
 	public HashMap() {
 		super();

@@ -1,7 +1,7 @@
 package com.vonchange.mybatis.tpl;
 
 
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 
 /**
  * Orm field
@@ -81,7 +81,7 @@ public class OrmUtil {
 	 * toEntity
 	 */
 	public static String toEntity(String tableName) {
-		return StringUtils.capitalize(toUp(tableName));
+		return UtilAll.UString.capitalize(toUp(tableName));
 	}
 
 

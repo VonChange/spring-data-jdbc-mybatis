@@ -21,10 +21,6 @@ public class JdbcCudRepositoryImpl extends AbstractJbdcRepositoryMysql {
         return new DataSourceWrapper(dataSource, "dataSource");
     }
 
-    @Override
-    protected int batchSize() {
-        return 5000;
-    }
 
     @Override
     protected boolean logRead() {

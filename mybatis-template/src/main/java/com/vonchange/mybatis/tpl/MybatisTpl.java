@@ -9,7 +9,7 @@ import com.vonchange.common.ibatis.scripting.LanguageDriver;
 import com.vonchange.common.ibatis.scripting.xmltags.XMLLanguageDriver;
 import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
@@ -35,7 +35,7 @@ public class MybatisTpl {
      @SuppressWarnings("unchecked")
      public static SqlWithParam generate(String sqlInXml, Map<String,Object> parameter, Dialect dialect){
          SqlWithParam sqlWithParam= new SqlWithParam();
-        if(StringUtils.isBlank(sqlInXml)){
+        if(UtilAll.UString.isBlank(sqlInXml)){
             sqlWithParam.setSql(null);
             sqlWithParam.setParams(null);
             return  sqlWithParam;
@@ -44,7 +44,7 @@ public class MybatisTpl {
          sqlInXml=sqlInXml.trim();
          if(sqlInXml.contains("</")){
              sqlInXml="<script>"+sqlInXml+"</script>";
-             sqlInXml =  StringUtils.replaceEach(sqlInXml,new String[]{" > "," < "," >= "," <= "," <> "},
+             sqlInXml =  UtilAll.UString.replaceEach(sqlInXml,new String[]{" > "," < "," >= "," <= "," <> "},
                      new String[]{" &gt; "," &lt; "," &gt;= "," &lt;= "," &lt;&gt; "});
          }
          if(null==parameter){

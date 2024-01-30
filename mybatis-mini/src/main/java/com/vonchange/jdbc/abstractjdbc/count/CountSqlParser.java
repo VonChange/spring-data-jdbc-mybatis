@@ -25,7 +25,7 @@
 package com.vonchange.jdbc.abstractjdbc.count;
 
 
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.jsqlparser.expression.Alias;
 import com.vonchange.jsqlparser.expression.Expression;
 import com.vonchange.jsqlparser.expression.Function;
@@ -166,7 +166,7 @@ public class CountSqlParser {
      * @param functions
      */
     public static void addAggregateFunctions(String functions){
-        if(StringUtils.isNotBlank(functions)){
+        if(UtilAll.UString.isNotBlank(functions)){
             String[] funs = functions.split(",");
             for (int i = 0; i < funs.length; i++) {
                 AGGREGATE_FUNCTIONS.add(funs[i].toUpperCase());
@@ -201,7 +201,7 @@ public class CountSqlParser {
             }
         }
         String result = sql.substring(begin, end);
-        return StringUtils.format("select count(1)  {0} ", result);
+        return UtilAll.UString.format("select count(1)  {} ", result);
     }
     /**
      * 获取智能的countSql

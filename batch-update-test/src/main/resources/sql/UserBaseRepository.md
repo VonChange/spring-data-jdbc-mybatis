@@ -33,7 +33,7 @@ user_name = #{userName}
 ```
 -- findListVo
 select * from user_base
-where [@sql findListWhereSql]
+where [@id findListWhereSql]
 ```
 
 ```

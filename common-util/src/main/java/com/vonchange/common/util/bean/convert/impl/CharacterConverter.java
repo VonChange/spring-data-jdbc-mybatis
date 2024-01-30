@@ -25,7 +25,7 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 
@@ -59,7 +59,7 @@ public class CharacterConverter extends TypeConvertCommon<Character> {
 			String s = value.toString();
 			if (s.length() != 1) {
 				s = s.trim();
-				if (!StringUtils.containsOnlyDigitsAndSigns(s)) {
+				if (!UtilAll.UString.containsOnlyDigitsAndSigns(s)) {
 					throw new TypeConversionException(value);
 				}
 

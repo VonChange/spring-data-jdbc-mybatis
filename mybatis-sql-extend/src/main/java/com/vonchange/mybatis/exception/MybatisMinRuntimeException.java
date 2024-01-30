@@ -1,25 +1,45 @@
+
 package com.vonchange.mybatis.exception;
 
 
+public class MybatisMinRuntimeException extends RuntimeException {
 
-/**
- *自定义RuntimeException
- * @author von_change@163.com
- */
-public class MybatisMinRuntimeException extends NestedRuntimeException {
+  private static final long serialVersionUID = 1L;
+  protected EnumErrorCode code = EnumErrorCode.Error;
 
-	public MybatisMinRuntimeException(String msg) {
-		super(msg);
-	}
-	public static MybatisMinRuntimeException instance(Object... msg) {
-		StringBuilder sb = new StringBuilder();
-		for (Object object : msg) {
-			sb.append(String.valueOf(object));
-		}
-	    String msgStr=sb.toString();
-		return new MybatisMinRuntimeException(msgStr);
-	}
+  public MybatisMinRuntimeException() {
+    super();
+  }
 
-	private static final long serialVersionUID = 1L;
+  public MybatisMinRuntimeException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public MybatisMinRuntimeException(String message) {
+    super(message);
+  }
+
+  public MybatisMinRuntimeException(String message, EnumErrorCode code) {
+    super(message);
+    this.code = code;
+  }
+  public MybatisMinRuntimeException( EnumErrorCode code) {
+    super(code.name());
+    this.code = code;
+  }
+
+  public MybatisMinRuntimeException(Throwable cause) {
+    super(cause);
+  }
+
+
+  public void setCode(EnumErrorCode code) {
+    this.code = code;
+  }
+
+
+  public EnumErrorCode getCode() {
+    return code;
+  }
 
 }

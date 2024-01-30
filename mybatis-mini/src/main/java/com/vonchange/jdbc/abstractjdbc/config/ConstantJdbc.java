@@ -6,15 +6,10 @@ package com.vonchange.jdbc.abstractjdbc.config;
 public class ConstantJdbc {
     private ConstantJdbc() { throw new IllegalStateException("Utility class");}
     public static  class  PageParam{
-        public static final String COUNT = "_count";
+        public static final String COUNT = "Count";
         public static final String AT = "@";
     }
-    public  static final String ISSQLFLAG= "@sql";
-    public  static final String ISMDFLAG= "@md";
-    public  static final String MAINFLAG= "main";
-    public  static final String MDID= "### id";
-    public  static final String MDVERSION= "#### version";
-    public  static final String MDINITVERSION= "1.0";
+    public  static final String SQL_FLAG= "@sql";
     public static  class  DataSource{
         public static final String DEFAULT = "dataSource";
         public static final String FLAG = "@ds:";

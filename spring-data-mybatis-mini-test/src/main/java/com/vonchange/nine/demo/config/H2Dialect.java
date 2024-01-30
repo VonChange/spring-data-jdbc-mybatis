@@ -2,7 +2,7 @@ package com.vonchange.nine.demo.config;
 
 
 import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.config.Constant;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.LikeTemplate;
@@ -17,7 +17,7 @@ public class H2Dialect implements Dialect {
 
     @Override
     public String getPageSql(String sql, int beginNo, int pageSize)  {
-    	return 	StringUtils.format("{0} limit {1},{2} ", sql, ConvertUtil.toString(beginNo), ConvertUtil.toString(pageSize));
+    	return 	UtilAll.UString.format("{} limit {},{} ", sql, ConvertUtil.toString(beginNo), ConvertUtil.toString(pageSize));
     }
 
 
@@ -39,6 +39,6 @@ public class H2Dialect implements Dialect {
 
     @Override
     public LikeTemplate getLikeTemplate() {
-        return new LikeTemplate(" CONCAT(''%'',#'{'{0}'}',''%'') "," CONCAT(''%'',#'{'{0}'}')"," CONCAT(#'{'{0}'}',''%'') ");
+        return new LikeTemplate(" CONCAT(''%'',#'{'{}'}',''%'') "," CONCAT(''%'',#'{'{}'}')"," CONCAT(#'{'{}'}',''%'') ");
     }
 }

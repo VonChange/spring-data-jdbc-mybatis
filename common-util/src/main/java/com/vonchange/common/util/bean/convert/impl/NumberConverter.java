@@ -1,6 +1,6 @@
 package com.vonchange.common.util.bean.convert.impl;
 
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 import com.vonchange.common.util.bean.convert.TypeConverter;
@@ -22,7 +22,7 @@ public class NumberConverter extends TypeConvertCommon<Number> implements TypeCo
 
         try {
             String stringValue = value.toString().trim();
-            if (StringUtils.startsWithChar(stringValue, '+')) {
+            if (UtilAll.UString.startsWithChar(stringValue, '+')) {
                 stringValue = stringValue.substring(1);
             }
             if(stringValue.contains(".")){

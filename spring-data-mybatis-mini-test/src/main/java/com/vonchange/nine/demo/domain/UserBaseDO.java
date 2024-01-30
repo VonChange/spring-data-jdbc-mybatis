@@ -2,8 +2,7 @@ package com.vonchange.nine.demo.domain;
 
 
 
-import com.vonchange.mybatis.tpl.annotation.InsertIfNull;
-import com.vonchange.mybatis.tpl.annotation.UpdateIfNull;
+
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,12 +31,10 @@ public class UserBaseDO {
     //private Integer isDelete;
     @UpdateNotNull
     private Integer isDelete;
-    @InsertIfNull(function = "now()")
+
     @UpdateNotNull
     private LocalDateTime createTime;
     //@UpdateDuplicateKeyIgnore
-    @InsertIfNull(function = "now()")
-    @UpdateIfNull(function = "now()")
     private Date updateTime;
 
 

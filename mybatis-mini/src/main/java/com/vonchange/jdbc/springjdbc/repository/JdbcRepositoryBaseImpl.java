@@ -1,8 +1,8 @@
 package com.vonchange.jdbc.springjdbc.repository;
 
-import javax.sql.DataSource;
-
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+
+import javax.sql.DataSource;
 
 public class JdbcRepositoryBaseImpl extends AbstractJbdcRepositoryMysql {
     private DataSource dataSource;
@@ -21,10 +21,6 @@ public class JdbcRepositoryBaseImpl extends AbstractJbdcRepositoryMysql {
         return new DataSourceWrapper(dataSource, "dataSource");
     }
 
-    @Override
-    protected int batchSize() {
-        return 5000;
-    }
 
     @Override
     protected boolean logRead() {

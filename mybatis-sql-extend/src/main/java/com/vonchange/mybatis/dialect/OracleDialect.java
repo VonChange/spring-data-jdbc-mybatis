@@ -2,7 +2,7 @@ package com.vonchange.mybatis.dialect;
 
 
 import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.config.Constant;
 
 
@@ -14,13 +14,13 @@ public class OracleDialect implements Dialect {
     @Override
     public String getPageSql(String sql, int beginNo, int pageSize) {
         if(beginNo==0){
-            String  sqlLimit="{0}" +
-                    " fetch first {1} rows only" ;
-            return 	StringUtils.format(sqlLimit, sql, ConvertUtil.toString(pageSize));
+            String  sqlLimit="{}" +
+                    " fetch first {} rows only" ;
+            return 	UtilAll.UString.format(sqlLimit, sql, ConvertUtil.toString(pageSize));
         }
-        String sqlOrg="{0}" +
-                " offset {1} rows fetch next {2} rows only " ;
-        return 	StringUtils.format(sqlOrg, sql, ConvertUtil.toString(beginNo), ConvertUtil.toString(pageSize));
+        String sqlOrg="{}" +
+                " offset {} rows fetch next {} rows only " ;
+        return 	UtilAll.UString.format(sqlOrg, sql, ConvertUtil.toString(beginNo), ConvertUtil.toString(pageSize));
     }
 
 
@@ -41,6 +41,6 @@ public class OracleDialect implements Dialect {
 
     @Override
     public LikeTemplate getLikeTemplate() {
-        return new LikeTemplate(" ''%''||#'{'{0}'}'||''%'' "," ''%''||#'{'{0}'}' "," #'{'{0}'}'||''%'' ");
+        return new LikeTemplate(" ''%''||#'{'{}'}'||''%'' "," ''%''||#'{'{}'}' "," #'{'{}'}'||''%'' ");
     }
 }

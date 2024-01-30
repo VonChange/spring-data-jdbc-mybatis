@@ -25,17 +25,17 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
+import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+import com.vonchange.common.util.time.TimeUtil;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
-
-import com.vonchange.common.util.StringUtils;
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
-import com.vonchange.common.util.time.TimeUtil;
 
 public class LocalDateTimeConverter extends TypeConvertCommon<LocalDateTime> {
 	@Override
@@ -65,7 +65,7 @@ public class LocalDateTimeConverter extends TypeConvertCommon<LocalDateTime> {
 
 		String stringValue = value.toString().trim();
 
-		if (!StringUtils.containsOnlyDigits(stringValue)) {
+		if (!UtilAll.UString.containsOnlyDigits(stringValue)) {
 			// try to parse default string format
 			return LocalDateTime.parse(stringValue);
 		}

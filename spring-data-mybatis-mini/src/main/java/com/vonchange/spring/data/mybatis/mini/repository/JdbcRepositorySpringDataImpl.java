@@ -1,22 +1,20 @@
 package com.vonchange.spring.data.mybatis.mini.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import javax.sql.DataSource;
-
+import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
+import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.dialect.MySQLDialect;
+import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
-import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.dialect.MySQLDialect;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
     private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringDataImpl.class);
@@ -110,10 +108,6 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
         return dataSourceInSql.getDataSourceFromSql(sql);
     }
 
-    @Override
-    protected int batchSize() {
-        return batchSize;
-    }
 
     @Override
     protected boolean logRead() {

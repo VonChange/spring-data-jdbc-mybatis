@@ -2,12 +2,9 @@ package com.vonchange.mybatis.tpl;
 
 
 import com.vonchange.common.util.ClazzUtils;
-import com.vonchange.common.util.StringUtils;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.tpl.annotation.ColumnNot;
-import com.vonchange.mybatis.tpl.annotation.InsertIfNull;
 import com.vonchange.mybatis.tpl.annotation.InsertReturn;
-import com.vonchange.mybatis.tpl.annotation.UpdateDuplicateKeyIgnore;
-import com.vonchange.mybatis.tpl.annotation.UpdateIfNull;
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
@@ -24,7 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +48,7 @@ public class EntityUtil {
         return entityMap.get(entityName);
     }
 
-    private static  void initEntity(Class<?> clazz) {
+    private static synchronized   void initEntity(Class<?> clazz) {
         logger.debug("初始化 {}", clazz.getName());
         if(ClazzUtils.isBaseType(clazz)){
             return;
@@ -62,7 +59,7 @@ public class EntityUtil {
         if(null!=table){
             tableName=table.name();
         }
-        if(StringUtils.isBlank(tableName)){
+        if(UtilAll.UString.isBlank(tableName)){
             String tableEntity= clazz.getSimpleName();
             if(clazz.getSimpleName().toLowerCase().endsWith("do")){
                 tableEntity=clazz.getSimpleName().substring(0,clazz.getSimpleName().length()-2);
@@ -73,14 +70,15 @@ public class EntityUtil {
         List<Field> fieldList = new ArrayList<>();
         getFieldList(clazz,fieldList);
                 //clazz.getDeclaredFields();// 只有本类
-        Map<String, EntityField> entityFieldMap = new LinkedHashMap<>();
+        List<EntityField> entityFieldList = new ArrayList<>();
+        Map<String,Boolean> fieldMap = new HashMap<>();
         Column column;
         List<String> columnReturns = new ArrayList<>();
         for (Field field : fieldList) {
             Class<?> type = field.getType();
             Boolean isBaseType = ClazzUtils.isBaseType(type);
             String fieldName = field.getName();
-            if(Boolean.FALSE.equals(isBaseType)||entityFieldMap.containsKey(fieldName)){
+            if(Boolean.FALSE.equals(isBaseType)||fieldMap.containsKey(fieldName)){
                 continue;
             }
             EntityField entityField = new EntityField();
@@ -98,7 +96,7 @@ public class EntityUtil {
             if(null!=column){
                 columnName=column.name();
             }
-            if(StringUtils.isBlank(columnName)){
+            if(UtilAll.UString.isBlank(columnName)){
                 columnName = OrmUtil.toSql(fieldName);
             }
             entityField.setColumnName(columnName);
@@ -106,7 +104,6 @@ public class EntityUtil {
             entityField.setIsBaseType(isBaseType);
             entityField.setIsColumn(true);
             entityField.setUpdateNotNull(false);
-            entityField.setIgnoreDupUpdate(false);
 
             Annotation[] annotations = field.getAnnotations();
             for (Annotation annotation : annotations) {
@@ -133,22 +130,12 @@ public class EntityUtil {
                 if (annotation instanceof UpdateNotNull) {
                     entityField.setUpdateNotNull(true);
                 }
-                if (annotation instanceof InsertIfNull) {
-                    entityField.setInsertIfNull(((InsertIfNull) annotation).value());
-                    entityField.setInsertIfNullFunc(((InsertIfNull) annotation).function());
-                }
-                if (annotation instanceof UpdateIfNull) {
-                    entityField.setUpdateIfNull(((UpdateIfNull) annotation).value());
-                    entityField.setUpdateIfNullFunc(((UpdateIfNull) annotation).function());
-                }
-                if (annotation instanceof UpdateDuplicateKeyIgnore) {
-                    entityField.setIgnoreDupUpdate(true);
-                }
             }
-            entityFieldMap.put(fieldName, entityField);
+            entityFieldList.add(entityField);
+            fieldMap.put(fieldName, true);
         }
         entity.setColumnReturns(columnReturns);
-        entity.setFieldMap(entityFieldMap);
+        entity.setEntityFields(entityFieldList);
         entityMap.put(clazz.getName(), entity);
     }
 
