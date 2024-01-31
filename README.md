@@ -30,6 +30,27 @@ SELECT  [@id column] FROM user_base
 ```
 ### see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ### Getting Started with JDBC mybatis
+
+
+```java
+public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
+    List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
+    List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
+}
+```
+> define sql in markdown [UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+
+> need  @EnableJdbcRepositories
+```java
+@SpringBootApplication
+@EnableJdbcRepositories
+public class JdbcMybatisTestApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(JdbcMybatisTestApplication.class, args);
+    }
+}
+```
+> maven
 ```
 <!-- spring boot 2.x -->
 <dependency>

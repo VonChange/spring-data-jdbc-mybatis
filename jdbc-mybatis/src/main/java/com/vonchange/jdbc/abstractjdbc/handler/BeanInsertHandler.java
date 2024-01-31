@@ -19,7 +19,7 @@ package com.vonchange.jdbc.abstractjdbc.handler;
 
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class BeanInsertHandler<T> implements ResultSetExtractor<T> {
 	private T toBean(ResultSet rs, T entity) throws SQLException {
 		String genColumn = EntityUtil.getEntityInfo(entity.getClass()).getGenColumn();
 		if(UtilAll.UString.isBlank(genColumn)){
-			throw new MybatisMinRuntimeException("实体类未设置主键注解@Id");
+			throw new JdbcMybatisRuntimeException("实体类未设置主键注解@Id");
 		}
 		try {
 			ConvertMap.convertMap(entity,null,ConvertMap.newMap(HandlerUtil.rowToMap(rs,genColumn)));

@@ -25,7 +25,7 @@ import com.vonchange.jdbc.abstractjdbc.template.MyJdbcTemplate;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
 import com.vonchange.jdbc.abstractjdbc.util.sql.SqlFill;
 import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.MybatisTpl;
 import com.vonchange.mybatis.tpl.model.EntityField;
@@ -284,11 +284,11 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         String tableName = entityInfo.getTableName();
         String idColumnName = entityInfo.getIdColumnName();
         if (null == idColumnName) {
-            throw new MybatisMinRuntimeException("need entity field @ID");
+            throw new JdbcMybatisRuntimeException("need entity field @ID");
         }
         Object idValue = getPublicPro(entity, entityInfo.getIdFieldName());
         if (null == idValue) {
-            throw new MybatisMinRuntimeException("ID value is null,can not update");
+            throw new JdbcMybatisRuntimeException("ID value is null,can not update");
         }
         List<EntityField> entityFieldList = entityInfo.getEntityFields();
         List<String> columns = new ArrayList<>();

@@ -22,7 +22,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 import java.lang.annotation.Annotation;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} to enable {@link EnableMybatisMini} annotation.
+ * {@link ImportBeanDefinitionRegistrar} to enable {@link EnableJdbcRepositories} annotation.
  *
  * @author Jens Schauder
  */
@@ -34,7 +34,7 @@ class JdbcRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport
 	 */
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableMybatisMini.class;
+		return EnableJdbcRepositories.class;
 	}
 
 	/*

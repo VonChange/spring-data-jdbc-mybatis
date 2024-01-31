@@ -4,7 +4,7 @@ import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +79,7 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
             dataSourcesRead = dataSources;
         }
         if (null == dataSourcesRead || dataSourcesRead.length == 0) {
-            throw new MybatisMinRuntimeException("no dataSource");
+            throw new JdbcMybatisRuntimeException("no dataSource");
         }
         List<DataSourceWrapper> dataSourceWrapperList = new ArrayList<>();
         int i = 0;
@@ -95,7 +95,7 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
     @Override
     protected DataSourceWrapper getWriteDataSource() {
         if (null == dataSources || dataSources.length == 0) {
-            throw new MybatisMinRuntimeException("no dataSource");
+            throw new JdbcMybatisRuntimeException("no dataSource");
         }
         return new DataSourceWrapper(dataSource, DATA_SOURCE_NAME);
     }

@@ -2,7 +2,7 @@ package com.vonchange.nine.demo.service.impl;
 
 import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.nine.demo.domain.UserBaseDO;
+import com.vonchange.nine.demo.domain.UserInfoDO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,28 +22,28 @@ public class JdbcQueryServiceImplTest {
     private JdbcRepository  jdbcRepository;
     @Test
     public void findList() {
-        List<UserBaseDO> userBaseDOList =jdbcRepository.queryList(UserBaseDO.class,"sql.UserBaseRepository.findList",new MyHashMap()
+        List<UserInfoDO> UserInfoDOList =jdbcRepository.queryList(UserInfoDO.class,"sql.UserBaseRepository.findList",new MyHashMap()
                 .set("userName","张三日子").set("createTime",null));
-        userBaseDOList.forEach(userBaseDO -> {
-            log.info("\n {}",userBaseDO.toString());
+        UserInfoDOList.forEach(UserInfoDO -> {
+            log.info("\n {}",UserInfoDO.toString());
         });
     }
     @Test
     public void findListToMap() {
-        List<Map<String,Object>> userBaseDOList =jdbcRepository.queryMapList("sql.UserBaseRepository.findList",new MyHashMap()
+        List<Map<String,Object>> UserInfoDOList =jdbcRepository.queryMapList("sql.UserBaseRepository.findList",new MyHashMap()
                 .set("userName","张三日子").set("createTime",null));
-        userBaseDOList.forEach(userBaseDO -> {
-            log.info("\n {}",userBaseDO.toString());
+        UserInfoDOList.forEach(UserInfoDO -> {
+            log.info("\n {}",UserInfoDO.toString());
         });
     }
     @Test
     public void findListBySql() {
         String sql ="select * from user_base\n" +
                 "where user_name = #{userName}";
-        List<UserBaseDO> userBaseDOList = jdbcRepository.queryList(UserBaseDO.class,"@sql"+sql,new MyHashMap()
+        List<UserInfoDO> UserInfoDOList = jdbcRepository.queryList(UserInfoDO.class,"@sql"+sql,new MyHashMap()
                 .set("userName","张三日子").set("createTime",null));
-        userBaseDOList.forEach(userBaseDO -> {
-            log.info("\n {}",userBaseDO.toString());
+        UserInfoDOList.forEach(UserInfoDO -> {
+            log.info("\n {}",UserInfoDO.toString());
         });
     }
 
@@ -64,10 +64,10 @@ public class JdbcQueryServiceImplTest {
                 "user_name = #{userName} and 1=1\n" +
                 "{@and create_time  < createTime}\n" +
                 "```";
-        List<UserBaseDO> userBaseDOList = jdbcRepository.queryList(UserBaseDO.class,"@md"+sql,new MyHashMap()
+        List<UserInfoDO> UserInfoDOList = jdbcRepository.queryList(UserInfoDO.class,"@md"+sql,new MyHashMap()
                 .set("userName","张三日子").set("createTime",null));
-        userBaseDOList.forEach(userBaseDO -> {
-            log.info("\n {}",userBaseDO.toString());
+        UserInfoDOList.forEach(UserInfoDO -> {
+            log.info("\n {}",UserInfoDO.toString());
         });
     }
 }

@@ -27,7 +27,7 @@ import java.util.List;
  * @author Eberhard Wolff
  */
 @NoRepositoryBean
-public interface BaseRepository<T, ID> extends Repository<T, ID> {
+public interface CrudRepository<T, ID> extends Repository<T, ID> {
 
 	/**
 	 * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the

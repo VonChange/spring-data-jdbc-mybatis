@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
-public class SimpleJdbcRepository<T, ID> implements BaseRepository<T, ID> {
+public class SimpleJdbcRepository<T, ID> implements CrudRepository<T, ID> {
 
 	private final JdbcRepository entityOperations;
 	private final ConfigInfo configInfo;

@@ -3,7 +3,7 @@ package com.vonchange.jdbc.abstractjdbc.util;
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.bean.BeanUtil;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.OrmUtil;
 import com.vonchange.mybatis.tpl.model.EntityField;
@@ -59,7 +59,7 @@ public class ConvertMap {
             try {
                 entity = (T) type.newInstance();
             } catch (InstantiationException e) {
-                throw new MybatisMinRuntimeException(
+                throw new JdbcMybatisRuntimeException(
                         "java.lang.InstantiationException " + type.getName() + " need no-arguments constructor");
             }
         }

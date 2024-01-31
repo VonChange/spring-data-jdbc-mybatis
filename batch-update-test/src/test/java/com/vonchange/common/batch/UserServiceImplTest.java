@@ -13,7 +13,7 @@ import java.util.List;
 @SpringBootTest
 public class UserServiceImplTest {
     @Resource
-    private UserBaseDao userBaseDao;
+    private UserCrudDao userBaseDao;
     private static final int MAXCOUNT = 100000;
 
     @Test

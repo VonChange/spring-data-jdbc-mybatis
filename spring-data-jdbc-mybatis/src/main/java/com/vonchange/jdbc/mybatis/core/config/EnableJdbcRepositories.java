@@ -36,7 +36,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Import(JdbcRepositoriesRegistrar.class)
-public @interface EnableMybatisMini {
+public @interface EnableJdbcRepositories {
 
 	/**
 	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation declarations e.g.:
@@ -46,7 +46,7 @@ public @interface EnableMybatisMini {
 
 	/**
 	 * Base packages to scan for annotated components. {@link #value()} is an alias for (and mutually exclusive with) this
-	 * attribute. Use {@link #basePackageClasses()} for a type-safe alternative to String-based package names.
+	 * attribute. Use  for a type-safe alternative to String-based package names.
 	 */
 	String[] basePackages() default {};
 

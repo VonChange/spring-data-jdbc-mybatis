@@ -1,19 +1,19 @@
 SET MODE=MySQL;
 SET FOREIGN_KEY_CHECKS=0;
-drop table if exists `user_base`;
-CREATE TABLE IF NOT EXISTS `user_base` (
-  `id` bigint(13) NOT NULL AUTO_INCREMENT COMMENT 'id序列，自增',
-  `code` varchar(36) DEFAULT NULL COMMENT '编码',
-  `user_name` varchar(30) DEFAULT NULL COMMENT '用户名',
-  `mobile_phone` varchar(13) DEFAULT NULL COMMENT '手机号',
+drop table if exists `user_info`;
+CREATE TABLE IF NOT EXISTS `user_info` (
+  `id` bigint(13) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `user_code` varchar(36) DEFAULT NULL COMMENT 'user code',
+  `user_name` varchar(30) DEFAULT NULL COMMENT 'user name',
+  `mobile_no` varchar(13) DEFAULT NULL COMMENT 'mobile nubmer',
   `address` varchar(20) DEFAULT NULL COMMENT 'address',
-  `is_delete` tinyint(1) DEFAULT '0' COMMENT '是否已删除',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `head_image_data` blob  DEFAULT NULL COMMENT '头像',
+  `is_delete` tinyint(1) DEFAULT '0' COMMENT 'is delete',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `head_image_data` blob  DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
- insert into user_base(id,code,user_name,mobile_phone,address,create_time) values (1,UUID(),'test','120','xxx',now());
- insert into user_base(user_name,mobile_phone,address,create_time) values ('李4','110','xxx额',now());
- insert into user_base(user_name,mobile_phone,address,create_time,update_time) values ('张三日子','911','xxx是啥',now(),now());
- insert into user_base(user_name,mobile_phone,address,create_time) values ('test','333','ufo',now());
+ insert into user_info(user_code,user_name,mobile_no,address,create_time) values ('u000','change','000','tang',now());
+ insert into user_info(user_code,user_name,mobile_no,address,create_time) values ('u001','Jack','001','hang zhou',now());
+ insert into user_info(user_code,user_name,mobile_no,address,create_time,update_time) values ('u002','Elon Reeve Musk','002','Mars',now(),now());
+ insert into user_info(user_code,user_name,mobile_no,address,create_time) values ('u003','Bill Gates','003',null,now());

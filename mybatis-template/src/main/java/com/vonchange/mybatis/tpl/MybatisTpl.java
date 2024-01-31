@@ -11,7 +11,7 @@ import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import org.slf4j.Logger;
@@ -95,7 +95,7 @@ public class MybatisTpl {
                  }else {
                      MetaObject metaObject = configuration.newMetaObject(param);
                      if(!metaObject.hasGetter(propertyName)){
-                         throw  new MybatisMinRuntimeException("{} {} placeholder not found",sqlId,propertyName);
+                         throw  new JdbcMybatisRuntimeException("{} placeholder #{{}}  not found",sqlId,propertyName);
                      }
                      value = metaObject.getValue(propertyName);
                  }

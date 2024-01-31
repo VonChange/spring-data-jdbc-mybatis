@@ -19,12 +19,9 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
 /**
- * Interface for generic CRUD operations on a repository for a specific type.
- *
- * @author Oliver Gierke
- * @author Eberhard Wolff
+ * only query
  */
 @NoRepositoryBean
-public interface BaseQueryRepository extends Repository<BaseModel,Long> {
+public interface QueryRepository extends Repository<BaseModel,Long> {
 
 }
