@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
   application:
-    name: mybatis-sql-eztend
+    name: mybatis-sql-extend
   datasource:
     hikari:
       driver-class-name: com.mysql.cj.jdbc.Driver

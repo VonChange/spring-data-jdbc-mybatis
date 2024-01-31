@@ -25,7 +25,6 @@ public class UserBaseDO {
     private Integer isDelete;
 
     private LocalDateTime createTime;
-    //@UpdateDuplicateKeyIgnore
 
     private Date updateTime;
 

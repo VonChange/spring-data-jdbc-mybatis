@@ -49,7 +49,9 @@ public class MybatisSqlExtendTest {
     @Test
     public void  insert(){
         UserBaseDO userBaseDO = new UserBaseDO();
-       int  result  = userMapper.insert(userBaseDO);
-        System.out.println(result);
+        userBaseDO.setUserName("2333");
+        userMapper.insert(userBaseDO);
+        System.out.println(userBaseDO.getId());
+        //System.out.println(result);
     }
 }

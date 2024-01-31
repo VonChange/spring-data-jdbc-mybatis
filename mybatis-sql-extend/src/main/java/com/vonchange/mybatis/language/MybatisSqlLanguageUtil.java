@@ -17,7 +17,6 @@ public class MybatisSqlLanguageUtil {
     public static String sqlInXml(String prePackage,String script, Dialect dialect){
         String sqlInXml = script;
         if (script.startsWith("@")) {
-            long a=System.currentTimeMillis();
             String sqlId = script.substring(1);
             sqlInXml = MarkdownUtil.getContent(null==prePackage?sqlId:(prePackage+"."+sqlId));
             sqlInXml = DynamicSql.dynamicSql(sqlInXml, dialect);
@@ -27,7 +26,6 @@ public class MybatisSqlLanguageUtil {
                 sqlInXml = UtilAll.UString.replaceEach(sqlInXml, new String[]{" > ", " < ", " >= ", " <= ", " <> "},
                         new String[]{" &gt; ", " &lt; ", " &gt;= ", " &lt;= ", " &lt;&gt; "});
             }
-            System.err.println("sqlInXml time"+(System.currentTimeMillis()-a));
         }
         return sqlInXml;
     }

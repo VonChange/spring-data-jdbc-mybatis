@@ -1,0 +1,2 @@
+org.springframework.data.repository.core.support.RepositoryFactorySupport=support.repository.jdbc.com.vonchange.data.jdbc.mybatis.JdbcRepositoryFactory
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=config.repository.jdbc.com.vonchange.data.jdbc.mybatis.JdbcConfiguration

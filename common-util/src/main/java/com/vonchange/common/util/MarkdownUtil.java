@@ -141,7 +141,7 @@ public class MarkdownUtil {
         String filePath= UtilAll.UString.substringBeforeLast(id, StringPool.DOT);
         String codeId= id.substring(filePath.length()+1);
         Map<String,String> contentMap= loadMdData(filePath);
-        if(null==contentMap.get(id)){
+        if(null==contentMap.get(codeId)){
             if(!notFoundThrowError){
                 return null;
             }

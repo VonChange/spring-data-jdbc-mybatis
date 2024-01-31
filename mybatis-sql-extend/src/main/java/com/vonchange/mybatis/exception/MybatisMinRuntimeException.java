@@ -2,6 +2,8 @@
 package com.vonchange.mybatis.exception;
 
 
+import com.vonchange.common.util.UtilAll;
+
 public class MybatisMinRuntimeException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
@@ -14,12 +16,18 @@ public class MybatisMinRuntimeException extends RuntimeException {
   public MybatisMinRuntimeException(String message, Throwable cause) {
     super(message, cause);
   }
-
+  public MybatisMinRuntimeException(EnumErrorCode code,String message, Object... parameters) {
+    super(UtilAll.UString.format(message, parameters));
+    this.code = code;
+  }
+  public MybatisMinRuntimeException(String message, Object... parameters) {
+    super(UtilAll.UString.format(message, parameters));
+  }
   public MybatisMinRuntimeException(String message) {
     super(message);
   }
 
-  public MybatisMinRuntimeException(String message, EnumErrorCode code) {
+  public MybatisMinRuntimeException(EnumErrorCode code,String message) {
     super(message);
     this.code = code;
   }

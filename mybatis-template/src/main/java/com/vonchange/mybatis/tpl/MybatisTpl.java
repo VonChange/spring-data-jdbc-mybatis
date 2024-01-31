@@ -8,7 +8,7 @@ import com.vonchange.common.ibatis.reflection.MetaObject;
 import com.vonchange.common.ibatis.scripting.LanguageDriver;
 import com.vonchange.common.ibatis.scripting.xmltags.XMLLanguageDriver;
 import com.vonchange.common.ibatis.session.Configuration;
-import com.vonchange.common.util.ConvertUtil;
+import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.MybatisMinRuntimeException;
@@ -29,11 +29,13 @@ import java.util.Properties;
 public class MybatisTpl {
     private static   Logger logger = LoggerFactory.getLogger(MybatisTpl.class);
     public static final String MARKDOWN_SQL_ID ="markdown_sql_id";
+    public  static final String SQL_FLAG= "@sql";
     private MybatisTpl() {
         throw new IllegalStateException("Utility class");
     }
      @SuppressWarnings("unchecked")
-     public static SqlWithParam generate(String sqlInXml, Map<String,Object> parameter, Dialect dialect){
+     public static SqlWithParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
+        String sqlInXml=getSql(sqlId);
          SqlWithParam sqlWithParam= new SqlWithParam();
         if(UtilAll.UString.isBlank(sqlInXml)){
             sqlWithParam.setSql(null);
@@ -50,7 +52,6 @@ public class MybatisTpl {
          if(null==parameter){
              parameter=new LinkedHashMap<>();
          }
-         String id =null;
          LanguageDriver languageDriver = new XMLLanguageDriver();
          Configuration configuration= new Configuration();
          Properties properties= new Properties();
@@ -72,14 +73,9 @@ public class MybatisTpl {
              sqlWithParam.setParams(null);
              return  sqlWithParam;
          }
-
-         if(boundSql.getSql().contains("#{")){
+        /* if(boundSql.getSql().contains("#{")){
              return generate(boundSql.getSql(),parameter,dialect);
-         }
-         if(parameter.containsKey(MARKDOWN_SQL_ID)){
-             id= ConvertUtil.toString(parameter.get(MARKDOWN_SQL_ID));
-             parameter.remove(MARKDOWN_SQL_ID);
-         }
+         }*/
          List<ParameterMapping> list= boundSql.getParameterMappings();
          List<Object> argList= new ArrayList<>();
          List<String> propertyNames = new ArrayList<>();
@@ -99,7 +95,7 @@ public class MybatisTpl {
                  }else {
                      MetaObject metaObject = configuration.newMetaObject(param);
                      if(!metaObject.hasGetter(propertyName)){
-                         throw  new MybatisMinRuntimeException(id+" "+propertyName+" placeholder not found");
+                         throw  new MybatisMinRuntimeException("{} {} placeholder not found",sqlId,propertyName);
                      }
                      value = metaObject.getValue(propertyName);
                  }
@@ -114,6 +110,13 @@ public class MybatisTpl {
          sqlWithParam.setPropertyNames(propertyNames);
          return sqlWithParam;
      }
+    private static String getSql(String sqlId) {
+        if(sqlId.startsWith(SQL_FLAG)){
+            return sqlId.substring(SQL_FLAG.length());
+        }
+        return MarkdownUtil.getContent(sqlId);
+    }
+
 
 
 }

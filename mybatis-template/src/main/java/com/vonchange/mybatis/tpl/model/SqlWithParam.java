@@ -11,6 +11,15 @@ public class SqlWithParam {
     private Object[] params;
     private List<String> propertyNames;
     private  List<String> columnReturns;
+    private long total;
+
+    public long getTotal() {
+        return total;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
 
     public String getSql() {
         return sql;

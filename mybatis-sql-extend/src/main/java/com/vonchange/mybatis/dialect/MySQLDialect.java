@@ -37,6 +37,6 @@ public class MySQLDialect implements Dialect {
 
     @Override
     public LikeTemplate getLikeTemplate() {
-        return new LikeTemplate(" CONCAT(''%'',#'{'{}'}',''%'') "," CONCAT(''%'',#'{'{}'}')"," CONCAT(#'{'{}'}',''%'') ");
+        return new LikeTemplate(" CONCAT('%',#{{}},'%') "," CONCAT('%',#{{}})"," CONCAT(#{{}},'%') ");
     }
 }

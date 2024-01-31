@@ -41,6 +41,6 @@ public class OracleDialect implements Dialect {
 
     @Override
     public LikeTemplate getLikeTemplate() {
-        return new LikeTemplate(" ''%''||#'{'{}'}'||''%'' "," ''%''||#'{'{}'}' "," #'{'{}'}'||''%'' ");
+        return new LikeTemplate(" ''%''||#{{}}||''%'' "," ''%''||#{{}} "," #{{}}||''%'' ");
     }
 }

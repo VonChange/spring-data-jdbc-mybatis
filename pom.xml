@@ -3,23 +3,23 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.vonchange.common</groupId>
-    <artifactId>mybatis-mini-parant</artifactId>
+    <artifactId>spring-data-jdbc-mybatis-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>2.5.0</version>
 	<modules>
-		<module>spring-data-mybatis-mini</module>
+		<module>spring-data-jdbc-mybatis</module>
         <module>mybatis-template</module>
-		<module>mybatis-mini</module>
+		<module>jdbc-mybatis</module>
 		<module>common-util</module>
-		<module>spring-data-mybatis-mini-test</module>
+		<module>spring-data-jdbc-mybatis-test</module>
 		<module>mybatis-sql-extend</module>
-		<module>spring-data-mybatis-mini-low</module>
-		<module>spring-data-mybatis-mini-low-test</module>
+		<module>spring-data-jdbc-mybatis-low</module>
+		<module>spring-data-jdbc-mybatis-low-test</module>
 		<module>mybatis-sql-extend-test</module>
         <module>batch-update-test</module>
     </modules>
 	<!-- SNAPSHOT-->
-	<name>mini parant pom</name>
+	<name>spring-data-jdbc-mybatis parant pom</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>
 	<url>https://github.com/VonChange/spring-data-mybatis-mini</url>
 	<licenses>

@@ -21,7 +21,7 @@ public class DynamicSql {
     }
 
     private static Logger log = LoggerFactory.getLogger(DynamicSql.class);
-    private static final String PALCEHOLDERA = "#'{'{}'}'";
+    private static final String PALCEHOLDERA = "#{{}}";
 
 
     public static String dynamicSql(String sql, Dialect dialect) {
@@ -47,7 +47,7 @@ public class DynamicSql {
                 throw new IllegalArgumentException("无结尾 ] 符号 at: " + (ndx - startLen));
             }
             model = sql.substring(ndx, ndx2);
-            newSql.append(new StringBuffer(getModel(model, dialect)));
+            newSql.append(getModel(model, dialect));
             i = ndx2 + endLen;
         }
         log.debug("new sql \n{}", newSql);
@@ -104,7 +104,7 @@ public class DynamicSql {
                 newSql.append(i == 0 ? model : model.substring(i));
                 break;
             }
-            newSql.append(model.substring(i, ndx));
+            newSql.append(model, i, ndx);
             ndx += startLen;
             int ndx2 = model.indexOf(endSym, ndx);
             if (ndx2 == -1) {
@@ -234,7 +234,7 @@ public class DynamicSql {
     public static String in(String named, String itemProperty) {
         String str = "<foreach collection=\"{}\" index=\"index\" item=\"item\" open=\"(\" separator=\",\" close=\")\">"
                 +
-                "#'{'item{}'}'" +
+                "#{item{}}" +
                 "</foreach>";
         return format(str, named, itemProperty);
     }

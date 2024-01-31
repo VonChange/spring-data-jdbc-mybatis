@@ -67,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>com.vonchange.common</groupId>
-            <artifactId>spring-data-mybatis-mini</artifactId>
+            <artifactId>spring-data-jdbc-mybatis</artifactId>
             <version>${spring.mybatis.mini}</version>
         </dependency>
         <dependency>

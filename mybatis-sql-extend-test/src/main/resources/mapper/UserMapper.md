@@ -1,4 +1,8 @@
 ```
+-- insert
+insert into user_base(user_name) values (#{userName})
+```
+```
 -- findList
 select * from user_base
 [@sql findListWhereSql]

@@ -1,6 +1,8 @@
 package com.vonchange.mybatis.test.config;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -8,7 +10,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
-public interface UserMapper extends BaseCrdMapper<UserBaseDO,Long>{
+public interface UserMapper{
+    @Insert("@UserMapper.insert")
+    @Options(useGeneratedKeys = true,keyProperty = "id")
+    int insert(UserBaseDO userBaseDO);
     @Select(" <script> "+
             "select * from user_base\n" +
             " <where>\n" +
@@ -24,6 +29,7 @@ public interface UserMapper extends BaseCrdMapper<UserBaseDO,Long>{
     @Select("@UserMapper.findList")
     List<UserBaseDO> findList(@Param("userName") String userName,
                               @Param("createTime") LocalDateTime createTime);
+
 
 
 }
