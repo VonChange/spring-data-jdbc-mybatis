@@ -1,5 +1,6 @@
 package com.vonchange.jdbc.mybatis.repository;
 
+import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.abstractjdbc.core.AbstractJdbcCore;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.Dialect;
@@ -21,10 +22,6 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
     private DataSource dataSource;
-    private DataSourceInSql dataSourceInSql;
-    private ReadDataSources readDataSources;
-    @Value("${jdbc-mybatis.isReadAllScopeOpen:false}")
-    private boolean isReadAllScopeOpen;
     @Value("${jdbc-mybatis.logWrite:false}")
     private boolean logWrite;
     @Value("${jdbc-mybatis.logRead:false}")
@@ -38,8 +35,6 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
     public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
-    private static final String DATA_SOURCE_NAME = "dataSource";
 
     public JdbcRepositorySpringImpl(DataSource... dataSources) {
         this.dataSources = dataSources;
@@ -58,36 +53,9 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
         return new MySQLDialect();
     }
 
-    @Autowired(required = false)
-    public void setDataSourceInSql(DataSourceInSql dataSourceInSql) {
-        this.dataSourceInSql = dataSourceInSql;
-    }
-
-    @Autowired(required = false)
-    public void setReadDataSources(ReadDataSources readDataSources) {
-        this.readDataSources = readDataSources;
-    }
-
     @Override
     public DataSourceWrapper getReadDataSource() {
-        DataSource[] dataSourcesRead;
-        if (null != readDataSources && null != readDataSources.allReadDataSources()) {
-            dataSourcesRead = readDataSources.allReadDataSources();
-        } else {
-            dataSourcesRead = dataSources;
-        }
-        if (null == dataSourcesRead || dataSourcesRead.length == 0) {
-            throw new JdbcMybatisRuntimeException("no dataSource");
-        }
-        List<DataSourceWrapper> dataSourceWrapperList = new ArrayList<>();
-        int i = 0;
-        for (DataSource dataSource : dataSourcesRead) {
-            dataSourceWrapperList.add(new DataSourceWrapper(dataSource, DATA_SOURCE_NAME + ((i == 0) ? "" : i)));
-            i++;
-        }
-        int random = RANDOM.nextInt(dataSourceWrapperList.size());
-        log.debug("dataSource read random {}", random);
-        return dataSourceWrapperList.get(random);
+        return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault);
     }
 
     @Override
@@ -95,7 +63,7 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
         if (null == dataSources || dataSources.length == 0) {
             throw new JdbcMybatisRuntimeException("no dataSource");
         }
-        return new DataSourceWrapper(dataSource, DATA_SOURCE_NAME);
+        return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault);
     }
 
 
