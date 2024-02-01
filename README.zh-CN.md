@@ -9,14 +9,14 @@
 
 **spring data jdbc 扩展 mybatis 动态sql能力**
 ## What Is This?
-* 简单直接调用jdbc。为了实现这一点，不提供缓存、延迟加载等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
+* 使用jdbcTemplate,相当于直接调用jdbc。不提供缓存、延迟加载等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
 
 * 使用mybatis动态sql能力,可以应对复杂sql
 
 * SQL 写在 Markdown 里 
 
 
-[UserBaseRepository.md](spring-data-jdbc-mybatis-test/src/test/resources/sql/UserBaseRepository.md)
+[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)[UserBaseRepository.md](spring-data-jdbc-mybatis-test/src/test/resources/sql/UserBaseRepository.md)
 
 ```sql
 -- findUserByIds
