@@ -25,17 +25,15 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
     private DataSource dataSource;
     private DataSourceInSql dataSourceInSql;
     private ReadDataSources readDataSources;
-    @Value("${mybatis-mini.isReadAllScopeOpen:false}")
+    @Value("${jdbc-mybatis.isReadAllScopeOpen:false}")
     private boolean isReadAllScopeOpen;
-    @Value("${mybatis-mini.batchSize:5000}")
-    private int batchSize;
-    @Value("${mybatis-mini.logWrite:false}")
+    @Value("${jdbc-mybatis.logWrite:false}")
     private boolean logWrite;
-    @Value("${mybatis-mini.logRead:false}")
+    @Value("${jdbc-mybatis.logRead:false}")
     private boolean logRead;
-    @Value("${mybatis-mini.logFullSql:false}")
+    @Value("${jdbc-mybatis.logFullSql:false}")
     private boolean logFullSql;
-    @Value("${mybatis-mini.dialect:}")
+    @Value("${jdbc-mybatis.dialect:}")
     private String dialect;
 
     @Autowired

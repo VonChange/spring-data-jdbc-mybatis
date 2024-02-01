@@ -12,7 +12,7 @@
     <!-- SNAPSHOT-->
     <name>spring data mybatis mini</name>
     <description>spring data jdbc with mybatis template dynamic query</description>
-    <url>https://github.com/VonChange/spring-data-mybatis-mini</url>
+    <url>https://github.com/VonChange/spring-data-jdbc-mybatis</url>
     <properties>
         <springdata.commons>2.1.5.RELEASE</springdata.commons>
         <spring.commons>5.1.5.RELEASE</spring.commons>

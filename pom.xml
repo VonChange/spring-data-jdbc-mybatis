@@ -18,10 +18,9 @@
 		<module>mybatis-sql-extend-test</module>
         <module>batch-update-test</module>
     </modules>
-	<!-- SNAPSHOT-->
-	<name>spring-data-jdbc-mybatis parant pom</name>
+	<name>spring-data-jdbc-mybatis parent pom</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>
-	<url>https://github.com/VonChange/spring-data-mybatis-mini</url>
+	<url>https://github.com/VonChange/spring-data-jdbc-mybatis</url>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>

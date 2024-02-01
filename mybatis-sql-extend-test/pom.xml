@@ -14,15 +14,14 @@
     <artifactId>mybatis-sql-extend-test</artifactId>
     <version>2.5.0</version>
     <properties>
-        <spring.mybatis.mini>2.5.0</spring.mybatis.mini>
-        <!--   <spring.mybatis.mini>1.6-SNAPSHOT</spring.mybatis.mini>-->
+        <spring.jdbc.mybatis>2.5.0</spring.jdbc.mybatis>
         <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
     </properties>
 <dependencies>
     <dependency>
         <groupId>com.vonchange.common</groupId>
         <artifactId>mybatis-sql-extend</artifactId>
-        <version>${spring.mybatis.mini}</version>
+        <version>${spring.jdbc.mybatis}</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.boot</groupId>

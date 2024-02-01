@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.beans.IntrospectionException;
@@ -119,10 +118,6 @@ public class EntityUtil {
                     if(null==entity.getGenColumn()){
                         entity.setGenColumn(columnName);
                     }
-                   // continue;
-                }
-                if(annotation instanceof GeneratedValue){
-                    entity.setGenColumn(columnName);
                 }
                 if(annotation instanceof InsertReturn){
                     columnReturns.add(columnName);

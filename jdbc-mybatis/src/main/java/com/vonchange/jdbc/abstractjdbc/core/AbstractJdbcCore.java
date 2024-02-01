@@ -59,7 +59,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     protected abstract DataSourceWrapper getWriteDataSource();
 
-    protected abstract boolean readAllScopeOpen();
+
 
 
     protected abstract DataSourceWrapper getDataSourceFromSql(String sql);
@@ -86,37 +86,32 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         return dialect;
     }
 
-    private MyJdbcTemplate initJdbcTemplate(DataSourceWrapper dataSourceWrapper, Constants.EnumRWType enumRWType,
-            String sql) {
-        return getJdbcTemplate(dataSourceWrapper, enumRWType, sql);
+    private MyJdbcTemplate initJdbcTemplate(DataSourceWrapper dataSourceWrapper, Constants.EnumRWType enumRWType) {
+        return getJdbcTemplate(dataSourceWrapper, enumRWType);
     }
 
     private static final Map<String, MyJdbcTemplate> myJdbcTemplateMap = new ConcurrentHashMap<>();
 
-    private DataSourceWrapper getDataSourceWrapper(DataSourceWrapper dataSourceWrapper, Constants.EnumRWType enumRWType,
-            String sql) {
+    private DataSourceWrapper getDataSourceWrapper(DataSourceWrapper dataSourceWrapper, Constants.EnumRWType enumRWType) {
         if (null != dataSourceWrapper) {
             return dataSourceWrapper;
         }
-        // from sql get datasource
-        DataSourceWrapper dataSourceFromSql = getDataSourceFromSql(sql);
-        if (null != dataSourceFromSql) {
-            return dataSourceFromSql;
-        }
-        // 去除 直接读随机数据源 主从有延迟 还是需要根据业务指定数据源
-        if (enumRWType.equals(Constants.EnumRWType.read) && readAllScopeOpen()) {
+        if (enumRWType.equals(Constants.EnumRWType.read)) {
             return getReadDataSource();
         }
         return getWriteDataSource();
     }
 
-    private MyJdbcTemplate getJdbcTemplate(DataSourceWrapper dataSourceWrapper, Constants.EnumRWType enumRWType,
-            String sql) {
-        DataSourceWrapper dataSource = getDataSourceWrapper(dataSourceWrapper, enumRWType, sql);
-        log.debug("\n====== use dataSource key {}", dataSource.getKey());
+    private MyJdbcTemplate getJdbcTemplate(DataSourceWrapper dataSourceWrapper, Constants.EnumRWType enumRWType) {
+        DataSourceWrapper dataSource = getDataSourceWrapper(dataSourceWrapper, enumRWType);
         if (myJdbcTemplateMap.containsKey(dataSource.getKey())) {
+            log.debug("\n====== use dataSource {}", dataSource.getKey());
             return myJdbcTemplateMap.get(dataSource.getKey());
         }
+        log.debug("\n====== init dataSource {}", dataSource.getKey());
+        return initJdbcTemplate(dataSource);
+    }
+    private synchronized  MyJdbcTemplate initJdbcTemplate(DataSourceWrapper dataSource){
         MyJdbcTemplate myJdbcTemplate = new MyJdbcTemplate(dataSource.getDataSource());
         myJdbcTemplate.setFetchSizeBigData(getDialect(dataSource).getBigDataFetchSize());
         myJdbcTemplate.setFetchSize(getDialect(dataSource).getFetchSize());
@@ -166,9 +161,9 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public final <T> int insert(DataSourceWrapper dataSourceWrapper, T entity) {
-        SqlWithParam sqlParmeter = generateInsertSql(entity,false);
-        return insert(dataSourceWrapper, entity, sqlParmeter.getSql(), sqlParmeter.getColumnReturns(),
-                sqlParmeter.getParams());
+        SqlWithParam sqlParameter = generateInsertSql(entity,false);
+        return insert(dataSourceWrapper, entity, sqlParameter.getSql(), sqlParameter.getColumnReturns(),
+                sqlParameter.getParams());
     }
 
     public final <T> int insert(T entity) {
@@ -176,8 +171,8 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public final <T> int update(DataSourceWrapper dataSourceWrapper, T entity) {
-        SqlWithParam sqlParmeter = generateUpdateEntitySql(entity, false);
-        return update(dataSourceWrapper, sqlParmeter.getSql(), sqlParmeter.getParams());
+        SqlWithParam sqlParameter = generateUpdateEntitySql(entity, false);
+        return update(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
     public final <T> int update(T entity) {
@@ -185,8 +180,8 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public final <T> int updateAllField(DataSourceWrapper dataSourceWrapper, T entity) {
-        SqlWithParam sqlParmeter = generateUpdateEntitySql(entity, true);
-        return update(dataSourceWrapper, sqlParmeter.getSql(), sqlParmeter.getParams());
+        SqlWithParam sqlParameter = generateUpdateEntitySql(entity, true);
+        return update(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
     public final <T> int updateAllField(T entity) {
@@ -213,23 +208,25 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         Object value ;
         for (EntityField entityField : entityFieldList) {
              value= BeanUtil.getProperty(entity,entityField.getFieldName());
-             if(entityField.getIsId()){
-                 if(null!=value){
-                     values.add(value);
-                 }
-                 continue;
+             if(insertColumn(entityField,value,ifNullInsert)){
+                 values.add(value);
              }
-            if(entityField.getIsColumn()){
-                if(null!=value){
-                    values.add(value);
-                    continue;
-                }
-                if(ifNullInsert){
-                    values.add(null);
-                }
-            }
         }
         return values.toArray();
+    }
+    private boolean insertColumn(EntityField entityField,Object value,boolean ifNullInsert){
+        if(entityField.getIsId()){
+            if(null!=value){
+                return true;
+            }
+        }
+        if(entityField.getIsColumn()){
+            if(null!=value){
+               return true;
+            }
+            return ifNullInsert;
+        }
+        return false;
     }
 
     private <T> SqlWithParam generateInsertSql(T entity,boolean ifNullInsert) {
@@ -245,26 +242,10 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         for (EntityField entityField : entityFieldList) {
             if(entityField.getIsColumn()){
                 value= BeanUtil.getProperty(entity,entityField.getFieldName());
-                if(entityField.getIsId()){
-                    if(null!=value){
-                        columns.add(entityField.getColumnName());
-                        params.add(StringPool.QUESTION_MARK);
-                        values.add(value);
-                    }
-                    continue;
-                }
-                if(entityField.getIsColumn()){
-                    if(null!=value){
-                        columns.add(entityField.getColumnName());
-                        params.add(StringPool.QUESTION_MARK);
-                        values.add(value);
-                        continue;
-                    }
-                    if(ifNullInsert){
-                        columns.add(entityField.getColumnName());
-                        params.add(StringPool.QUESTION_MARK);
-                        values.add(null);
-                    }
+                if(insertColumn(entityField,value,ifNullInsert)){
+                    columns.add(entityField.getColumnName());
+                    params.add(StringPool.QUESTION_MARK);
+                    values.add(value);
                 }
             }
         }
@@ -598,53 +579,53 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     // ================================= base
     public <T> List<T> queryList(DataSourceWrapper dataSourceWrapper, Class<T> type, String sql, Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new BeanListHandler<>(type), args);
     }
 
     public List<Map<String, Object>> queryListResultMap(DataSourceWrapper dataSourceWrapper, String sql,
             Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new MapListHandler(sql), args);
     }
 
     public void queryForBigData(DataSourceWrapper dataSourceWrapper, String sql, AbstractMapPageWork pageWork,
             Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         jdbcTemplate.queryBigData(sql, new BigDataMapListHandler(pageWork, sql), args);
     }
 
     public <T> void queryForBigData(DataSourceWrapper dataSourceWrapper, Class<? extends T> type, String sql,
             AbstractPageWork<T> pageWork, Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         jdbcTemplate.queryBigData(sql, new BigDataBeanListHandler<T>(type, pageWork, sql), args);
     }
 
     public <T> T queryOne(DataSourceWrapper dataSourceWrapper, Class<T> type, String sql, Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new BeanHandler<>(type), args);
     }
 
     public Map<String, Object> queryUniqueResultMap(DataSourceWrapper dataSourceWrapper, String sql, Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new MapHandler(sql), args);
     }
 
     public Object queryOneColumn(DataSourceWrapper dataSourceWrapper, String sql, int columnIndex, Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new ScalarHandler(columnIndex), args);
     }
 
     public <T> Map<String, T> queryMapList(DataSourceWrapper dataSourceWrapper, Class<T> c, String sql, String keyInMap,
             Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new MapBeanListHandler<>(c, keyInMap), args);
     }
 
@@ -652,19 +633,19 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     public <T> int insert(DataSourceWrapper dataSourceWrapper, T entity, String sql, List<String> columnReturn,
             Object[] parameter) {
         logSql(Constants.EnumRWType.write, sql, parameter);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write);
         return jdbcTemplate.insert(sql, columnReturn, new BeanInsertHandler<>(entity), parameter);
     }
 
     public int insert(DataSourceWrapper dataSourceWrapper, String sql, Object[] parameter) {
         logSql(Constants.EnumRWType.write, sql, parameter);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write);
         return jdbcTemplate.insert(sql, null, new ScalarHandler(), parameter);
     }
 
     public int update(DataSourceWrapper dataSourceWrapper, String sql, Object... args) {
         logSql(Constants.EnumRWType.write, sql, args);
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write);
         return jdbcTemplate.update(sql, args);
     }
 
@@ -673,7 +654,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
             return new int[0];
         }
         logSql(Constants.EnumRWType.write, sql, batchArgs.get(0));
-        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write, sql);
+        MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write);
         return jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 

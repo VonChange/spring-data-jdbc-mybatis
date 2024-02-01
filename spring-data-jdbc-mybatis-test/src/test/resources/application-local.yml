@@ -1,7 +1,7 @@
 server:
   port: 9001
 
-mybatis-mini:
+jdbc-mybatis:
   isReadAllScopeOpen: false
   logRead: true
   logWrite: true

@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name = "user_base")
 public class UserBaseDO {
 
-    //@GeneratedValue
+
     @Id
     private Long id;
     private String code;
