@@ -9,7 +9,24 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Map;
 
-public interface JdbcRepository extends JdbcCudRepository {
+public interface JdbcRepository  {
+    <T> int  insert(T entity);
+    <T> int  update(T entity);
+
+    <T> int  updateAllField(T entity);
+
+    <T> int  insertBatch(List<T> entityList, int size);
+
+    <T> int batchUpdate(String sqlId, List<T> entityList,int size);
+
+    <T> int  insert(DataSourceWrapper dataSourceWrapper, T entity);
+    <T> int  update(DataSourceWrapper dataSourceWrapper,T entity);
+    <T> int  updateAllField(DataSourceWrapper dataSourceWrapper,T entity);
+
+
+    <T> int  insertBatch(DataSourceWrapper dataSourceWrapper,List<T> entityList,int size);
+    <T> int batchUpdate(DataSourceWrapper dataSourceWrapper, String sqlId, List<T> entityList,int size);
+
     DataSourceWrapper getReadDataSource();
 
     <T> List<T> queryList(Class<T> type, String sqlId, Map<String, Object> parameter);

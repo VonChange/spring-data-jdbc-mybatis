@@ -1,7 +1,7 @@
 package com.vonchange.jdbc.mybatis.repository;
 
+import com.vonchange.jdbc.abstractjdbc.core.AbstractJdbcCore;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
-    private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringDataImpl.class);
+public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
+    private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringImpl.class);
     private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
     private DataSource dataSource;
@@ -41,7 +41,7 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
 
     private static final String DATA_SOURCE_NAME = "dataSource";
 
-    public JdbcRepositorySpringDataImpl(DataSource... dataSources) {
+    public JdbcRepositorySpringImpl(DataSource... dataSources) {
         this.dataSources = dataSources;
     }
 
@@ -98,13 +98,6 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
         return new DataSourceWrapper(dataSource, DATA_SOURCE_NAME);
     }
 
-    @Override
-    protected DataSourceWrapper getDataSourceFromSql(String sql) {
-        if (null == dataSourceInSql) {
-            return null;
-        }
-        return dataSourceInSql.getDataSourceFromSql(sql);
-    }
 
 
     @Override
@@ -122,8 +115,4 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
         return logFullSql;
     }
 
-    @Override
-    protected boolean readAllScopeOpen() {
-        return isReadAllScopeOpen;
-    }
 }

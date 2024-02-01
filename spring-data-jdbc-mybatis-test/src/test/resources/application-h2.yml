@@ -3,7 +3,7 @@ server:
 
 
 jdbc-mybatis:
-  dialect: com.vonchange.nine.demo.config.H2Dialect
+  dialect: com.vonchange.mybatis.dialect.H2Dialect
   logRead: true
   logWrite: true
   logFullSql: true

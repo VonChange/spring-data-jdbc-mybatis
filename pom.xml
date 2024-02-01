@@ -13,10 +13,7 @@
 		<module>common-util</module>
 		<module>spring-data-jdbc-mybatis-test</module>
 		<module>mybatis-sql-extend</module>
-		<module>spring-data-jdbc-mybatis-low</module>
-		<module>spring-data-jdbc-mybatis-low-test</module>
 		<module>mybatis-sql-extend-test</module>
-        <module>batch-update-test</module>
     </modules>
 	<name>spring-data-jdbc-mybatis parent pom</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>
@@ -43,41 +40,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 	</properties>
-	<repositories>
-		<repository>
-			<id>aliyun-repos</id>
-			<name>Aliyun Repository</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>sonatype-repos</id>
-			<name>Sonatype Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>sonatype-repos-s</id>
-			<name>Sonatype Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>oss</id>
@@ -114,14 +76,10 @@
 						</goals>
 						<configuration>
 							<executable>gpg</executable>
-							<!--    <gpgArguments>
-                                    <gpgArgument>&#45;&#45;no-tty</gpgArgument>
-                                </gpgArguments>-->
 							<gpgArguments>
 								<arg>--pinentry-mode</arg>
 								<arg>loopback</arg>
 							</gpgArguments>
-							<passphrase>change2012</passphrase>
 						</configuration>
 					</execution>
 				</executions>

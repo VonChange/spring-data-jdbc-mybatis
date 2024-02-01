@@ -1,7 +1,7 @@
 package com.vonchange.jdbc.mybatis.repository;
 
+import com.vonchange.jdbc.abstractjdbc.core.AbstractJdbcCore;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.springjdbc.repository.AbstractJbdcRepositoryMysql;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.sql.DataSource;
 
-public class JdbcCudRepositorySpringImpl extends AbstractJbdcRepositoryMysql {
+public class JdbcCudRepositorySpringImpl extends AbstractJdbcCore {
     private static final Logger log = LoggerFactory.getLogger(JdbcCudRepositorySpringImpl.class);
 
     private DataSource[] dataSources;
@@ -74,15 +74,6 @@ public class JdbcCudRepositorySpringImpl extends AbstractJbdcRepositoryMysql {
     }
 
     @Override
-    protected DataSourceWrapper getDataSourceFromSql(String sql) {
-        if (null == dataSourceInSql) {
-            return null;
-        }
-        return dataSourceInSql.getDataSourceFromSql(sql);
-    }
-
-
-    @Override
     protected boolean logRead() {
         return logRead;
     }
@@ -97,9 +88,5 @@ public class JdbcCudRepositorySpringImpl extends AbstractJbdcRepositoryMysql {
         return logFullSql;
     }
 
-    @Override
-    protected boolean readAllScopeOpen() {
-        return isReadAllScopeOpen;
-    }
 
 }

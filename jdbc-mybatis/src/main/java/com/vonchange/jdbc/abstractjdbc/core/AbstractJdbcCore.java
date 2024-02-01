@@ -60,10 +60,6 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     protected abstract DataSourceWrapper getWriteDataSource();
 
 
-
-
-    protected abstract DataSourceWrapper getDataSourceFromSql(String sql);
-
     protected abstract boolean logRead();
 
     protected abstract boolean logWrite();

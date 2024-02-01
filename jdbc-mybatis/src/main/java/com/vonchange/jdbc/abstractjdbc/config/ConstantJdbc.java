@@ -6,7 +6,7 @@ package com.vonchange.jdbc.abstractjdbc.config;
 public class ConstantJdbc {
     private ConstantJdbc() { throw new IllegalStateException("Utility class");}
 
-    public  static final String SQL_FLAG= "@sql";
+    public  static final String DataSourceDefault= "dataSource";
     public static  class  DataSource{
         public static final String DEFAULT = "dataSource";
         public static final String FLAG = "@ds:";

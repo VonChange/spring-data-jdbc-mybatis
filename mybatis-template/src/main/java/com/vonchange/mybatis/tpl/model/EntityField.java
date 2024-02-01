@@ -11,12 +11,10 @@ public class EntityField {
 	private String fieldName;
 	private String columnName;
 	private Class<?> type;
-	private Boolean isBaseType = false;
 	private Boolean isColumn = false;
 	private Boolean isId = false;
 
 	private Boolean updateNotNull;
-	private Method writeMethod;
 
 	public String getFieldName() {
 		return fieldName;
@@ -26,13 +24,6 @@ public class EntityField {
 		this.fieldName = fieldName;
 	}
 
-	public Method getWriteMethod() {
-		return writeMethod;
-	}
-
-	public void setWriteMethod(Method writeMethod) {
-		this.writeMethod = writeMethod;
-	}
 
 	public String getColumnName() {
 		return columnName;
@@ -43,13 +34,6 @@ public class EntityField {
 		this.columnName = columnName;
 	}
 
-	public Boolean getIsBaseType() {
-		return isBaseType;
-	}
-
-	public void setIsBaseType(Boolean isBaseType) {
-		this.isBaseType = isBaseType;
-	}
 
 	public Boolean getIsId() {
 		return isId;

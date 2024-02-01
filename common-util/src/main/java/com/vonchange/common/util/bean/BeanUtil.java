@@ -26,9 +26,10 @@ public class BeanUtil {
             return methodAccessDataMap.get(id);
         }
         MethodAccessData methodAccessData=initMethodAccessData(type);
-         methodAccessDataMap.put(id,methodAccessData);
+        methodAccessDataMap.put(id,methodAccessData);
         return methodAccessData;
     }
+
     private static synchronized  MethodAccessData  initMethodAccessData(Class type){
         MethodAccess methodAccess = MethodAccess.get(type);
         Map<String,Integer> methodIndexMap=new HashMap<>();
