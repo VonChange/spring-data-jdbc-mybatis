@@ -143,15 +143,6 @@ public class UserBaseRepositoryTest {
 
 
     @Test
-    public void insertDuplicateKey() {
-        UserBaseDO userBaseDO = new UserBaseDO();
-        userBaseDO.setUserName("UUUUU");
-        userBaseDO.setMobilePhone("110");
-        int result  = userBaseRepository.insertDuplicateKey(userBaseDO);
-        log.info("\nresult {} {}",result,userBaseDO.getId());
-
-    }
-    @Test
     //@Transactional
     //@Rollback
     public void update() {
@@ -196,26 +187,6 @@ public class UserBaseRepositoryTest {
 
 
 
-    /**
-     * 批量插入
-     */
-    @Test
-    @Transactional
-    public void insertBatchDuplicateKey() {
-        int result  = userBaseRepository.update(new UserBaseDO(1L,"testxx","",1,null,null));
-        log.info("result {}",result);
-        long start = System.currentTimeMillis();
-        List<UserBaseDO> list = new ArrayList<>();
-        for (int i=0;i<10000;i++) {
-            list.add(new UserBaseDO(null,"三e"+i,"1100"+i,null, LocalDateTime.now(),null));
-        }
-        int resultx = userBaseRepository.insertBatchDuplicateKey(list,5000);
-        log.info("id {}",list.get(0).getId());
-        log.info("result {}",resultx);
-        int resulty = userBaseRepository.insertBatchDuplicateKey(list,5000);
-        log.info("result {}",resulty);
-        log.info("time {}",System.currentTimeMillis()-start);//1554
-    }
 
     @Test
     //@Transactional

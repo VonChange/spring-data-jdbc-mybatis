@@ -42,14 +42,7 @@ public interface BaseRepository<T, ID extends Serializable> extends Repository<T
 
 	<S extends T> int insertBatch(List<S> entitys,int batchSize);
 
-	<S extends T> int  insertBatchDuplicateKey(List<S> entitys,int batchSize);
 
-	/**
-	 * insert into  on duplication key
-	 * @param entity
-	 * @param <S>
-	 */
-	<S extends T> int insertDuplicateKey(S entity);
 
 	/**
 	 * 默认只更新不为空的字段

@@ -34,7 +34,7 @@ public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
   @BatchUpdate
   int batchUpdate(List<UserInfoDO> list);
 
-  @BatchUpdate(size = 5000)
+  @BatchUpdate(size = 1000)
   int batchInsert(List<UserInfoDO> list);
 
   List<Long> findLongList();

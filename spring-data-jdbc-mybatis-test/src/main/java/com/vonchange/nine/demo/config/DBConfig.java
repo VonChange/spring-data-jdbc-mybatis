@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 
 
 @Configuration
-public class DBConfig implements InitializingBean {
+public class DBConfig {
     @Bean(name = "dataSource")
     @Primary
     @ConfigurationProperties(prefix = "spring.datasource.hikari")
@@ -45,12 +45,6 @@ public class DBConfig implements InitializingBean {
                 return new DataSource[]{readDataSource()};
             }
         };
-    }
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        /*DataSource dataSource=mainDataSource();
-        Connection connection = DataSourceUtils.getConnection(dataSource);
-        DataSourceUtils.releaseConnection(connection,dataSource);*/
     }
 
 }

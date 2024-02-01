@@ -1,4 +1,4 @@
-## spring-data-jdbc-mybatis
+# spring-data-jdbc-mybatis
 
 [![](https://img.shields.io/badge/Blog-博客-blue.svg)](http://www.vonchange.com/doc/mini.html)
 ![](https://img.shields.io/maven-central/v/com.vonchange.common/spring-data-jdbc-mybatis.svg?label=Maven%20Central)
@@ -8,7 +8,7 @@
 ](https://gitee.com/vonchange/spring-data-jdbc-mybatis)
 
 **spring data jdbc extend mybatis dynamic sql**
-### What Is This?
+## What Is This?
 * It aims at being conceptually easy. In order to achieve this it does NOT offer caching, lazy loading, write behind or many other features of JPA. This makes  a simple, limited, opinionated ORM.
 
 * use mybatis dynamic SQL,it is good for complex SQL
@@ -28,8 +28,19 @@ SELECT  [@id column] FROM user_base
 <if test="null!=createTime">  and create_time < #{createTime}  </if>
 </where>
 ```
-### see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
-### Getting Started with JDBC mybatis
+## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
+## Features
+### batch update
+> need rewriteBatchedStatements=true&allowMultiQueries=true
+```java
+public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
+    @BatchUpdate
+    int batchUpdate(List<UserInfoDO> list);
+}
+```
+### [multi-datasource.md](multi-datasource.md)
+
+## Getting Started with JDBC mybatis
 
 
 ```java

@@ -116,10 +116,6 @@ public class JdbcRepositorySpringDataImpl extends AbstractJbdcRepositoryMysql {
         return dataSourceInSql.getDataSourceFromSql(sql);
     }
 
-    @Override
-    protected int batchSize() {
-        return batchSize;
-    }
 
     @Override
     protected boolean logRead() {

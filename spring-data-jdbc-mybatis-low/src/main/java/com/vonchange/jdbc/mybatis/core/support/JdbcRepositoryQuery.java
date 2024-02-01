@@ -109,8 +109,9 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			return operations.insert(dataSourceWrapper, sqlId, parameters.getParameter());
 		}
 		if (null != parameters.getAbstractPageWork()) {
-			operations.queryBigData(dataSourceWrapper, parameters.getAbstractPageWorkClass(), sqlId,
-					parameters.getAbstractPageWork(), parameters.getParameter());
+			//@@@
+			//operations.queryBigData(dataSourceWrapper, parameters.getAbstractPageWorkClass(), sqlId,
+				//	parameters.getAbstractPageWork(), parameters.getParameter());
 		}
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
 			return operations.queryList(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,

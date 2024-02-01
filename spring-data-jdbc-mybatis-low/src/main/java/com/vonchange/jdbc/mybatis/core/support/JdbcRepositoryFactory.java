@@ -15,8 +15,10 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import com.vonchange.common.util.MarkdownUtil;
+import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.abstractjdbc.util.markdown.MarkdownUtil;
+
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
@@ -76,9 +78,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 		String interfaceName =repositoryInformation.getRepositoryInterface().getSimpleName();
 		SqlPackage sqlPackage=	repositoryInformation.getRepositoryInterface().getAnnotation(SqlPackage.class);
 		String configLoc=null!=sqlPackage?sqlPackage.value():"sql";
-		if(MarkdownUtil.markdownFileExist(configLoc,interfaceName+".md")){
-			MarkdownUtil.readMarkdownFile(configLoc,interfaceName+".md",false);
-		}
+		MarkdownUtil.readMarkdownFile(configLoc+ StringPool.DOT+interfaceName,false);
 		DataSourceKey dataSourceKey=repositoryInformation.getRepositoryInterface().getAnnotation(DataSourceKey.class);
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		ConfigInfo configInfo= new ConfigInfo();

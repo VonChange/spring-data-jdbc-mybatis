@@ -1,7 +1,6 @@
 package com.vonchange.nine.demo.jpa;
 
-import com.vonchange.mybatis.tpl.annotation.InsertIfNull;
-import com.vonchange.mybatis.tpl.annotation.UpdateIfNull;
+
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 
 import javax.persistence.Column;
@@ -29,12 +28,10 @@ public class UserBase {
     //@InsertIfNull("0")
     @UpdateNotNull
     private Integer isDelete;
-    @InsertIfNull(function = "now()")
+
     @UpdateNotNull
     private LocalDateTime createTime;
-    //@UpdateDuplicateKeyIgnore
-    @InsertIfNull(function = "now()")
-    @UpdateIfNull(function = "now()")
+
     private Date updateTime;
     private byte[] headImageData;
     public UserBase(){

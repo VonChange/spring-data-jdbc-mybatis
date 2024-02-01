@@ -1,8 +1,6 @@
 package com.vonchange.nine.demo.domain;
 
-import com.vonchange.mybatis.tpl.annotation.InsertIfNull;
-import com.vonchange.mybatis.tpl.annotation.UpdateDuplicateKeyIgnore;
-import com.vonchange.mybatis.tpl.annotation.UpdateIfNull;
+
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 
 import javax.persistence.Id;
@@ -17,12 +15,8 @@ public class BaseDO {
     private Long id;
     @UpdateNotNull
     private Integer isDelete;
-    @InsertIfNull(function = "now()")
     @UpdateNotNull
     private Date createTime;
-    @UpdateDuplicateKeyIgnore
-    @InsertIfNull(function = "now()")
-    @UpdateIfNull(function = "now()")
     private Date updateTime;
 
     public BaseDO(){

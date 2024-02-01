@@ -52,15 +52,6 @@ public class SimpleJdbcRepository<T, ID extends Serializable> implements BaseRep
 		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entitys, batchSize);
 	}
 
-	@Override
-	public <S extends T> int insertBatchDuplicateKey(List<S> entitys, int batchSize) {
-		return entityOperations.insertBatchDuplicateKey(configInfo.getDataSourceWrapper(), entitys, batchSize);
-	}
-
-	@Override
-	public <S extends T> int insertDuplicateKey(S entity) {
-		return entityOperations.insertDuplicateKey(configInfo.getDataSourceWrapper(), entity);
-	}
 
 	@Override
 	public <S extends T> int update(S entity) {

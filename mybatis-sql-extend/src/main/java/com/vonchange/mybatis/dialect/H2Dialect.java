@@ -1,4 +1,4 @@
-package com.vonchange.nine.demo.config;
+package com.vonchange.mybatis.dialect;
 
 
 import com.vonchange.common.util.ConvertUtil;

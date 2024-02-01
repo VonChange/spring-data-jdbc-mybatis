@@ -1,7 +1,5 @@
 package com.vonchange.nine.demo.domain;
 
-import com.vonchange.mybatis.tpl.annotation.InsertIfNull;
-import com.vonchange.mybatis.tpl.annotation.UpdateIfNull;
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 
 import javax.persistence.Column;
@@ -27,12 +25,8 @@ public class UserBaseDO {
     //@InsertIfNull("0")
     @UpdateNotNull
     private Integer isDelete;
-    @InsertIfNull(function = "now()")
     @UpdateNotNull
     private LocalDateTime createTime;
-    //@UpdateDuplicateKeyIgnore
-    @InsertIfNull(function = "now()")
-    @UpdateIfNull(function = "now()")
     private Date updateTime;
     private EnumDelete enumDelete;
     private byte[] headImageData;

@@ -4,8 +4,8 @@ import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
 import com.vonchange.nine.demo.util.JsonUtil;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 //@Transactional
 //@Slf4j
@@ -40,7 +40,6 @@ public class UserInfoRepositoryTest {
     @Test
     public void findListByUserCode() {
         List<UserInfoDO> userInfoDOList = userInfoRepository.findListByUserCode("u001");
-        System.out.println(userInfoDOList.size());
         userInfoDOList.forEach(UserInfoDO -> {
             log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
         });
