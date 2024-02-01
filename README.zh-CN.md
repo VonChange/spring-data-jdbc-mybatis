@@ -16,7 +16,7 @@
 * SQL 写在 Markdown 里 
 
 
-[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)[UserBaseRepository.md](spring-data-jdbc-mybatis-test/src/test/resources/sql/UserBaseRepository.md)
+[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 ```sql
 -- findUserByIds
