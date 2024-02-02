@@ -19,7 +19,6 @@ import java.util.Random;
 
 public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
     private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringImpl.class);
-    private static final Random RANDOM = new Random();
     private DataSource[] dataSources;
     private DataSource dataSource;
     @Value("${jdbc-mybatis.logWrite:false}")
@@ -55,6 +54,9 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
 
     @Override
     public DataSourceWrapper getReadDataSource() {
+        if (null == dataSources || dataSources.length == 0) {
+            throw new JdbcMybatisRuntimeException("no dataSource");
+        }
         return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault);
     }
 

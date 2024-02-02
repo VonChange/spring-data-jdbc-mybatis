@@ -1,4 +1,4 @@
-## spring-data-jdbc-mybatis
+## spring-data-jdbc-mybatis 大道至简 返璞归真
 
 [![](https://img.shields.io/badge/Blog-博客-blue.svg)](http://www.vonchange.com/doc/)
 ![](https://img.shields.io/maven-central/v/com.vonchange.common/spring-data-jdbc-mybatis.svg?label=Maven%20Central)
@@ -9,11 +9,11 @@
 
 **spring data jdbc 扩展 mybatis 动态sql能力**
 ## What Is This?
-* 使用jdbcTemplate,相当于直接调用jdbc。不提供缓存、延迟加载等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
+* 和spring data jdbc一样的追求简单,使用jdbcTemplate,调用jdbc。不提供缓存、延迟加载、QueryDSL等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
 
-* 使用mybatis动态sql能力,可以应对复杂sql
+* 使用mybatis动态sql能力(不依赖mybatis!),可以应对复杂sql
 
-* SQL 写在 Markdown 里 
+* SQL统一写在Markdown里,不提供@Query或QueryDSL
 
 
 [UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
@@ -30,6 +30,7 @@ SELECT  [@id column] FROM user_base
 ```
 ## 更多扩展写法 ==>  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## 特性
+### 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 ### 批量更新
 > need rewriteBatchedStatements=true&allowMultiQueries=true
 ```java

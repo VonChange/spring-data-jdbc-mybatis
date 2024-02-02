@@ -70,7 +70,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     private Dialect dialect = null;
 
-    private static final Integer batchSizeDefault=100;
+    private static final Integer batchSizeDefault=500;
 
     private Dialect getDialect(DataSourceWrapper dataSourceWrapper) {
         if (null != dataSourceWrapper && null != dataSourceWrapper.getDialect()) {
@@ -190,9 +190,6 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     private static Object getPublicPro(Object bean, String name) {
-        if (name.equals("serialVersionUID")) {// ??????
-            return null;
-        }
         return BeanUtil.getProperty(bean, name);
     }
 
@@ -279,7 +276,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
                     values.add(value);
                     continue;
                 }
-                if(isNullUpdate){
+                if(isNullUpdate&&!entityField.getUpdateNotNull()){
                     columns.add(UtilAll.UString.format("{} = {}",entityField.getColumnName(),StringPool.QUESTION_MARK));
                     values.add(null);
                 }

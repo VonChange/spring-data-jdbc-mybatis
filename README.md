@@ -6,9 +6,9 @@
 
 **spring data jdbc extend mybatis dynamic sql**
 ## What Is This?
-* It aims at being conceptually easy. In order to achieve this it does NOT offer caching, lazy loading, write behind or many other features of JPA. This makes  a simple, limited, opinionated ORM.
+* It aims at being conceptually easy. In order to achieve this it does NOT offer caching, lazy loading,QueryDSL, write behind or many other features of JPA. This makes  a simple, limited, opinionated ORM.
 
-* use mybatis dynamic SQL,it is good for complex SQL
+* use mybatis dynamic SQL(not dependency mybatis),it is good for complex SQL
 
 * SQL is  written in Markdown
 
@@ -27,6 +27,7 @@ SELECT  [@id column] FROM user_base
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## Features
+### not support @Query or QueryDSL, sql must be written in markdown
 ### batch update
 > need rewriteBatchedStatements=true&allowMultiQueries=true
 ```java
