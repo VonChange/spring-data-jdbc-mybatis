@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,8 @@ public class JsonUtil {
 		throw new IllegalStateException("Utility class");
 	}
 	public static String toJson(Object object) {
-		ObjectMapper objectMapper = new ObjectMapper();  
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
 		try {
 			return objectMapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
@@ -36,6 +38,7 @@ public class JsonUtil {
 	}
 	public static <T> T evalJson(String json, Class<T> clazz,TypeReference<T> type) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,true);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 		T t =null;

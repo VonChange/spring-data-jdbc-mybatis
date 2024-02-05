@@ -14,17 +14,6 @@
 
     <dependencies>
 
-       <!-- <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
-            <version>5.8.25</version>
-        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jcl -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jcl</artifactId>
-            <version>5.3.31</version>
-        </dependency>
         <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>reflectasm</artifactId>

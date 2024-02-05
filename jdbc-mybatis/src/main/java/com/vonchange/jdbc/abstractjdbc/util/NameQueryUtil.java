@@ -45,17 +45,17 @@ public class NameQueryUtil {
         map.put("like",new SplitMap("like",EnumStep.Condition));
         map.put("not_like",new SplitMap("like",EnumStep.Condition));
         map.put("between",new SplitMap("between",EnumStep.Condition));
-        map.put("order_by",new SplitMap("order_by",EnumStep.End));
+        map.put("order_by",new SplitMap("order by",EnumStep.End));
         map.put("and", new SplitMap("and",EnumStep.Join));
         map.put("or", new SplitMap("or",EnumStep.Join));
         map.put("desc", new SplitMap("desc",EnumStep.NUll));
-        map.put("asc", new SplitMap("desc",EnumStep.NUll));
+        map.put("asc", new SplitMap("asc",EnumStep.NUll));
     }
 
     public static SqlWithParam nameSql(String method,Class<?> entityType, Map<String, Object> parameter){
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
-        if(!method.startsWith("find")){
-            return null;
+        if(!(method.startsWith("find")||method.startsWith("count"))){
+            throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,must start with find or count,please define in the markdown",method);
         }
         String newMethod=UtilAll.UString.substringAfter(method,"By");
         if("".equals(newMethod)){

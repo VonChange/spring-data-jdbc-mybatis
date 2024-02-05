@@ -7,6 +7,7 @@ import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 public class JdbcRepositoryImpl extends AbstractJdbcCore {
     private DataSource dataSource;
@@ -22,6 +23,7 @@ public class JdbcRepositoryImpl extends AbstractJdbcCore {
     public DataSourceWrapper getReadDataSource() {
         return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault);
     }
+
 
 
 

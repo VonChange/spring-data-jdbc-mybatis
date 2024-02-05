@@ -1,5 +1,6 @@
 package com.vonchange.jdbc.abstractjdbc.core;
 
+
 import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.MarkdownUtil;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.CollectionUtils;
 
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
@@ -116,16 +118,11 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         return myJdbcTemplate;
     }
 
-    public final <T> int insertBatch(List<T> entityList, int batchSize) {
-        return insertBatch(null, entityList, batchSize);
+    public final <T> int insertBatch(List<T> entityList, boolean ifNullInsert,int batchSize) {
+        return insertBatch(null, entityList,ifNullInsert, batchSize);
     }
 
-    public final <T> int insertBatch(DataSourceWrapper dataSourceWrapper, List<T> entityList, int batchSize) {
-        return insertBatch(dataSourceWrapper, entityList, false, batchSize);
-    }
-
-    public final <T> int insertBatch(DataSourceWrapper dataSourceWrapper, List<T> entityList, boolean ifNullInsert,
-            int batchSize) {
+    public final <T> int insertBatch(DataSourceWrapper dataSourceWrapper, List<T> entityList, boolean ifNullInsert, int batchSize) {
         if (null == entityList || entityList.isEmpty()) {
             return 0;
         }
@@ -293,25 +290,94 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     // crud end
-    public final <T> T queryById(DataSourceWrapper dataSourceWrapper, Class<T> type, Object id) {
-        String sql = generateQueryByIdSql(type);
-        return queryOne(dataSourceWrapper, type, sql, id);
+    public final <T,ID> T queryById(DataSourceWrapper dataSourceWrapper, Class<T> type, ID id) {
+        SqlWithParam sqlWithParam = genIdEqQuery(true,false,type,id);
+        return queryOne(dataSourceWrapper, type, sqlWithParam.getSql(), id);
+    }
+    @Override
+    public <T, ID> List<T> queryByIds(DataSourceWrapper dataSourceWrapper, Class<T> domainType, List<ID> ids) {
+        SqlWithParam sqlWithParam = genIdInQuery(true,domainType,ids);
+        return queryList(dataSourceWrapper, domainType, sqlWithParam.getSql(), sqlWithParam.getParams());
     }
 
-    public final <T> T queryById(Class<T> type, Object id) {
+    public final <T,ID> T queryById(Class<T> type, ID id) {
         return queryById(null, type, id);
     }
+    public  <ID> int deleteById(DataSourceWrapper dataSourceWrapper, Class<?> domainType, ID id){
+        SqlWithParam sqlWithParam = genIdEqQuery(false,false,domainType,id);
+        return update(dataSourceWrapper,sqlWithParam.getSql(), id);
+    }
 
-    private String generateQueryByIdSql(Class<?> type) {
+    public <ID> int deleteByIds(DataSourceWrapper dataSourceWrapper, Class<?> domainType, List<ID> ids){
+        SqlWithParam sqlWithParam = genIdInQuery(false,domainType,ids);
+        return update(dataSourceWrapper,sqlWithParam.getSql(), sqlWithParam.getParams());
+    }
+
+    public <ID> boolean existsById(DataSourceWrapper dataSourceWrapper, Class<?> domainType, ID id){
+        SqlWithParam sqlWithParam = genIdEqQuery(true,true,domainType,id);
+        return ConvertUtil.toBoolean(queryOneColumn(dataSourceWrapper,sqlWithParam.getSql(),1,id));
+    }
+
+
+    private <ID> SqlWithParam genIdEqQuery(boolean select,boolean count,Class<?> type,ID id){
+        if(null==id){
+            throw new JdbcMybatisRuntimeException("id must not null");
+        }
         initEntityInfo(type);
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
-        List<EntityField> entityFieldList = entityInfo.getEntityFields();
-        String columnStr= entityFieldList.stream().filter(item->!item.getIsColumn()).map(EntityField::getColumnName)
-                .collect(Collectors.joining(StringPool.COMMA));
+        String columnStr=null;
+        if(select){
+            if(count){
+                columnStr="count(1)";
+            }else{
+                List<EntityField> entityFieldList = entityInfo.getEntityFields();
+                columnStr= entityFieldList.stream().filter(EntityField::getIsColumn).map(EntityField::getColumnName)
+                        .collect(Collectors.joining(StringPool.COMMA));
+            }
+        }
         String idName = entityInfo.getIdColumnName();
         Assert.notNull(idName,"@Id must not null");
-        return UtilAll.UString.format("select {} from {} where  {} = ?", columnStr,  entityInfo.getTableName(),
+        String sql="delete";
+        if(select){
+            sql="select "+columnStr;
+        }
+        sql= sql+UtilAll.UString.format(
+                " from {} where  {} = ?",   entityInfo.getTableName(),
                 idName);
+        SqlWithParam sqlWithParam = new SqlWithParam();
+        sqlWithParam.setParams(new Object[]{id});
+        sqlWithParam.setSql(sql);
+        return sqlWithParam;
+    }
+    private <ID> SqlWithParam genIdInQuery(boolean select, Class<?> type, List<ID> ids){
+        if(null==ids||ids.isEmpty()){
+            throw new JdbcMybatisRuntimeException("ids must not empty");
+        }
+        initEntityInfo(type);
+        EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
+        String columnStr=null;
+        if(select){
+            List<EntityField> entityFieldList = entityInfo.getEntityFields();
+            columnStr= entityFieldList.stream().filter(EntityField::getIsColumn).map(EntityField::getColumnName)
+                    .collect(Collectors.joining(StringPool.COMMA));
+        }
+        String idName = entityInfo.getIdColumnName();
+        Assert.notNull(idName,"@Id must not null");
+        StringBuilder idParam=new StringBuilder("(");
+        for (ID id : ids) {
+            idParam.append("?").append(",");
+        }
+        String sql="delete";
+        if(select){
+            sql="select "+columnStr;
+        }
+        sql= sql+UtilAll.UString.format(
+                " from {} where  {} in {}",  entityInfo.getTableName(),
+                idName,idParam.substring(0,idParam.length()-1)+")");
+        SqlWithParam sqlWithParam = new SqlWithParam();
+        sqlWithParam.setParams(ids.toArray());
+        sqlWithParam.setSql(sql);
+        return sqlWithParam;
     }
 
     public final <T> List<T> queryList(DataSourceWrapper dataSourceWrapper, Class<T> type, String sqlId,
@@ -481,7 +547,11 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
             }
             Class<?> entityType= (Class<?>) parameter.get(ConstantJdbc.EntityType);
             parameter.remove(ConstantJdbc.EntityType);
-            return NameQueryUtil.nameSql(sqlId,entityType,parameter);
+            SqlWithParam sqlWithParam= NameQueryUtil.nameSql(sqlId,entityType,parameter);
+            if(null==sqlWithParam){
+                throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,please define in the markdown",sqlId);
+            }
+            return sqlWithParam;
         }
         return MybatisTpl.generate(sqlId,parameter, getDialect(dataSourceWrapper));
     }
@@ -660,6 +730,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.write);
         return jdbcTemplate.batchUpdate(sql, batchArgs);
     }
+
 
     private void logSql(Constants.EnumRWType enumRWType, String sql, Object... params) {
         if (log.isDebugEnabled()) {

@@ -1,18 +1,18 @@
+server:
+  port: 9002
+
+jdbc:
+ mybatis:
+  isReadAllScopeOpen: false
+  logRead: true
+  logWrite: true
+  logFullSql: true
+
 spring:
-  profiles:
-    active: h2
-  application:
-    name: demo
   datasource:
     hikari:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://127.0.0.1:3306/jdbc_test?autoReconnect=true&rewriteBatchedStatements=true&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=CTT
       username: root
       password: 123456
-      maximum-pool-size: 10
-
-
-
-
-
-
+#

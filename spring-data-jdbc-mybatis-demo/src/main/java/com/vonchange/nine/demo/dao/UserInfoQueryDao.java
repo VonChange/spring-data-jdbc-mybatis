@@ -9,7 +9,7 @@ import java.util.List;
 
 
 
-public interface UserQueryRepository extends QueryRepository {
+public interface UserInfoQueryDao extends QueryRepository {
 
   List<UserInfoDO> findList(@Param("userName") String userName,
                             @Param("createTime") Date createTime);

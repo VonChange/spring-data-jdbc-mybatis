@@ -18,10 +18,9 @@ package com.vonchange.jdbc.mybatis.core.support;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
-
 import java.util.List;
 
-public class SimpleJdbcRepository<T, ID> implements CrudRepository<T, ID> {
+public class SimpleJdbcRepository<T, ID> implements CrudJdbcRepository<T, ID> {
 
 	private final JdbcRepository entityOperations;
 	private final ConfigInfo configInfo;
@@ -37,13 +36,17 @@ public class SimpleJdbcRepository<T, ID> implements CrudRepository<T, ID> {
 	 * @see org.springframework.data.repository.CrudRepository#save(S)
 	 */
 	@Override
-	public <S extends T> int insert(S instance) {
+	public <S extends T> int save(S instance) {
 		return entityOperations.insert(configInfo.getDataSourceWrapper(), instance);
 	}
 
 	@Override
-	public <S extends T> int insertBatch(List<S> entitys, int batchSize) {
-		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entitys, batchSize);
+	public <S extends T> int saveAll(List<S> entities, int batchSize) {
+		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entities, true,batchSize);
+	}
+	@Override
+	public <S extends T> int saveAllNotNull(List<S> entities, int batchSize) {
+		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entities,false, batchSize);
 	}
 
 	@Override
@@ -60,6 +63,26 @@ public class SimpleJdbcRepository<T, ID> implements CrudRepository<T, ID> {
 	@SuppressWarnings("unchecked")
 	public T findById(ID id) {
 		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), id);
+	}
+
+	@Override
+	public  List<T> findAllById(List<ID> ids) {
+		return (List<T>) entityOperations.queryByIds(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), ids);
+	}
+
+	@Override
+	public boolean existsById(ID id) {
+		return  entityOperations.existsById(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), id);
+	}
+
+	@Override
+	public int deleteById(ID id) {
+		return entityOperations.deleteById(configInfo.getDataSourceWrapper(),  configInfo.getDomainType(), id);
+	}
+
+	@Override
+	public int deleteAllById(List<? extends ID> ids) {
+		return entityOperations.deleteByIds(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), ids);
 	}
 
 }

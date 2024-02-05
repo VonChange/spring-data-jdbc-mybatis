@@ -27,11 +27,12 @@ SELECT  [@id column] FROM user_base
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## Features
+### extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
 ### not support @Query or QueryDSL, sql must be written in markdown
 ### batch update
 > need rewriteBatchedStatements=true&allowMultiQueries=true
 ```java
-public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
+public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
     @BatchUpdate
     int batchUpdate(List<UserInfoDO> list);
 }
@@ -42,7 +43,7 @@ public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
 
 
 ```java
-public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
+public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
     List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
     List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
 }

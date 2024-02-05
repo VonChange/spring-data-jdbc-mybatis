@@ -2,7 +2,8 @@ server:
   port: 9001
 
 
-jdbc-mybatis:
+jdbc:
+ mybatis:
   dialect: com.vonchange.mybatis.dialect.H2Dialect
   logRead: true
   logWrite: true

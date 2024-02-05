@@ -19,6 +19,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interface for generic CRUD operations on a repository for a specific type.
@@ -27,40 +28,39 @@ import java.util.List;
  * @author Eberhard Wolff
  */
 @NoRepositoryBean
-public interface CrudRepository<T, ID> extends Repository<T, ID> {
+public interface CrudJdbcRepository<T, ID> extends Repository<T, ID> {
+
+	<S extends T> int save(S entity);
 
 	/**
-	 * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the
-	 * entity instance completely.
-	 *
-	 * @param entity must not be {@literal null}.
-	 * @return the saved entity; will never be {@literal null}.
-	 * @throws IllegalArgumentException in case the given {@literal entity} is {@literal null}.
+	 * saveAll null will save
+	 * @param entities
+	 * @param batchSize
+	 * @return
+	 * @param <S>
 	 */
-	<S extends T> int insert(S entity);
+	<S extends T> int saveAll(List<S> entities,int batchSize);
 
-	<S extends T> int insertBatch(List<S> entitys,int batchSize);
+	<S extends T> int saveAllNotNull(List<S> entities,int batchSize);
 
 	/**
-	 * 默认只更新不为空的字段
+	 * update not null fields
 	 * @param entity
 	 * @param <S>
 	 */
 	<S extends T> int  update(S entity);
 
 	/**
-	 * 更新所有字段
+	 *  update all fields
 	 * @param entity
 	 * @param <S>
 	 */
 	<S extends T> int  updateAllField(S entity);
-	/**
-	 * Retrieves an entity by its id.
-	 *
-	 * @param id must not be {@literal null}.
-	 * @return the entity with the given id or {@literal Optional#empty()} if none found.
-	 * @throws IllegalArgumentException if {@literal id} is {@literal null}.
-	 */
+
 	T findById(ID id);
+	List<T> findAllById(List<ID> ids);
+	boolean existsById(ID id);
+	int deleteById(ID id);
+	int deleteAllById(List<? extends ID> ids);
 
 }

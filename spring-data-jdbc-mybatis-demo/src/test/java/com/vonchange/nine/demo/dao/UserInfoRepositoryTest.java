@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -39,34 +40,12 @@ public class UserInfoRepositoryTest {
 
     @Resource
     private UserInfoRepository userInfoRepository;
+
+
     @Test
-    public  void methodSql() {
-      SqlWithParam sqlWithParam = NameQueryUtil.nameSql(
-              "findListByUserCodeIn",UserInfoDO.class,new MyHashMap()
-                      .set("233",0).set("2",9));
-      //BetweenOrderByCreateTimeDesc
-      //LessThanAndUserNameIs
-        System.out.println(sqlWithParam.getSql());
-    }
-    @Test
-    public void findListByUserCodeIn() {
-        List<UserInfoDO> userInfoDOList = userInfoRepository.findUserMethodByUserCodeIn(
+    public void findByUserCodes() {
+        List<UserInfoDO> userInfoDOList = userInfoRepository.findByUserCodes(
                 Arrays.asList("u001","u002"));
-        userInfoDOList.forEach(UserInfoDO -> {
-            log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
-        });
-    }
-    @Test
-    public void findByUserCodeIn() {
-        List<UserInfoDO> userInfoDOList = userInfoRepository.findByUserCodeIn(
-                Arrays.asList("u001","u002"));
-        userInfoDOList.forEach(UserInfoDO -> {
-            log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
-        });
-    }
-    @Test
-    public void findListByUserCode() {
-        List<UserInfoDO> userInfoDOList = userInfoRepository.findListByUserCode("u001");
         userInfoDOList.forEach(UserInfoDO -> {
             log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
         });
@@ -80,17 +59,18 @@ public class UserInfoRepositoryTest {
 
     @Test
     public void findUserList() {
-        List<UserInfoDO> UserInfoDOList = userInfoRepository.findUserList("change",LocalDateTime.now().plusHours(1L),
-                0);
-        UserInfoDOList.forEach(UserInfoDO -> {
-            log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
+        List<UserInfoDO> userInfoDOList = userInfoRepository.findUserList(Arrays.asList("u000","u001","u002"),
+                "ch",null);//LocalDateTime.now().plusHours(1L)
+        userInfoDOList.forEach(userInfoDO -> {
+            log.info("\nUserInfoDOList {}",JsonUtil.toJson(userInfoDO));
         });
     }
     @Test
     public void findUserPage() {
         Pageable pageable = PageRequest.of(0,10);
-        //PageRequest.of(0,3);
-        Page<UserInfoDO> userInfoDOPage = userInfoRepository.findUserList(pageable,"change",LocalDateTime.now().plusHours(1L),0);
+        Page<UserInfoDO> userInfoDOPage = userInfoRepository
+                .findUserList(pageable,Arrays.asList("u000","u001","u002"),
+                        "ch",LocalDateTime.now().plusHours(1L));
         log.info("\n {}",userInfoDOPage.getTotalElements());
         userInfoDOPage.getContent().forEach(UserInfoDO -> {
             log.info("\n {}",UserInfoDO.toString());
@@ -101,48 +81,18 @@ public class UserInfoRepositoryTest {
     public void findUserBySearchParam() {
         SearchParam searchParam = new SearchParam();
         searchParam.setUserName("chang");
+        //searchParam.setUserCodes(Arrays.asList("u000","u001","u002"));
+        searchParam.setCreateTime(toDate(LocalDateTime.now().plusHours(1L)));
         List<UserInfoDO> userInfoDOList = userInfoRepository.findUserBySearchParam(searchParam);
-        userInfoDOList.forEach(UserInfoDO -> {
-            log.info("\n {}",userInfoDOList);
+        userInfoDOList.forEach(userInfoDO -> {
+            log.info("\n {}",JsonUtil.toJson(userInfoDO));
         });
+    }
+    public static Date toDate(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
 
-
-    @Test
-    public void findById() {
-        UserInfoDO UserInfoDO = userInfoRepository.findById(1L);
-        log.info("\n UserInfoDO {}",UserInfoDO);
-    }
-
-    @Test
-    public void findByXX() {
-        List<UserInfoDO> UserInfoDOList = userInfoRepository.findByUserName("test");
-        UserInfoDOList.forEach(UserInfoDO -> {
-            log.info("\n UserInfoDO {}",UserInfoDO);
-        });
-
-    }
-    @Test
-    public void findLongList() {
-        List<Long> idList = userInfoRepository.findLongList();
-        idList.forEach(id -> {
-            log.info("\n id {}",id);
-        });
-
-    }
-    @Test
-    public void findListByIds() {
-        List<UserInfoDO> UserInfoDOListQ = userInfoRepository.findListByIds("test",null,Arrays.asList(1L,2L));
-        UserInfoDOListQ.forEach(UserInfoDO -> {
-            log.info("\n {}",UserInfoDO.toString());
-        });
-        List<UserInfoDO> UserInfoDOList = userInfoRepository.findListByIds("test",new Date(), Arrays.asList(1L,2L));
-        UserInfoDOList.forEach(UserInfoDO -> {
-            log.info("\n {}",UserInfoDO.toString());
-        });
-
-    }
 
     @Test
     @Transactional
@@ -150,134 +100,41 @@ public class UserInfoRepositoryTest {
     public void updateIsDelete() {
         int result = userInfoRepository.updateIsDelete(1,1L);
         log.info("result {}",result);
-    }
-    @Test
-    public void insert() throws IOException {
-        UserInfoDO UserInfoDO = new UserInfoDO();
-        //UserInfoDO.setId(3L);
-        UserInfoDO.setUserName("test");
-        UserInfoDO.setUserCode(UUID.randomUUID().toString());
-
-        //UserInfoDO.setHeadImageData(FileUtils.readFileToByteArray(new File("/Users/vonchange/work/docment/cat.jpg")));
-       // UserInfoDO.setCode("1");
-        //UserInfoDO.setCreateTime(LocalDateTime.now().plusHours(1L));
-        int result  = userInfoRepository.insert(UserInfoDO);
-        log.info("\nresult {} {} ",result,UserInfoDO.toString());
-        UserInfoDO UserInfoDOFind =userInfoRepository.findById(UserInfoDO.getId());
-        //FileUtils.writeByteArrayToFile(new File("/Users/vonchange/work/docment/catcc.jpg"),UserInfoDOFind.getHeadImageData());
-        log.info("\nUserInfoDOFind {}",UserInfoDOFind.toString());
+        UserInfoDO userInfoDO= userInfoRepository.findById(1L);
+        log.info("\nuserInfoDO {}",JsonUtil.toJson(userInfoDO));
     }
 
-
-
-    @Test
-    //@Transactional
-    //@Rollback
-    public void update() {
-        UserInfoDO UserInfoDO = new UserInfoDO();
-        UserInfoDO.setUserName("test_ss");
-        UserInfoDO.setId(1L);
-        int result  = userInfoRepository.update(UserInfoDO);
-        log.info("\nresult {}",result);
-        //UserInfoDO UserInfoDOFind =userInfoRepository.findById(1L);
-        //log.info("\nUserInfoDOFind {}",UserInfoDOFind.toString());
-    }
-
-    @Test
-    public void updateAllField() {
-        UserInfoDO UserInfoDO = new UserInfoDO();
-        UserInfoDO.setUserName(null);
-        UserInfoDO.setId(1L);
-        int result  = userInfoRepository.updateAllField(UserInfoDO);
-        log.info("\nresult {}",result);
-    }
-
-    //13
-
-    /**
-     * 批量插入
-     */
-    @Test
-    @Transactional
-    public void insertBatch() {
-      /*  int result  = userInfoRepository.update(new UserInfoDO(1L,"testxx","",1,null,null));
-        log.info("result {}",result);
-        long start = System.currentTimeMillis();
-        List<UserInfoDO> list = new ArrayList<>();
-        for (int i=0;i<10000;i++) {
-            list.add(new UserInfoDO(null,"三e"+i,"1100"+i,null, LocalDateTime.now(),null));
-        }
-        int resultx = userInfoRepository.insertBatch(list,5000);
-        log.info("id {}",list.get(0).getId());
-        log.info("result {}",resultx);
-        log.info("time {}",System.currentTimeMillis()-start);//1554*/
-    }
-
-
-    @Test
-    //@Transactional
-    //@Rollback
-    public void updateBatchBySqlId() {
-       /* int result  = userInfoRepository.update(new UserInfoDO(1L,"testxx","",1,null,null));
-        log.info("result {}",result);
-        long start = System.currentTimeMillis();
-        List<UserInfoDO> list = new ArrayList<>();
-        for (int i=0;i<2;i++) {
-            list.add(new UserInfoDO(1L+i,"RRR"+i,null,null,null,new Date()));
-        }
-        int resultx  = userInfoRepository.batchUpdate(list);
-        log.info("resultx {}",resultx);
-        log.info("time {}",System.currentTimeMillis()-start);*/
-    }
 
     @Test
     @Transactional
-    //@Rollback
-    public void insertBatchNormal() {
-     /*   int result  = userInfoRepository.update(new UserInfoDO(1L,"testxx","",1,null,null));
-        log.info("result {}",result);
+    public void batchUpdate() {
         long start = System.currentTimeMillis();
         List<UserInfoDO> list = new ArrayList<>();
         for (int i=0;i<10000;i++) {
-            list.add(new UserInfoDO(null,"三e"+i,"1100"+i,null, LocalDateTime.now(),null));
+            UserInfoDO userInfoDO = UserInfoDO.builder().id(0L+i).userName("name:"+i)
+                    .build();
+            list.add(userInfoDO);
         }
-        int resultx  = userInfoRepository.insertBatchNormal(list);
-        System.out.println(list.get(0).getId());
-        log.info("resultx {}",resultx);
-        log.info("time {}",System.currentTimeMillis()-start);//908*/
+        int resultNum  = userInfoRepository.batchUpdate(list);
+        log.info("resultNum {}",resultNum);
+        log.info("time {}",System.currentTimeMillis()-start);
+        List<UserInfoDO> userInfoDOList = userInfoRepository.findAllById(Arrays.asList(1L,2L));
+        log.info("userInfoDOList {}",JsonUtil.toJson(userInfoDOList));
     }
-
-    @Test
-    @Transactional
-    //@Rollback
-    public void bachUpdate() {
-       /* int result  = userInfoRepository.update(new UserInfoDO(1L,"testxx","",1,null,null));
-        log.info("result {}",result);
-        long start = System.currentTimeMillis();
-        List<UserInfoDO> list = new ArrayList<>();
-        for (int i=0;i<10000;i++) {
-            list.add(new UserInfoDO(null,"三e"+i,"1100"+i,null, LocalDateTime.now(),null));
-        }
-        int resultx  = userInfoRepository.batchInsert(list);
-        System.out.println(list.get(0).getId());
-        log.info("resultx {}",resultx);
-        log.info("time {}",System.currentTimeMillis()-start);//563*/
-    }
-
 
     @Test
     @Transactional
     public void findBigData() {
-
         long start = System.currentTimeMillis();
         List<UserInfoDO> list = new ArrayList<>();
         for (int i=0;i<10006;i++) {
-            list.add(null);
-            //new UserInfoDO(null,"三e"+i,"1100"+i,null, LocalDateTime.now(),null)
+            UserInfoDO userInfoDO = UserInfoDO.builder().userCode("code:"+i).userName("name:"+i)
+                    .build();
+            userInfoDO.setCreateTime(LocalDateTime.now());
+            list.add(userInfoDO);
         }
-        int resultx = userInfoRepository.insertBatch(list,5000);
-        log.info("id {}",list.get(0).getId());
-        log.info("result {}",resultx);
+        int resultNum = userInfoRepository.saveAllNotNull(list,1000);
+        log.info("resultNum {}",resultNum);
         log.info("time {}",System.currentTimeMillis()-start);//1554
         AbstractPageWork<UserInfoDO> abstractPageWork = new AbstractPageWork<UserInfoDO>() {
             @Override
@@ -293,11 +150,9 @@ public class UserInfoRepositoryTest {
                 return 500;
             }
         };
-       userInfoRepository.findBigData(abstractPageWork,"三");
+       userInfoRepository.findBigData(abstractPageWork,"name");
         log.info("{} {} {}",abstractPageWork.getSize(),abstractPageWork.getTotalPages(),abstractPageWork.getTotalElements());
     }
 
-    @Test
-    void testFindListByUserCode() {
-    }
+
 }
