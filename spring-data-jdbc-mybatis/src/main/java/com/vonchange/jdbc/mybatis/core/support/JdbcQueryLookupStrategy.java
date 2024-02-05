@@ -15,11 +15,14 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import com.vonchange.common.util.StringPool;
+import com.vonchange.common.util.UtilAll;
+import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
-import com.vonchange.jdbc.mybatis.core.query.SqlPackage;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
+import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
@@ -28,6 +31,7 @@ import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.util.Assert;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 /**
@@ -62,19 +66,17 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 	@Override
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata repositoryMetadata,
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
-        String interfaceName =repositoryMetadata.getRepositoryInterface().getSimpleName();
-		SqlPackage sqlPackage=	repositoryMetadata.getRepositoryInterface().getAnnotation(SqlPackage.class);
+		String configLoc = JdbcMybatisUtil.interfaceNameMd(repositoryMetadata.getRepositoryInterface());
 		DataSourceKey dataSourceKey=	repositoryMetadata.getRepositoryInterface().getAnnotation(DataSourceKey.class);
-		String configLoc=null!=sqlPackage?sqlPackage.value()+"."+interfaceName:"sql."+interfaceName;
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		JdbcQueryMethod queryMethod = new JdbcQueryMethod(method, repositoryMetadata, projectionFactory);
 		ConfigInfo configInfo= new ConfigInfo();
 		configInfo.setMethod(method.getName());
 		configInfo.setLocation(configLoc);
-		configInfo.setRepositoryName(interfaceName);
-		configInfo.setType(repositoryMetadata.getDomainType());
+		configInfo.setDomainType(repositoryMetadata.getDomainType());
 		configInfo.setDataSourceWrapper(null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null);
 		return new JdbcRepositoryQuery(queryMethod, operations,configInfo);
 	}
+
 
 }

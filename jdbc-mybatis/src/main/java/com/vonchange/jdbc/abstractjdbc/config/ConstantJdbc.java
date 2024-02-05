@@ -7,6 +7,8 @@ public class ConstantJdbc {
     private ConstantJdbc() { throw new IllegalStateException("Utility class");}
 
     public  static final String DataSourceDefault= "dataSource";
+    public  static final String EntityType= "entityType";
+    public  static final String SqlPackage= "sql";
     public static  class  DataSource{
         public static final String DEFAULT = "dataSource";
         public static final String FLAG = "@ds:";

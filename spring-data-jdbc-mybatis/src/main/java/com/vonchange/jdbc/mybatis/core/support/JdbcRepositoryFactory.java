@@ -18,11 +18,12 @@ package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
+import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
-import com.vonchange.jdbc.mybatis.core.query.SqlPackage;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 
+import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,21 +74,23 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
 		Class<?> domainType =repositoryInformation.getDomainType();
-		if(!domainType.equals(BaseModel.class)){
+		EntityUtil.initEntityInfo(domainType);
+		/*if(!domainType.equals(BaseModel.class)){//QueryRepository
 			EntityUtil.initEntityInfo(domainType);
-		}
-		String interfaceName =repositoryInformation.getRepositoryInterface().getSimpleName();
-		SqlPackage sqlPackage=	repositoryInformation.getRepositoryInterface().getAnnotation(SqlPackage.class);
-		String configLoc=null!=sqlPackage?sqlPackage.value():"sql";
+		}*/
+		String mdFile= JdbcMybatisUtil.interfaceNameMd(repositoryInformation.getRepositoryInterface());
 		//初始化markdown数据
-		MarkdownUtil.readMarkdownFile(configLoc+ StringPool.DOT+interfaceName,false);
+		if(null!=mdFile){
+			MarkdownUtil.readMarkdownFile(mdFile,false);
+		}
 		DataSourceKey dataSourceKey=repositoryInformation.getRepositoryInterface().getAnnotation(DataSourceKey.class);
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
 		ConfigInfo configInfo= new ConfigInfo();
-		configInfo.setType(repositoryInformation.getDomainType());
+		configInfo.setDomainType(repositoryInformation.getDomainType());
 		configInfo.setDataSourceWrapper(null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null);
 		return new SimpleJdbcRepository<>(operations,configInfo);
 	}
+
 
 	/*
 	 * (non-Javadoc)

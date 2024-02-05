@@ -23,6 +23,7 @@ import com.vonchange.jdbc.abstractjdbc.handler.ScalarHandler;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.abstractjdbc.template.MyJdbcTemplate;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
+import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.abstractjdbc.util.sql.SqlFill;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
@@ -325,8 +326,8 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public <T> T queryOne(DataSourceWrapper dataSourceWrapper, Class<T> type, String sqlId,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParmeter = getSqlParameter(dataSourceWrapper,sqlId, parameter);
-        List<T> list = queryList(dataSourceWrapper, type, sqlParmeter.getSql(), sqlParmeter.getParams());
+        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper,sqlId, parameter);
+        List<T> list = queryList(dataSourceWrapper, type, sqlParameter.getSql(), sqlParameter.getParams());
         if (list.isEmpty()) {
             return null;
         }
@@ -473,6 +474,15 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     private SqlWithParam getSqlParameter(DataSourceWrapper dataSourceWrapper,String sqlId,
             Map<String, Object> parameter) {
+        if(!sqlId.contains(StringPool.DOT)){
+            //namedQuery
+            if(!parameter.containsKey(ConstantJdbc.EntityType)){
+                throw new JdbcMybatisRuntimeException("This method is not supported for converting to SQL");
+            }
+            Class<?> entityType= (Class<?>) parameter.get(ConstantJdbc.EntityType);
+            parameter.remove(ConstantJdbc.EntityType);
+            return NameQueryUtil.nameSql(sqlId,entityType,parameter);
+        }
         return MybatisTpl.generate(sqlId,parameter, getDialect(dataSourceWrapper));
     }
 

@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URL;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +76,28 @@ public class UtilAll {
             else
                 return "";
         }
-        //classpath:com/test/a.md
+        private static Map<String,Boolean> resourceExistMap = new ConcurrentHashMap<>();
+        public static boolean isClassResourceExist(String location){
+            if(resourceExistMap.containsKey(location)){
+                return resourceExistMap.get(location);
+            }
+            ClassLoader classLoader = getDefaultClassLoader();
+            if(null==classLoader){
+                return false;
+            }
+            URL url=  classLoader.getResource(location);
+            boolean flag = null!=url;
+            if(flag){
+                resourceExistMap.put(location,true);
+            }
+            return flag;
+        }
+        public static String classPath(String id) {
+            if(null==id){
+                return null;
+            }
+            return id.replaceAll("\\.", URLSEPARATOR);
+        }
         public static InputStream getClassResource(String location){
             //PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
             //return patternResolver.getResource(location);
@@ -192,6 +215,16 @@ public class UtilAll {
             String uuid = UUID.randomUUID().toString();
             return remove(uuid, "-");
         }
+        public static String substringBefore(final String str, final String separator) {
+            if (isEmpty(str) || isEmpty(separator)) {
+                return str;
+            }
+            final int pos = str.indexOf(separator);
+            if (pos == -1) {
+                return str;
+            }
+            return str.substring(0, pos);
+        }
         public static String substringBeforeLast(final String str, final String separator) {
             if (isEmpty(str) || isEmpty(separator)) {
                 return str;
@@ -202,7 +235,19 @@ public class UtilAll {
             }
             return str.substring(0, pos);
         }
-
+        public static String substringAfter(final String str, final String separator) {
+            if (isEmpty(str)) {
+                return str;
+            }
+            if (isEmpty(separator)) {
+                return EMPTY;
+            }
+            final int pos = str.indexOf(separator);
+            if (pos == -1 || pos == str.length() - separator.length()) {
+                return EMPTY;
+            }
+            return str.substring(pos + separator.length());
+        }
         public static String substringAfterLast(final String str, final String separator) {
             if (isEmpty(str)) {
                 return str;

@@ -21,13 +21,13 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
     private static final Logger log = LoggerFactory.getLogger(JdbcRepositorySpringImpl.class);
     private DataSource[] dataSources;
     private DataSource dataSource;
-    @Value("${jdbc-mybatis.logWrite:false}")
+    @Value("${jdbc.mybatis.logWrite:false}")
     private boolean logWrite;
-    @Value("${jdbc-mybatis.logRead:false}")
+    @Value("${jdbc.mybatis.logRead:false}")
     private boolean logRead;
-    @Value("${jdbc-mybatis.logFullSql:false}")
+    @Value("${jdbc.mybatis.logFullSql:false}")
     private boolean logFullSql;
-    @Value("${jdbc-mybatis.dialect:}")
+    @Value("${jdbc.mybatis.dialect:}")
     private String dialect;
 
     @Autowired
@@ -38,6 +38,7 @@ public class JdbcRepositorySpringImpl extends AbstractJdbcCore {
     public JdbcRepositorySpringImpl(DataSource... dataSources) {
         this.dataSources = dataSources;
     }
+
 
     @Override
     protected Dialect getDefaultDialect() {

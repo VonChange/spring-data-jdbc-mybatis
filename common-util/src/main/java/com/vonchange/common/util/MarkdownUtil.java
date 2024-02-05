@@ -23,14 +23,9 @@ public class MarkdownUtil {
     // fileId mdId-> content
     private   static  Map<String,Map<String,String>> markdownDataCache=new ConcurrentHashMap<>(256);
     private static final   String  URLSEPARATOR="/";
-    public static String classPath(String id) {
-        if(null==id){
-            return null;
-        }
-        return id.replaceAll("\\.", URLSEPARATOR);
-    }
+
     public     static synchronized   Map<String,String> readMarkdownFile(String id,boolean notFoundError){
-        String path= classPath(id);
+        String path= UtilAll.UFile.classPath(id);
         InputStream inputStream = UtilAll.UFile.getClassResource(path+".md");
         if(null==inputStream){
              if(!notFoundError){
@@ -138,10 +133,17 @@ public class MarkdownUtil {
         return getIdSpinner(contentMap,content);
     }
     public static String  getContent(String id,boolean notFoundThrowError) {
+        Assert.notNull(id,"id can not null");
+        if(!id.contains(StringPool.DOT)){
+            if(!notFoundThrowError){
+                return null;
+            }
+            throw new UtilException(EnumUtilErrorCode.MarkdownIdNotFound,id+" not found");
+        }
         String filePath= UtilAll.UString.substringBeforeLast(id, StringPool.DOT);
         String codeId= id.substring(filePath.length()+1);
         Map<String,String> contentMap= loadMdData(filePath);
-        if(null==contentMap.get(codeId)){
+        if(!contentMap.containsKey(codeId)){
             if(!notFoundThrowError){
                 return null;
             }

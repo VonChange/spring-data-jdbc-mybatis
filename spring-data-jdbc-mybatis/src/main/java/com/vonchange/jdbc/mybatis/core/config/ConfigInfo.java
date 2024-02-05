@@ -5,7 +5,7 @@ import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 public class ConfigInfo {
     private String location;
     private String method;
-    private Class<?> type;
+    private Class<?> domainType;
     private String repositoryName;
     private DataSourceWrapper dataSourceWrapper;
 
@@ -42,11 +42,11 @@ public class ConfigInfo {
         this.method = method;
     }
 
-    public Class<?> getType() {
-        return type;
+    public Class<?> getDomainType() {
+        return domainType;
     }
 
-    public void setType(Class<?> type) {
-        this.type = type;
+    public void setDomainType(Class<?> domainType) {
+        this.domainType = domainType;
     }
 }

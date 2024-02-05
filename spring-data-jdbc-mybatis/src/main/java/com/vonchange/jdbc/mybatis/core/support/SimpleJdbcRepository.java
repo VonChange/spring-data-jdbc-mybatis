@@ -59,7 +59,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudRepository<T, ID> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public T findById(ID id) {
-		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(), configInfo.getType(), id);
+		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), id);
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.vonchange.nine.demo.dao;
 
+import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
+import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
 import com.vonchange.nine.demo.util.JsonUtil;
@@ -36,7 +39,31 @@ public class UserInfoRepositoryTest {
 
     @Resource
     private UserInfoRepository userInfoRepository;
-
+    @Test
+    public  void methodSql() {
+      SqlWithParam sqlWithParam = NameQueryUtil.nameSql(
+              "findListByUserCodeIn",UserInfoDO.class,new MyHashMap()
+                      .set("233",0).set("2",9));
+      //BetweenOrderByCreateTimeDesc
+      //LessThanAndUserNameIs
+        System.out.println(sqlWithParam.getSql());
+    }
+    @Test
+    public void findListByUserCodeIn() {
+        List<UserInfoDO> userInfoDOList = userInfoRepository.findUserMethodByUserCodeIn(
+                Arrays.asList("u001","u002"));
+        userInfoDOList.forEach(UserInfoDO -> {
+            log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
+        });
+    }
+    @Test
+    public void findByUserCodeIn() {
+        List<UserInfoDO> userInfoDOList = userInfoRepository.findByUserCodeIn(
+                Arrays.asList("u001","u002"));
+        userInfoDOList.forEach(UserInfoDO -> {
+            log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
+        });
+    }
     @Test
     public void findListByUserCode() {
         List<UserInfoDO> userInfoDOList = userInfoRepository.findListByUserCode("u001");
@@ -130,7 +157,6 @@ public class UserInfoRepositoryTest {
         //UserInfoDO.setId(3L);
         UserInfoDO.setUserName("test");
         UserInfoDO.setUserCode(UUID.randomUUID().toString());
-        UserInfoDO.setStatus(1);
 
         //UserInfoDO.setHeadImageData(FileUtils.readFileToByteArray(new File("/Users/vonchange/work/docment/cat.jpg")));
        // UserInfoDO.setCode("1");
@@ -269,5 +295,9 @@ public class UserInfoRepositoryTest {
         };
        userInfoRepository.findBigData(abstractPageWork,"三");
         log.info("{} {} {}",abstractPageWork.getSize(),abstractPageWork.getTotalPages(),abstractPageWork.getTotalElements());
+    }
+
+    @Test
+    void testFindListByUserCode() {
     }
 }

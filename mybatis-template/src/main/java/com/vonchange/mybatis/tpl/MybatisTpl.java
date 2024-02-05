@@ -44,72 +44,69 @@ public class MybatisTpl {
         }
          sqlInXml= DynamicSql.dynamicSql(sqlInXml,dialect);
          sqlInXml=sqlInXml.trim();
-         if(sqlInXml.contains("</")){
-             sqlInXml="<script>"+sqlInXml+"</script>";
-             sqlInXml =  UtilAll.UString.replaceEach(sqlInXml,new String[]{" > "," < "," >= "," <= "," <> "},
-                     new String[]{" &gt; "," &lt; "," &gt;= "," &lt;= "," &lt;&gt; "});
-         }
-         if(null==parameter){
-             parameter=new LinkedHashMap<>();
-         }
-         LanguageDriver languageDriver = new XMLLanguageDriver();
-         Configuration configuration= new Configuration();
-         Properties properties= new Properties();
-         for (Map.Entry<String,Object> entry: parameter.entrySet()) {
-             if(null==entry.getValue()){
-                 continue;
-             }
-             properties.put(entry.getKey(),entry.getValue());
-         }
-         configuration.setVariables(properties);
-         BoundSql boundSql = null;
-         try {
-             SqlSource sqlSource = languageDriver.createSqlSource(configuration, sqlInXml, Map.class);
-              boundSql=sqlSource.getBoundSql(parameter);
-         }catch (Exception e){
-             logger.error("解析sqlxml出错",e);
-             logger.error("sqlxml:{}",sqlInXml);
-             sqlWithParam.setSql(null);
-             sqlWithParam.setParams(null);
-             return  sqlWithParam;
-         }
-        /* if(boundSql.getSql().contains("#{")){
-             return generate(boundSql.getSql(),parameter,dialect);
-         }*/
-         List<ParameterMapping> list= boundSql.getParameterMappings();
-         List<Object> argList= new ArrayList<>();
-         List<String> propertyNames = new ArrayList<>();
-         if(null!=list&&!list.isEmpty()){
-             Map<String,Object> param =new LinkedHashMap<>();
-             if(boundSql.getParameterObject() instanceof  Map){
-                       param = (Map<String, Object>) boundSql.getParameterObject();
-             }
-             for (ParameterMapping parameterMapping: list) {
-                 Object value;
-
-                 String propertyName= parameterMapping.getProperty();
-                 if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
-                     value = boundSql.getAdditionalParameter(propertyName);
-                 } else if (param == null) {
-                     value = null;
-                 }else {
-                     MetaObject metaObject = configuration.newMetaObject(param);
-                     if(!metaObject.hasGetter(propertyName)){
-                         throw  new JdbcMybatisRuntimeException("{} placeholder #{{}}  not found",sqlId,propertyName);
-                     }
-                     value = metaObject.getValue(propertyName);
-                 }
-                 argList.add(value);
-                 propertyNames.add(propertyName);
-             }
-         }
-         Object[] args=argList.toArray();
-         String sql=boundSql.getSql();
-         sqlWithParam.setSql(sql);
-         sqlWithParam.setParams(args);
-         sqlWithParam.setPropertyNames(propertyNames);
-         return sqlWithParam;
+         return generate(sqlId,sqlInXml,parameter);
      }
+    public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter){
+        if(sqlInXml.contains("</")){
+            sqlInXml="<script>"+sqlInXml+"</script>";
+            sqlInXml =  UtilAll.UString.replaceEach(sqlInXml,new String[]{" > "," < "," >= "," <= "," <> "},
+                    new String[]{" &gt; "," &lt; "," &gt;= "," &lt;= "," &lt;&gt; "});
+        }
+        SqlWithParam sqlWithParam= new SqlWithParam();
+        if(null==parameter){
+            parameter=new LinkedHashMap<>();
+        }
+        LanguageDriver languageDriver = new XMLLanguageDriver();
+        Configuration configuration= new Configuration();
+        Properties properties= new Properties();
+        for (Map.Entry<String,Object> entry: parameter.entrySet()) {
+            if(null==entry.getValue()){
+                continue;
+            }
+            properties.put(entry.getKey(),entry.getValue());
+        }
+        configuration.setVariables(properties);
+        SqlSource sqlSource = languageDriver.createSqlSource(configuration, sqlInXml, Map.class);
+        BoundSql boundSql=null;
+        try{
+             boundSql=sqlSource.getBoundSql(parameter);
+        }catch (Exception e){
+            throw new JdbcMybatisRuntimeException(e,"{} error builder mybatis dynamic sql ",sqlId);
+        }
+        List<ParameterMapping> list= boundSql.getParameterMappings();
+        List<Object> argList= new ArrayList<>();
+        List<String> propertyNames = new ArrayList<>();
+        if(null!=list&&!list.isEmpty()){
+            Map<String,Object> param =new LinkedHashMap<>();
+            if(boundSql.getParameterObject() instanceof  Map){
+                param = (Map<String, Object>) boundSql.getParameterObject();
+            }
+            for (ParameterMapping parameterMapping: list) {
+                Object value;
+
+                String propertyName= parameterMapping.getProperty();
+                if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+                    value = boundSql.getAdditionalParameter(propertyName);
+                } else if (param == null) {
+                    value = null;
+                }else {
+                    MetaObject metaObject = configuration.newMetaObject(param);
+                    if(!metaObject.hasGetter(propertyName)){
+                        throw  new JdbcMybatisRuntimeException("{} placeholder #{{}}  not found",sqlId,propertyName);
+                    }
+                    value = metaObject.getValue(propertyName);
+                }
+                argList.add(value);
+                propertyNames.add(propertyName);
+            }
+        }
+        Object[] args=argList.toArray();
+        String sql=boundSql.getSql();
+        sqlWithParam.setSql(sql);
+        sqlWithParam.setParams(args);
+        sqlWithParam.setPropertyNames(propertyNames);
+        return sqlWithParam;
+    }
     private static String getSql(String sqlId) {
         if(sqlId.startsWith(SQL_FLAG)){
             return sqlId.substring(SQL_FLAG.length());

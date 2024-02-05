@@ -3,6 +3,7 @@ package com.vonchange.nine.demo.dao;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import com.vonchange.jdbc.mybatis.core.query.BatchUpdate;
 import com.vonchange.jdbc.mybatis.core.query.ReadDataSource;
+
 import com.vonchange.jdbc.mybatis.core.support.CrudRepository;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
@@ -14,9 +15,11 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-
 public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
   List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
+
+  List<UserInfoDO> findUserMethodByUserCodeIn(List<String> userCodes);
+  List<UserInfoDO> findByUserCodeIn(@Param("userCodes") List<String> userCodes);
   UserInfoDO findOneByUserCode(@Param("userCode") String userCode);
   String findUserNameByCode(@Param("userCode") String userCode);
   @ReadDataSource

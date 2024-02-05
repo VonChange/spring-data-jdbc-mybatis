@@ -11,7 +11,7 @@
         <module>mybatis-template</module>
 		<module>jdbc-mybatis</module>
 		<module>common-util</module>
-		<module>spring-data-jdbc-mybatis-test</module>
+		<module>spring-data-jdbc-mybatis-demo</module>
 		<module>mybatis-sql-extend</module>
 		<module>mybatis-sql-extend-test</module>
     </modules>

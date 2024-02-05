@@ -11,10 +11,11 @@
 ## What Is This?
 * 和spring data jdbc一样的追求简单,使用jdbcTemplate,调用jdbc。不提供缓存、延迟加载、QueryDSL等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
 
-* 使用mybatis动态sql能力(不依赖mybatis!),可以应对复杂sql
+* 使用mybatis动态sql能力(不依赖mybatis!提取了动态sql代码),可以应对复杂sql,如果换其他模板引擎或自己实现也是可以的,但有一定的学习成本,使用mybaits动态sql已比较成熟
 
 * SQL统一写在Markdown里,不提供@Query或QueryDSL
 
+* 扩展简单写法 [easy-dynamic-sql.md](easy-dynamic-sql.md)
 
 [UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
 
@@ -28,7 +29,6 @@ SELECT  [@id column] FROM user_base
 <if test="null!=createTime">  and create_time < #{createTime}  </if>
 </where>
 ```
-## 更多扩展写法 ==>  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## 特性
 ### 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 ### 批量更新

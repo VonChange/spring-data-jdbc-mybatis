@@ -6,6 +6,7 @@
 package com.vonchange.common.util;
 
 public interface StringPool {
+    String markdown_suffix=".md";
     String AMPERSAND = "&";
     String AND = "and";
     String AT = "@";

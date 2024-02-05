@@ -3,8 +3,8 @@ package com.vonchange.nine.demo.service.impl;
 import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.nine.demo.domain.UserInfoDO;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 public class JdbcQueryServiceImplTest {
     private static final Logger log = LoggerFactory.getLogger(JdbcQueryServiceImplTest.class);

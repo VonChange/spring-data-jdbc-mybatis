@@ -39,7 +39,7 @@ public class DynamicSql {
                 newSql.append(i == 0 ? sql : sql.substring(i));
                 break;
             }
-            newSql.append(sql.substring(i, ndx));
+            newSql.append(sql, i, ndx);
             ndx += startLen;
             // newSql
             int ndx2 = sql.indexOf(endSym, ndx);

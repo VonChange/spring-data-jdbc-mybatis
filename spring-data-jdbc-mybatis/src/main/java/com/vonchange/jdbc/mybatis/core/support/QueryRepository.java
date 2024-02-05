@@ -22,6 +22,6 @@ import org.springframework.data.repository.Repository;
  * only query
  */
 @NoRepositoryBean
-public interface QueryRepository extends Repository<BaseModel,Long> {
+public interface QueryRepository extends Repository<Object,Long> {
 
 }

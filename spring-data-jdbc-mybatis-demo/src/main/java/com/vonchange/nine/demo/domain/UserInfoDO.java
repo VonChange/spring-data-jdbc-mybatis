@@ -20,7 +20,7 @@ public class UserInfoDO extends BaseDO{
     @Column(name="user_name")
     private String userName;
     private String  mobileNo;
-    private Integer status;
+   // private Integer status;
 
     private byte[] headImageData;
     public UserInfoDO(){
