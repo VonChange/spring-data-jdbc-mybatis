@@ -27,13 +27,10 @@ import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
-import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -65,7 +62,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	/**
 	 * Creates a new {@link JdbcRepositoryQuery} for the given
 	 * {@link JdbcQueryMethod}, and
-	 * {@link RowMapper}.
 	 *
 	 * @param queryMethod must not be {@literal null}.
 	 * @param operations  must not be {@literal null}.
@@ -154,15 +150,11 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			return operations.queryOneColumn(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
 					parameters.getParameter());
 		}
-		try {
-			if(nameQuery){
-				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
-			}
-			return operations.queryOne(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-					parameters.getParameter());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
+		if(nameQuery){
+			parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
 		}
+		return operations.queryOne(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
+				parameters.getParameter());
 	}
 
 	/*

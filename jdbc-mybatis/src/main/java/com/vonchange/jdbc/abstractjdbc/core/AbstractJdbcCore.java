@@ -295,7 +295,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         return queryOne(dataSourceWrapper, type, sqlWithParam.getSql(), id);
     }
     @Override
-    public <T, ID> List<T> queryByIds(DataSourceWrapper dataSourceWrapper, Class<T> domainType, List<ID> ids) {
+    public <T, ID> List<T> queryByIds(DataSourceWrapper dataSourceWrapper, Class<? extends T> domainType, List<ID> ids) {
         SqlWithParam sqlWithParam = genIdInQuery(true,domainType,ids);
         return queryList(dataSourceWrapper, domainType, sqlWithParam.getSql(), sqlWithParam.getParams());
     }
@@ -650,7 +650,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     // ================================= base
-    public <T> List<T> queryList(DataSourceWrapper dataSourceWrapper, Class<T> type, String sql, Object... args) {
+    public <T> List<T> queryList(DataSourceWrapper dataSourceWrapper, Class<? extends T> type, String sql, Object... args) {
         logSql(Constants.EnumRWType.read, sql, args);
         MyJdbcTemplate jdbcTemplate = initJdbcTemplate(dataSourceWrapper, Constants.EnumRWType.read);
         return jdbcTemplate.query(sql, new BeanListHandler<>(type), args);

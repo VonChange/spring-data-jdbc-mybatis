@@ -92,7 +92,7 @@ public interface JdbcRepository  {
     <T> Map<String, T> queryToMap(DataSourceWrapper dataSourceWrapper, Class<T> c, String sqlId, String keyInMap,
             Map<String, Object> parameter);
 
-    <T, ID> List<T> queryByIds(DataSourceWrapper dataSourceWrapper, Class<T> domainType, List<ID> ids);
+    <T, ID> List<T> queryByIds(DataSourceWrapper dataSourceWrapper, Class<? extends T> domainType, List<ID> ids);
 
     <ID> int deleteById(DataSourceWrapper dataSourceWrapper, Class<?> domainType, ID id);
 

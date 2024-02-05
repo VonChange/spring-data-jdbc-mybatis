@@ -67,7 +67,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudJdbcRepository<T, ID> {
 
 	@Override
 	public  List<T> findAllById(List<ID> ids) {
-		return (List<T>) entityOperations.queryByIds(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), ids);
+		return (List<T>) entityOperations.queryByIds(configInfo.getDataSourceWrapper(),configInfo.getDomainType(), ids);
 	}
 
 	@Override

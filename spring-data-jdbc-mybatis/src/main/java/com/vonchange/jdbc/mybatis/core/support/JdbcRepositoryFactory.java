@@ -27,7 +27,6 @@ import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -53,7 +52,6 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 
 	/**
 	 *
-	 *  and {@link ApplicationEventPublisher}.
 	 *
 	 * @param operations must not be {@literal null}.
 	 */
