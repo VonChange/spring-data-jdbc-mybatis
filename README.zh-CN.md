@@ -33,7 +33,7 @@ SELECT  [@id column] FROM user_base
 ### 支持按方法名查询 但不推荐过度使用 [method-name-query.md](method-name-query.md)
 ### crud 继成 CrudJdbcRepository 不是CrudRepository 因为需要新增和去掉部分方法
 ### 不提供@Query或QueryDSL,sql统一写在markdown文件里面
-### 批量更新
+### 批量更新 [bach-update.md](bach-update.md)
 ### [多数据源.md](multi-datasource.md)
 
 ## Getting Started with JDBC mybatis
