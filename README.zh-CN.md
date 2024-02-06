@@ -17,11 +17,11 @@
 
 * 扩展简易动态sql写法 [easy-dynamic-sql.md](easy-dynamic-sql.md)
 
-[UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+[UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 ```sql
--- findUserByIds
-SELECT  [@id column] FROM user_base 
+-- findUser
+SELECT  [@id column] FROM user_info
 <where> 
 [@@and id in #{idList:in} and user_name like #{userName:like}]
 [@and user_name like userName%]
