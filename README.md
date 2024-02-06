@@ -27,7 +27,7 @@ SELECT  [@id column] FROM user_base
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## Features
-### method am
+### method name query[method-name-query.md](method-name-query.md)
 ### extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
 ### not support @Query or QueryDSL, sql must be written in markdown
 ### batch update [bach-update.md](bach-update.md)
@@ -35,13 +35,14 @@ SELECT  [@id column] FROM user_base
 
 ## Getting Started with JDBC mybatis
 
+[UserInfoRepository.java](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fjava%2Fcom%2Fvonchange%2Fnine%2Fdemo%2Fdao%2FUserInfoRepository.java)
 ```java
 public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
-    List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
-    List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
+    List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
+    List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam);
 }
 ```
-> define sql in markdown [UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+> define sql in markdown [UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 > need  @EnableJdbcRepositories
 ```java

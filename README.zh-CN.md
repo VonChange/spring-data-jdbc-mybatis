@@ -11,7 +11,7 @@
 ## What Is This?
 * 和spring data jdbc一样的追求简单,使用jdbcTemplate,调用jdbc。不提供缓存、延迟加载、QueryDSL等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
 
-* 扩展mybatis动态sql能力(不依赖mybatis!提取了动态sql代码),可以应对复杂sql,如果换其他模板引擎或自己实现也是可以的,但有一定的学习成本,使用mybaits动态sql已比较成熟
+* 扩展mybatis动态sql能力(不依赖mybatis!提取了动态sql代码),可以应对复杂sql,如果换其他模板引擎或自己实现也是可以的,但有一定的学习成本,使用mybatis动态sql已比较成熟
 
 * SQL统一写在Markdown里,不提供@Query或QueryDSL
 
@@ -38,14 +38,13 @@ SELECT  [@id column] FROM user_info
 
 ## Getting Started with JDBC mybatis
 
-
 ```java
 public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
-    List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
+    List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
     List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
 }
 ```
-> 在 markdown 定义 [UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+> 在 markdown 定义 [UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 > 只需要  @EnableJdbcRepositories 注解
 ```java
