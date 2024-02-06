@@ -27,14 +27,13 @@ SELECT  [@id column] FROM user_base
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## Features
+### method am
 ### extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
 ### not support @Query or QueryDSL, sql must be written in markdown
-### batch update
-
+### batch update [bach-update.md](bach-update.md)
 ### [multi-datasource.md](multi-datasource.md)
 
 ## Getting Started with JDBC mybatis
-
 
 ```java
 public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {

@@ -34,20 +34,13 @@ SELECT  [@id column] FROM user_base
 ### crud 继成 CrudJdbcRepository 不是CrudRepository 因为需要新增和去掉部分方法
 ### 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 ### 批量更新
-> need rewriteBatchedStatements=true&allowMultiQueries=true
-```java
-public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
-    @BatchUpdate
-    int batchUpdate(List<UserInfoDO> list);
-}
-```
 ### [多数据源.md](multi-datasource.md)
 
 ## Getting Started with JDBC mybatis
 
 
 ```java
-public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
+public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
     List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
     List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
 }
