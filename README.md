@@ -27,7 +27,7 @@ SELECT  [@id column] FROM user_base
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## Features
-### method name query[method-name-query.md](method-name-query.md)
+### method name query [method-name-query.md](method-name-query.md)
 ### extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
 ### not support @Query or QueryDSL, sql must be written in markdown
 ### batch update [bach-update.md](bach-update.md)
