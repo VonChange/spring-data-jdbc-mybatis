@@ -62,12 +62,15 @@ public class SimpleJdbcRepository<T, ID> implements CrudJdbcRepository<T, ID> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public T findById(ID id) {
-		return (T) entityOperations.queryById(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), id);
+		Class<T> tClass= (Class<T>) configInfo.getDomainType();
+		return  entityOperations.queryById(configInfo.getDataSourceWrapper(), tClass, id);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public  List<T> findAllById(List<ID> ids) {
-		return (List<T>) entityOperations.queryByIds(configInfo.getDataSourceWrapper(),configInfo.getDomainType(), ids);
+		Class<T> tClass= (Class<T>) configInfo.getDomainType();
+		return entityOperations.queryByIds(configInfo.getDataSourceWrapper(),tClass, ids);
 	}
 
 	@Override

@@ -190,7 +190,7 @@ public class NameQueryUtil {
         List<Object> newParams= new ArrayList<>();
         for (Object value : objectList) {
             if (value instanceof Collection) {
-                Collection collection= (Collection) value;
+                Collection<?> collection= (Collection<?>) value;
                 newParams.addAll(collection);
             }else{
                 newParams.add(value);

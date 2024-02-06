@@ -45,6 +45,7 @@ public class MybatisTpl {
          sqlInXml=sqlInXml.trim();
          return generate(sqlId,sqlInXml,parameter);
      }
+    @SuppressWarnings("unchecked")
     public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter){
         if(sqlInXml.contains("</")){
             sqlInXml="<script>"+sqlInXml+"</script>";

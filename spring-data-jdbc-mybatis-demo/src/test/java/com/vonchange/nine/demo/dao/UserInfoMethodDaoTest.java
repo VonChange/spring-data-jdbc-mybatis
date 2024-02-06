@@ -170,8 +170,8 @@ class UserInfoMethodDaoTest {
         log.info("\ndeleteById {}", num);
         UserInfoDO userInfo = userInfoMethodDao.findById(1L);
         log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
-        num = userInfoMethodDao.deleteAllById(null);
-        log.info("\ndeleteById {}", num);
+        //num = userInfoMethodDao.deleteAllById(null);
+        //log.info("\ndeleteById {}", num);
     }
 
 
