@@ -17,12 +17,13 @@ public class MarkdownUtil {
     private  MarkdownUtil(){
         throw new IllegalStateException("Utility class");
     }
+    private   static final String ID_END= System.getenv("ID_END");
     public static final String ID_PRE_SQL = "--";
     public static final String ID_PRE_CODE = "//";
     private   static Logger log = LoggerFactory.getLogger(MarkdownUtil.class);
     // fileId mdId-> content
     private   static  Map<String,Map<String,String>> markdownDataCache=new ConcurrentHashMap<>(256);
-    private static final   String  URLSEPARATOR="/";
+    private   static  Map<String,String> idContentCache=new ConcurrentHashMap<>(256);
 
     public     static synchronized   Map<String,String> readMarkdownFile(String id,boolean notFoundError){
         String path= UtilAll.UFile.classPath(id);
@@ -127,12 +128,24 @@ public class MarkdownUtil {
         }
         return  newSb.toString();
     }
+
     private static String extendContent(Map<String,String> contentMap,String codeId) {
+        if(null!=ID_END&&!"".equals(ID_END)){
+            if(contentMap.containsKey(codeId+ID_END)){
+                codeId=codeId+ID_END;
+            }
+        }
         String content =contentMap.get(codeId);
         /* 支持[@Id  递归实现*/
         return getIdSpinner(contentMap,content);
     }
+    public static boolean  hasId(String id) {
+         return idContentCache.containsKey(id);
+    }
     public static String  getContent(String id,boolean notFoundThrowError) {
+        if(idContentCache.containsKey(id)){
+            return idContentCache.get(id);
+        }
         Assert.notNull(id,"id can not null");
         if(!id.contains(StringPool.DOT)){
             if(!notFoundThrowError){
@@ -149,20 +162,24 @@ public class MarkdownUtil {
             }
             throw new UtilException(EnumUtilErrorCode.MarkdownIdNotFound,id+" not found");
         }
-        return  extendContent(contentMap,codeId);
+        String content=  extendContent(contentMap,codeId);
+        if(UtilAll.UString.isNotBlank(content)){
+            idContentCache.put(id,content);
+        }
+        return content;
     }
     public static String  getContent(String id) {
         return getContent(id,true);
     }
 
 
-    private static  Map<String,String>  loadMdData(String id){
+    private static  Map<String,String>  loadMdData(String fileId){
         Map<String,String> contentMap = null;
-        if(markdownDataCache.containsKey(id)){
-            contentMap= markdownDataCache.get(id);
+        if(markdownDataCache.containsKey(fileId)){
+            contentMap= markdownDataCache.get(fileId);
         }
         if(null==contentMap){
-            contentMap=readMarkdownFile(id,true);
+            contentMap=readMarkdownFile(fileId,true);
         }
         return contentMap;
     }

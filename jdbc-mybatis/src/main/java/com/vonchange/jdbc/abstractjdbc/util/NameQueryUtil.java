@@ -48,10 +48,77 @@ public class NameQueryUtil {
         map.put("order_by",new SplitMap("order by",EnumStep.End));
         map.put("and", new SplitMap("and",EnumStep.Join));
         map.put("or", new SplitMap("or",EnumStep.Join));
-        map.put("desc", new SplitMap("desc",EnumStep.NUll));
-        map.put("asc", new SplitMap("asc",EnumStep.NUll));
+        map.put("desc", new SplitMap("desc",EnumStep.ORDER));
+        map.put("asc", new SplitMap("asc",EnumStep.ORDER));
     }
-
+    private static final Map<String, SplitMap> orderMap=new HashMap<>();
+    static {
+        orderMap.put("desc", new SplitMap("desc",EnumStep.ORDER));
+        orderMap.put("asc", new SplitMap("asc",EnumStep.ORDER));
+    }
+    public static String orderSql(String orderBy,Class<?> entityType){
+        if(orderBy.contains(StringPool.SPACE)){
+            throw  new JdbcMybatisRuntimeException("orderBy can  not contain  space");
+        }
+        if(!orderBy.startsWith("orderBy")){
+            throw  new JdbcMybatisRuntimeException("must start with orderBy");
+        }
+        orderBy=orderBy.substring(7);
+        EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
+        String[] splits=  OrmUtil.toSql(orderBy).split(StringPool.UNDERSCORE);
+        Map<String,SplitMap> columnsMap= new HashMap<>();
+        for (EntityField entityField : entityInfo.getEntityFields()) {
+            columnsMap.put(entityField.getColumnName(),new SplitMap(entityField.getColumnName(),EnumStep.Column));
+        }
+        columnsMap.putAll(orderMap);
+        SplitMap lastSplit =new SplitMap("",EnumStep.Column);
+        StringBuilder sql=new StringBuilder(StringPool.SPACE);
+        int i =0;
+        while (i<splits.length) {
+            StringBuilder stringBuilder=new StringBuilder(splits[i]);
+            String sqlSplit=null;
+            String mapKey=null;
+            i++;
+            boolean flag=false;
+            //max 5
+            for(int j=i-1;j<i+3;j++){
+                if(j>=splits.length){
+                    break;
+                }
+                if(columnsMap.containsKey(stringBuilder.toString())){
+                    mapKey=stringBuilder.toString();
+                    sqlSplit=columnsMap.get(mapKey).getSplit();
+                    i=j+1;
+                    flag=true;
+                }
+                if(j<splits.length-1){
+                    stringBuilder.append(StringPool.UNDERSCORE).append(splits[j+1]);
+                }
+            }
+            if(!flag){
+                throw new JdbcMybatisRuntimeException("{} can not generate order by",orderBy);
+            }
+            if(null!=sqlSplit){
+                if(lastSplit.getEnumStep().equals(EnumStep.ORDER)){
+                    sql.append(StringPool.COMMA).append(sqlSplit);
+                }
+                if(lastSplit.getEnumStep().equals(EnumStep.Column)){
+                    EnumStep thisStep= columnsMap.get(mapKey).getEnumStep();
+                    if(thisStep.equals(EnumStep.Column)){
+                        if(!"".equals(lastSplit.getSplit())){
+                            sql.append(StringPool.COMMA);
+                        }
+                        sql.append(sqlSplit);
+                    }
+                    if(thisStep.equals(EnumStep.ORDER)){
+                        sql.append(StringPool.SPACE).append(sqlSplit);
+                    }
+                }
+                lastSplit= columnsMap.get(mapKey);
+            }
+        }
+        return "order by"+sql.toString();
+    }
     public static SqlWithParam nameSql(String method,Class<?> entityType, Map<String, Object> parameter){
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
         if(!(method.startsWith("find")||method.startsWith("count"))){

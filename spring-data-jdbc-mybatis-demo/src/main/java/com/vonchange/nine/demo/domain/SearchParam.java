@@ -19,4 +19,6 @@ public class SearchParam {
     private String userName;
     private Date createTime;
 
+    private String sort;
+
 }

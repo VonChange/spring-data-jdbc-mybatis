@@ -44,11 +44,10 @@
     <loggers>
         <root  level="INFO">
             <appenderref ref="CONSOLE" />
-            <!-- 日志异步配置,可不开启异步 -->
             <appenderref ref="infoAsync" />
             <appenderref ref="errorAsync" />
         </root>
-        <logger name="com.vonchange" level="INFO" additivity="false">
+        <logger name="com.vonchange" level="DEBUG" additivity="false">
             <appenderref ref="CONSOLE" />
             <appenderref ref="infoAsync" />
             <appenderref ref="errorAsync" />

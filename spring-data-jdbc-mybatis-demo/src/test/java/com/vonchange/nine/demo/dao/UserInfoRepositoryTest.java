@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,8 @@ public class UserInfoRepositoryTest {
 
     @Test
     public void findUserNameByCode() {
+        String sqlDialect=System.getenv("SQL_DIALECT");
+        log.info("XXX:: "+sqlDialect);
         String userName = userInfoRepository.findUserNameByCode("u000");
         log.info("\n userName {}",userName);
     }
@@ -83,6 +86,7 @@ public class UserInfoRepositoryTest {
         searchParam.setUserName("chang");
         //searchParam.setUserCodes(Arrays.asList("u000","u001","u002"));
         searchParam.setCreateTime(toDate(LocalDateTime.now().plusHours(1L)));
+        searchParam.setSort(NameQueryUtil.orderSql("orderByCreateTimeDescId",UserInfoDO.class));
         List<UserInfoDO> userInfoDOList = userInfoRepository.findUserBySearchParam(searchParam);
         userInfoDOList.forEach(userInfoDO -> {
             log.info("\n {}",JsonUtil.toJson(userInfoDO));

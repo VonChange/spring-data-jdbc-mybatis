@@ -28,12 +28,11 @@ import java.util.Properties;
  */
 public class MybatisTpl {
     private static   Logger logger = LoggerFactory.getLogger(MybatisTpl.class);
-    public static final String MARKDOWN_SQL_ID ="markdown_sql_id";
-    public  static final String SQL_FLAG= "@sql";
     private MybatisTpl() {
         throw new IllegalStateException("Utility class");
     }
-     @SuppressWarnings("unchecked")
+    private   static final String SQL_START= "@sql";
+
      public static SqlWithParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
         String sqlInXml=getSql(sqlId);
          SqlWithParam sqlWithParam= new SqlWithParam();
@@ -67,7 +66,7 @@ public class MybatisTpl {
         }
         configuration.setVariables(properties);
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sqlInXml, Map.class);
-        BoundSql boundSql=null;
+        BoundSql boundSql;
         try{
              boundSql=sqlSource.getBoundSql(parameter);
         }catch (Exception e){
@@ -108,8 +107,8 @@ public class MybatisTpl {
         return sqlWithParam;
     }
     private static String getSql(String sqlId) {
-        if(sqlId.startsWith(SQL_FLAG)){
-            return sqlId.substring(SQL_FLAG.length());
+        if(sqlId.startsWith(SQL_START)){
+            return sqlId.substring(SQL_START.length());
         }
         return MarkdownUtil.getContent(sqlId);
     }

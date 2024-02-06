@@ -1,5 +1,7 @@
 package com.vonchange.nine.demo.dao;
 
+import com.vonchange.common.util.StringPool;
+import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
@@ -9,13 +11,17 @@ import jdk.nashorn.internal.runtime.logging.Logger;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +46,12 @@ class UserInfoMethodDaoTest {
         if(null!=sqlWithParam){
             log.info("\nnameSql {}", JsonUtil.toJson(sqlWithParam.getSql()));
         }
+    }
+    @Test
+    public  void orderSql() {
+        String  sql = NameQueryUtil.orderSql(
+                "orderByCreateTimeDescId",UserInfoDO.class);
+        log.info("\nsql {}", sql);
     }
     @Test
     void findByUserCode() {
@@ -86,23 +98,31 @@ class UserInfoMethodDaoTest {
     }
 
     @Test
-    public void save() {
+    @Transactional
+    @Rollback
+    public void save() throws IOException {
         UserInfoDO userInfoDO = new UserInfoDO();
         userInfoDO.setUserCode("L001");
         userInfoDO.setUserName("Bruce Lee");
+        userInfoDO.setHeadImageData(IOUtils.toByteArray(UtilAll.UFile.getClassResource("db-init.sql")));
         int resultNum  = userInfoMethodDao.save(userInfoDO);
         log.info("\nresultNum {} id {}",resultNum,userInfoDO.getId());
         UserInfoDO userInfoDOFind =userInfoMethodDao.findById(userInfoDO.getId());
+        if(null!=userInfoDOFind.getHeadImageData()){
+            log.info(IOUtils.toString(userInfoDOFind.getHeadImageData(), StringPool.UTF_8));
+        }
         log.info("\nuserInfoDOFind {}",userInfoDOFind.toString());
     }
     @Test
-    //@Transactional
-    //@Rollback
+    @Transactional
+    //@Rollback(value = false)
     public void update() {
         UserInfoDO userInfoDO = new UserInfoDO();
-        userInfoDO.setUserName("jack ma");
-        userInfoDO.setId(1L);
+        userInfoDO.setUserName("Jack ma");
+        userInfoDO.setId(2L);
         int resultNum  = userInfoMethodDao.update(userInfoDO);
+        //int a=0;
+        //log.info((1/a);
         log.info("\nresultNum {}",resultNum);
         UserInfoDO userInfoDOFind =userInfoMethodDao.findById(1L);
         log.info("\nuserInfoDOFind {}",userInfoDOFind.toString());

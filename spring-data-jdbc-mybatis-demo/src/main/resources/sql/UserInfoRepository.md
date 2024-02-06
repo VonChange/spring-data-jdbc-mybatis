@@ -14,7 +14,17 @@ select [@id column] from user_info  <where>
 
 ```
 -- findUserNameByCode
-select user_name from user_info  where user_code = #{userCode}
+select user_name from user_info  where user_code = #{userCode} [@id isDelete]
+```
+
+```
+-- isDelete
+and is_delete=0
+```
+
+```
+-- isDeleteOracle
+and is_delete=1
 ```
 
 ```
@@ -34,6 +44,7 @@ select * from user_info
 <where> 
 [@id whereSql]
 </where>
+${param.sort}
 ```
 
 ```sql
