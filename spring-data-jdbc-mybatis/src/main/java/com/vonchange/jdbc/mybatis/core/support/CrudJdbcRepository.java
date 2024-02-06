@@ -36,7 +36,6 @@ public interface CrudJdbcRepository<T, ID> extends Repository<T, ID> {
 	 * saveAll null will save
 	 * @param entities
 	 * @param batchSize
-	 * @return
 	 * @param <S>
 	 */
 	<S extends T> int saveAll(List<S> entities,int batchSize);
