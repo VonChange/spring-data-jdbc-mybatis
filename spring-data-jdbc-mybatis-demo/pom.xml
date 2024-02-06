@@ -5,8 +5,8 @@
     <groupId>com.vonchange.common</groupId>
     <artifactId>spring-data-jdbc-mybatis-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-data-jdbc-mybatis-test</name>
-    <description>spring-data-jdbc-mybatis-test 测试</description>
+    <name>spring-data-jdbc-mybatis-demo</name>
+    <description>spring-data-jdbc-mybatis-demo 测试</description>
     <properties>
         <spring.boot.version>2.7.18</spring.boot.version>
         <spring.jdbc.mybatis>2.5.0</spring.jdbc.mybatis>
