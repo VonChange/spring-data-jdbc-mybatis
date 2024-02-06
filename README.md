@@ -13,7 +13,7 @@
 * SQL is  written in Markdown
 
 
-[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+[UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 ```sql
 -- findUserByIds
@@ -30,13 +30,7 @@ SELECT  [@id column] FROM user_base
 ### extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
 ### not support @Query or QueryDSL, sql must be written in markdown
 ### batch update
-> need rewriteBatchedStatements=true&allowMultiQueries=true
-```java
-public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
-    @BatchUpdate
-    int batchUpdate(List<UserInfoDO> list);
-}
-```
+
 ### [multi-datasource.md](multi-datasource.md)
 
 ## Getting Started with JDBC mybatis

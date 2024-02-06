@@ -54,7 +54,7 @@ public class UserInfoRepositoryTest {
 
     @Test
     public void findUserNameByCode() {
-        String sqlDialect=System.getenv("SQL_DIALECT");
+        String sqlDialect=System.getenv("ID_END");
         log.info("XXX:: "+sqlDialect);
         String userName = userInfoRepository.findUserNameByCode("u000");
         log.info("\n userName {}",userName);

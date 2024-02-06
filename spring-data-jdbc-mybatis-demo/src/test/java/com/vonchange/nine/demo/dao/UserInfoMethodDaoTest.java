@@ -42,9 +42,9 @@ class UserInfoMethodDaoTest {
     public  void methodSql() {
         SqlWithParam sqlWithParam = NameQueryUtil.nameSql(
                 "findListByUserCodeIn",UserInfoDO.class,new MyHashMap()
-                        .set("233",0).set("2",9));
+                        .set("111",new String[]{"233","333"}).set("2",9));
         if(null!=sqlWithParam){
-            log.info("\nnameSql {}", JsonUtil.toJson(sqlWithParam.getSql()));
+            log.info("\nnameSql {}", sqlWithParam.getSql());
         }
     }
     @Test

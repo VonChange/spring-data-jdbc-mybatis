@@ -15,7 +15,10 @@ import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -141,6 +144,10 @@ public class NameQueryUtil {
         int index =0;
         SplitMap lastSplit =new SplitMap("",EnumStep.Column);
         int i=0;
+        List<Object> objectList= new ArrayList<>();
+        for (Map.Entry<String, Object> entry : parameter.entrySet()) {
+            objectList.add(entry.getValue());
+        }
         while (i<splits.length) {
             StringBuilder stringBuilder=new StringBuilder(splits[i]);
             String sqlSplit=null;
@@ -168,7 +175,7 @@ public class NameQueryUtil {
             if(null!=sqlSplit){
                 EnumStep thisStep= columnsMap.get(mapKey).getEnumStep();
                 if(thisStep.equals(EnumStep.Join)||thisStep.equals(EnumStep.End)){
-                    index=genMybatisSql(lastSplit,sql,index);
+                    index=genMybatisSql(lastSplit,sql,index,objectList.get(index));
                     index++;
                 }
                 sql.append(sqlSplit).append(StringPool.SPACE);
@@ -176,32 +183,52 @@ public class NameQueryUtil {
             }
         }
         if(lastSplit.getEnumStep().equals(EnumStep.Column)||lastSplit.getEnumStep().equals(EnumStep.Condition)){
-            genMybatisSql(lastSplit,sql,index);
+            genMybatisSql(lastSplit,sql,index,objectList.get(index));
         }
-        Map<String,Object> newParam= new HashMap<>();
-        int k=0;
-        for (Map.Entry<String, Object> entry : parameter.entrySet()) {
-            newParam.put(ParamPre+k,entry.getValue());
-            k++;
+        SqlWithParam sqlWithParam = new SqlWithParam();
+        sqlWithParam.setSql(sql.toString());
+        List<Object> newParams= new ArrayList<>();
+        for (Object value : objectList) {
+            if (value instanceof Collection) {
+                Collection collection= (Collection) value;
+                newParams.addAll(collection);
+            }else{
+                newParams.add(value);
+            }
         }
+        sqlWithParam.setParams(newParams.toArray());
        log.debug("gen sql {}",sql);
-       return MybatisTpl.generate(method,sql.toString(),newParam);
+       return sqlWithParam;
     }
 
-    private static int genMybatisSql(SplitMap lastSplit, StringBuilder sql, int index){
+    private static int genMybatisSql(SplitMap lastSplit, StringBuilder sql, int index,Object value){
         String split =lastSplit.getSplit();
         if(lastSplit.getEnumStep().equals(EnumStep.Column)){
             sql.append(" = ");
         }
         if(split.equals("in")||split.equals("not in")){
-            sql.append(UtilAll.UString.format("<foreach collection=\"{}\" index=\"index\" item=\"item\" open=\"(\" separator=\",\" close=\")\">#{item}</foreach> ",ParamPre+index));
+             if (!(value instanceof Collection||value.getClass().isArray())){
+                 throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
+             }
+            StringBuilder inSb=new StringBuilder("(");
+            if (value instanceof Collection) {
+                for (Object o : (Collection<?>) value) {
+                    inSb.append("?,");
+                }
+            }
+            if (value.getClass().isArray()) {
+                for (Object o : (Object[]) value) {
+                    inSb.append("?,");
+                }
+            }
+            sql.append(inSb.substring(0,inSb.length()-1)).append(")");
             return index;
         }
         if(split.equals("between")){
-            sql.append(UtilAll.UString.format("#{{}} and #{{}} ",ParamPre+index,ParamPre+(index+1)));
+            sql.append("? and ? ");
             return index+1;
         }
-        sql.append(UtilAll.UString.format("#{{}} ",ParamPre+index));
+        sql.append("? ");
         return index;
 
     }

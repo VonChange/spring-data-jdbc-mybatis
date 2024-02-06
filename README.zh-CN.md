@@ -17,7 +17,7 @@
 
 * 扩展简易动态sql写法 [easy-dynamic-sql.md](easy-dynamic-sql.md)
 
-[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+[UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)[UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 ```sql
 -- findUserByIds
@@ -30,6 +30,7 @@ SELECT  [@id column] FROM user_base
 </where>
 ```
 ## 特性
+### 支持按方法名查询 但不推荐过度使用 [method-name-query.md](method-name-query.md)
 ### crud 继成 CrudJdbcRepository 不是CrudRepository 因为需要新增和去掉部分方法
 ### 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 ### 批量更新
