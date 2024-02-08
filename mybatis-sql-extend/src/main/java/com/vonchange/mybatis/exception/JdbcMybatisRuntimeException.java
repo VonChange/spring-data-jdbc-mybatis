@@ -23,6 +23,9 @@ public class JdbcMybatisRuntimeException extends RuntimeException {
   public JdbcMybatisRuntimeException(String message, Object... parameters) {
     super(UtilAll.UString.format(message, parameters));
   }
+  public JdbcMybatisRuntimeException(Throwable cause,String message, Object... parameters) {
+    super(UtilAll.UString.format(message, parameters),cause);
+  }
   public JdbcMybatisRuntimeException(String message) {
     super(message);
   }

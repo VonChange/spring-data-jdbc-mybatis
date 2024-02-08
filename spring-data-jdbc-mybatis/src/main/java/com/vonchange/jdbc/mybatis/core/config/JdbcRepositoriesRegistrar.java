@@ -15,14 +15,14 @@
  */
 package com.vonchange.jdbc.mybatis.core.config;
 
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+
 import org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 import java.lang.annotation.Annotation;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} to enable {@link EnableJdbcRepositories} annotation.
+ *   enable {@link EnableJdbcRepositories} annotation.
  *
  * @author Jens Schauder
  */

@@ -60,7 +60,7 @@ public class ConvertMap {
                 entity = (T) type.newInstance();
             } catch (InstantiationException e) {
                 throw new JdbcMybatisRuntimeException(
-                        "java.lang.InstantiationException " + type.getName() + " need no-arguments constructor");
+                        "java.lang.InstantiationException {} need no-arguments constructor",type.getName());
             }
         }
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);

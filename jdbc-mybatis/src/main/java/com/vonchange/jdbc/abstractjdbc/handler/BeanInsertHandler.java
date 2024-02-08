@@ -68,12 +68,12 @@ public class BeanInsertHandler<T> implements ResultSetExtractor<T> {
 	}
 
 	private T toBean(ResultSet rs, T entity) throws SQLException {
-		String genColumn = EntityUtil.getEntityInfo(entity.getClass()).getGenColumn();
-		if(UtilAll.UString.isBlank(genColumn)){
-			throw new JdbcMybatisRuntimeException("实体类未设置主键注解@Id");
+		String idColumnName = EntityUtil.getEntityInfo(entity.getClass()).getIdColumnName();
+		if(UtilAll.UString.isBlank(idColumnName)){
+			throw new JdbcMybatisRuntimeException("need @Id in your entity");
 		}
 		try {
-			ConvertMap.convertMap(entity,null,ConvertMap.newMap(HandlerUtil.rowToMap(rs,genColumn)));
+			ConvertMap.convertMap(entity,null,ConvertMap.newMap(HandlerUtil.rowToMap(rs,idColumnName)));
 		} catch (IntrospectionException  | IllegalAccessException | InvocationTargetException e) {
 			log.error("exception",e);
 		}

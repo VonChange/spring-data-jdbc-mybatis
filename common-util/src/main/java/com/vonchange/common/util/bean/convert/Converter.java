@@ -389,6 +389,9 @@ public class Converter {
 	public Byte toByte(final Object value) {
 		return (Byte) getConvert(Byte.class).convert(value);
 	}
+	public byte[] toBytes(final Object value) {
+		return (byte[]) getConvert(byte[].class).convert(value);
+	}
 
 	/**
 	 * Converts value to <code>Byte</code>. Returns default value

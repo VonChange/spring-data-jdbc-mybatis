@@ -1,22 +1,19 @@
 # spring-data-jdbc-mybatis
 
-[![](https://img.shields.io/badge/Blog-博客-blue.svg)](http://www.vonchange.com/doc/mini.html)
 ![](https://img.shields.io/maven-central/v/com.vonchange.common/spring-data-jdbc-mybatis.svg?label=Maven%20Central)
 [![](https://img.shields.io/github/stars/vonchange/spring-data-jdbc-mybatis.svg?style=social)
 ](https://github.com/VonChange/spring-data-jdbc-mybatis)
-[![](https://gitee.com/vonchange/spring-data-jdbc-mybatis/badge/star.svg?theme=dark)
-](https://gitee.com/vonchange/spring-data-jdbc-mybatis)
 
 **spring data jdbc extend mybatis dynamic sql**
 ## What Is This?
-* It aims at being conceptually easy. In order to achieve this it does NOT offer caching, lazy loading, write behind or many other features of JPA. This makes  a simple, limited, opinionated ORM.
+* It aims at being conceptually easy. In order to achieve this it does NOT offer caching, lazy loading,QueryDSL, write behind or many other features of JPA. This makes  a simple, limited, opinionated ORM.
 
-* use mybatis dynamic SQL,it is good for complex SQL
+* use mybatis dynamic SQL(not dependency mybatis),it is good for complex SQL
 
 * SQL is  written in Markdown
 
 
-[UserBaseRepository.md](spring-data-jdbc-mybatis-test/src/test/resources/sql/UserBaseRepository.md)
+[UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 ```sql
 -- findUserByIds
@@ -30,26 +27,23 @@ SELECT  [@id column] FROM user_base
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
 ## Features
-### batch update
-> need rewriteBatchedStatements=true&allowMultiQueries=true
-```java
-public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
-    @BatchUpdate
-    int batchUpdate(List<UserInfoDO> list);
-}
-```
+### method name query [method-name-query.md](method-name-query.md)
+### @Id @Table @Column
+### extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
+### not support @Query or QueryDSL, sql must be written in markdown
+### batch update [bach-update.md](bach-update.md)
 ### [multi-datasource.md](multi-datasource.md)
 
 ## Getting Started with JDBC mybatis
 
-
+[UserInfoRepository.java](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fjava%2Fcom%2Fvonchange%2Fnine%2Fdemo%2Fdao%2FUserInfoRepository.java)
 ```java
-public interface UserInfoRepository extends CrudRepository<UserInfoDO, Long> {
-    List<UserInfoDO> findListByUserCode(@Param("userCode") String userCode);
-    List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
+public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
+    List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
+    List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam);
 }
 ```
-> define sql in markdown [UserInfoRepository.md](spring-data-jdbc-mybatis-test%2Fsrc%2Ftest%2Fresources%2Fsql%2FUserInfoRepository.md)
+> define sql in markdown [UserInfoRepository.md](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fresources%2Fsql%2FUserInfoRepository.md)
 
 > need  @EnableJdbcRepositories
 ```java

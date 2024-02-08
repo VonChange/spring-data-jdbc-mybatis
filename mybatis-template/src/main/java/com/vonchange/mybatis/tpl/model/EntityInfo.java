@@ -13,7 +13,6 @@ public class EntityInfo {
 	private String idColumnName;
 	private String idType;
 	private  List<String> columnReturns;
-	private String genColumn;
 	private List<EntityField> entityFields;
 
 	public String getEntityName() {
@@ -74,11 +73,5 @@ public class EntityInfo {
 		this.columnReturns = columnReturns;
 	}
 
-	public String getGenColumn() {
-		return genColumn;
-	}
 
-	public void setGenColumn(String genColumn) {
-		this.genColumn = genColumn;
-	}
 }

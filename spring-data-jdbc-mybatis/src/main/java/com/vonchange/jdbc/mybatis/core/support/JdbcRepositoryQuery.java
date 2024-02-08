@@ -18,16 +18,19 @@ package com.vonchange.jdbc.mybatis.core.support;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.vonchange.common.util.MarkdownUtil;
+import com.vonchange.common.util.StringPool;
+import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -59,7 +62,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	/**
 	 * Creates a new {@link JdbcRepositoryQuery} for the given
 	 * {@link JdbcQueryMethod}, and
-	 * {@link RowMapper}.
 	 *
 	 * @param queryMethod must not be {@literal null}.
 	 * @param operations  must not be {@literal null}.
@@ -90,7 +92,18 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	@SuppressWarnings("unchecked")
 	private <T> Object executeDo(Object[] objects) {
 		BindParameterWrapper<T> parameters = bindParameter(objects);
-		String sqlId = configInfo.getLocation() + "." + configInfo.getMethod();
+		String sqlId;
+		boolean nameQuery=false;
+		if(null!=configInfo.getLocation()){
+			 sqlId = configInfo.getLocation() + StringPool.DOT + configInfo.getMethod();
+		}else{
+			sqlId=configInfo.getMethod();
+		}
+		String sql = MarkdownUtil.getContent(sqlId,false);
+		if(null==sql){
+			nameQuery=true;
+			sqlId=configInfo.getMethod();
+		}
 		DataSourceWrapper dataSourceWrapper = configInfo.getDataSourceWrapper();
 		if (null == dataSourceWrapper && queryMethod.isReadDataSource()) {
 			dataSourceWrapper = operations.getReadDataSource();
@@ -115,24 +128,33 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 					parameters.getAbstractPageWork(), parameters.getParameter());
 		}
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
+			if(nameQuery){
+				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
+			}
 			return operations.queryList(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
 					parameters.getParameter());
 		}
 		if (queryMethod.isPageQuery()) {
+			if(nameQuery){
+				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
+			}
 			return operations.queryPage(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
 					parameters.getPageable(), parameters.getParameter());
 		}
 
 		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
+			if(nameQuery){
+				Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
+				parameters.getParameter().put(ConstantJdbc.EntityType,configInfo.getDomainType());
+			}
 			return operations.queryOneColumn(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
 					parameters.getParameter());
 		}
-		try {
-			return operations.queryOne(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-					parameters.getParameter());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
+		if(nameQuery){
+			parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
 		}
+		return operations.queryOne(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
+				parameters.getParameter());
 	}
 
 	/*
@@ -149,7 +171,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	@SuppressWarnings("unchecked")
 	private <T> BindParameterWrapper<T> bindParameter(Object[] objects) {
 		Parameters<?, ?> parameters = queryMethod.getParameters();
-		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		BindParameterWrapper<T> bindParameterWrapper = new BindParameterWrapper<>();
 		if (objects.length > 0) {
 			if (parameters.getPageableIndex() >= 0) {
@@ -170,10 +192,12 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if (queryMethod.isBatchUpdate()) {
 			return bindParameterWrapper;
 		}
+		AtomicInteger i= new AtomicInteger();
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
-			String parameterName = p.getName()
-					.orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
+			String parameterName = p.getName().orElse(i.toString());
+					//.orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
 			map.put(parameterName, objects[p.getIndex()]);
+			i.getAndIncrement();
 		});
 		bindParameterWrapper.setParameter(map);
 		return bindParameterWrapper;

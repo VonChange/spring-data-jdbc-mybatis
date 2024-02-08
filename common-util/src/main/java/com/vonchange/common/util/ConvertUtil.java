@@ -82,6 +82,10 @@ public class ConvertUtil {
 		value = toNull(value);
 		return Converter.get().toByte(value);
 	}
+	public static byte[] toBytes(Object value) {
+		value = toNull(value);
+		return Converter.get().toBytes(value);
+	}
 
 	public static Character toCharacter(Object value) {
 		value = toNull(value);
@@ -179,6 +183,9 @@ public class ConvertUtil {
 		}
 		if (targetType.isAssignableFrom(LocalTime.class)) {
 			return (T) ConvertUtil.toLocalTime(value);
+		}
+		if (targetType.isAssignableFrom(byte[].class)) {
+			return (T) ConvertUtil.toBytes(value);
 		}
 		if (targetType.isEnum()) {
 			Class type = targetType;

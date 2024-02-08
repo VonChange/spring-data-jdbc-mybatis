@@ -15,10 +15,8 @@
  */
 package com.vonchange.jdbc.mybatis.core.config;
 
+import com.vonchange.jdbc.mybatis.repository.JdbcRepositorySpringImpl;
 
-import com.vonchange.jdbc.mybatis.repository.JdbcCudRepositorySpringImpl;
-import com.vonchange.jdbc.mybatis.repository.JdbcRepositorySpringDataImpl;
-import com.vonchange.jdbc.abstractjdbc.core.JdbcCudRepository;
 import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +36,9 @@ import javax.sql.DataSource;
  */
 @Configuration
 public class JdbcConfiguration {
-
-
 	@Bean(name = "jdbcRepository")
 	public JdbcRepository initJdbcRepository(DataSource... dataSource){
-		return new JdbcRepositorySpringDataImpl(dataSource);
-	}
-	@Bean(name = "jdbcCudRepository")
-	public JdbcCudRepository initJdbcCudRepository(DataSource... dataSource){
-		return new JdbcCudRepositorySpringImpl(dataSource);
+		return new JdbcRepositorySpringImpl(dataSource);
 	}
 	@Bean
 	public DataSourceWrapperHelper initDataSourceWrapperHelper(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper){

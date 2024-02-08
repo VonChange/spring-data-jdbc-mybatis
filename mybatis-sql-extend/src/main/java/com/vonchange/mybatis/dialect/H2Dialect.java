@@ -24,7 +24,7 @@ public class H2Dialect implements Dialect {
 
     @Override
     public int getBigDataFetchSize() {
-        return 200;
+        return 500;
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.vonchange.mybatis.tpl;
 
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.common.util.bean.MethodAccessData;
 import com.vonchange.mybatis.tpl.annotation.ColumnNot;
 import com.vonchange.mybatis.tpl.annotation.InsertReturn;
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
@@ -12,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.beans.IntrospectionException;
@@ -61,35 +62,27 @@ public class EntityUtil {
         }
         if(UtilAll.UString.isBlank(tableName)){
             String tableEntity= clazz.getSimpleName();
-            if(clazz.getSimpleName().toLowerCase().endsWith("do")){
-                tableEntity=clazz.getSimpleName().substring(0,clazz.getSimpleName().length()-2);
-            }
             tableName= OrmUtil.toSql(tableEntity);
         }
         entity.setTableName(tableName);
         List<Field> fieldList = new ArrayList<>();
         getFieldList(clazz,fieldList);
-                //clazz.getDeclaredFields();// 只有本类
         List<EntityField> entityFieldList = new ArrayList<>();
         Map<String,Boolean> fieldMap = new HashMap<>();
         Column column;
         List<String> columnReturns = new ArrayList<>();
+        MethodAccessData methodAccessData = BeanUtil.methodAccessData(clazz);
+        String writeMethod;
         for (Field field : fieldList) {
             Class<?> type = field.getType();
-            Boolean isBaseType = ClazzUtils.isBaseType(type);
+            writeMethod="set"+ UtilAll.UString.capitalize(field.getName());
+            boolean isColumnField =methodAccessData.getMethodIndexMap()
+                    .containsKey(writeMethod);
             String fieldName = field.getName();
-            if(Boolean.FALSE.equals(isBaseType)||fieldMap.containsKey(fieldName)){
+            if(!isColumnField||fieldMap.containsKey(fieldName)){
                 continue;
             }
             EntityField entityField = new EntityField();
-            PropertyDescriptor descriptor = null;
-            try {
-                descriptor = new PropertyDescriptor(field.getName(),clazz);
-            } catch (IntrospectionException e) {
-                logger.error("", e);
-                continue;
-            }
-            entityField.setWriteMethod(descriptor.getWriteMethod());
             entityField.setFieldName(fieldName);
             column=field.getAnnotation(Column.class);
             String columnName =null;
@@ -101,10 +94,8 @@ public class EntityUtil {
             }
             entityField.setColumnName(columnName);
             entityField.setType(type);
-            entityField.setIsBaseType(isBaseType);
             entityField.setIsColumn(true);
             entityField.setUpdateNotNull(false);
-
             Annotation[] annotations = field.getAnnotations();
             for (Annotation annotation : annotations) {
                 if (annotation instanceof ColumnNot) {
@@ -116,13 +107,7 @@ public class EntityUtil {
                     entity.setIdFieldName(fieldName);
                     entity.setIdColumnName(columnName);
                     entity.setIdType(type.getSimpleName());
-                    if(null==entity.getGenColumn()){
-                        entity.setGenColumn(columnName);
-                    }
-                   // continue;
-                }
-                if(annotation instanceof GeneratedValue){
-                    entity.setGenColumn(columnName);
+                    entityField.setUpdateNotNull(true);
                 }
                 if(annotation instanceof InsertReturn){
                     columnReturns.add(columnName);

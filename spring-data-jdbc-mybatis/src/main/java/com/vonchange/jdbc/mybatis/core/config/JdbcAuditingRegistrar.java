@@ -18,7 +18,6 @@ package com.vonchange.jdbc.mybatis.core.config;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.auditing.IsNewAwareAuditingHandler;
 import org.springframework.data.auditing.config.AuditingBeanDefinitionRegistrarSupport;
 import org.springframework.data.auditing.config.AuditingConfiguration;
@@ -27,7 +26,7 @@ import org.springframework.util.Assert;
 import java.lang.annotation.Annotation;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} which registers additional beans in order to enable auditing via the
+ * {@link1 ImportBeanDefinitionRegistrar} which registers additional beans in order to enable auditing via the
  * {@link EnableJdbcAuditing} annotation.
  *
  * @see EnableJdbcAuditing

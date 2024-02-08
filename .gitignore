@@ -1,3 +1,4 @@
+/*/logs/
 /target/
 /*/target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -24,4 +25,3 @@
 /dist/
 /nbdist/
 /.nb-gradle/
-mini.code-workspace
