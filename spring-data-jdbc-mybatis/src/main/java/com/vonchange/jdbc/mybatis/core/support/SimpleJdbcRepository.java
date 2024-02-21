@@ -15,77 +15,101 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
+import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
-import java.util.List;
+import com.vonchange.mybatis.tpl.EntityUtil;
+import com.vonchange.mybatis.tpl.model.EntityInfo;
 
-public class SimpleJdbcRepository<T, ID> implements CrudJdbcRepository<T, ID> {
+import java.util.Optional;
 
-	private final JdbcRepository entityOperations;
+public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> {
+
+	private final CrudClient crudClient;
 	private final ConfigInfo configInfo;
 
-	public SimpleJdbcRepository(@Qualifier("jdbcRepository") JdbcRepository entityOperations, ConfigInfo configInfo) {
-		this.entityOperations = entityOperations;
+	public SimpleJdbcRepository(CrudClient crudClient, ConfigInfo configInfo) {
+		this.crudClient = crudClient;
 		this.configInfo = configInfo;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.data.repository.CrudRepository#save(S)
-	 */
+
 	@Override
-	public <S extends T> int save(S instance) {
-		return entityOperations.insert(configInfo.getDataSourceWrapper(), instance);
+	public <S extends T> S save(S entity) {
+		EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
+		Object idValue = BeanUtil.getPropertyT(entity,entityInfo.getIdFieldName());
+		if(null==idValue){
+			 insert(entity);
+			 return entity;
+		}
+		update(entity);
+		return entity;
 	}
 
 	@Override
-	public <S extends T> int saveAll(List<S> entities, int batchSize) {
-		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entities, true,batchSize);
-	}
-	@Override
-	public <S extends T> int saveAllNotNull(List<S> entities, int batchSize) {
-		return entityOperations.insertBatch(configInfo.getDataSourceWrapper(), entities,false, batchSize);
+	public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
+		 crudClient.insert(entities);
+		 return entities;
 	}
 
-	@Override
-	public <S extends T> int update(S entity) {
-		return entityOperations.update(configInfo.getDataSourceWrapper(), entity);
-	}
 
 	@Override
-	public <S extends T> int updateAllField(S entity) {
-		return entityOperations.updateAllField(configInfo.getDataSourceWrapper(), entity);
+	@SuppressWarnings("unchecked")
+	public Optional<T> findById(ID id) {
+		Class<T> tClass= (Class<T>) configInfo.getDomainType();
+		return Optional.ofNullable(crudClient.sqlId("findById").param(id).query(tClass).single());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T findById(ID id) {
+	public  Iterable<T> findAllById(Iterable<ID> ids) {
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
-		return  entityOperations.queryById(configInfo.getDataSourceWrapper(), tClass, id);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public  List<T> findAllById(List<ID> ids) {
-		Class<T> tClass= (Class<T>) configInfo.getDomainType();
-		return entityOperations.queryByIds(configInfo.getDataSourceWrapper(),tClass, ids);
+		return crudClient.sqlId("findByIdIn").param(ids).query(tClass).iterable();
 	}
 
 	@Override
 	public boolean existsById(ID id) {
-		return  entityOperations.existsById(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), id);
+		return  crudClient.sqlId(NameQueryUtil.simpleNameSql("existsById",configInfo.getDomainType())).param(id).query(Boolean.class).single();
 	}
 
 	@Override
-	public int deleteById(ID id) {
-		return entityOperations.deleteById(configInfo.getDataSourceWrapper(),  configInfo.getDomainType(), id);
+	public Iterable<T> findAll() {
+		return null;
 	}
 
 	@Override
-	public int deleteAllById(List<? extends ID> ids) {
-		return entityOperations.deleteByIds(configInfo.getDataSourceWrapper(), configInfo.getDomainType(), ids);
+	public long count() {
+		return 0;
 	}
 
+	@Override
+	public void deleteById(ID id) {
+		 crudClient.sqlId("deleteById").param(id).update();
+	}
+
+	@Override
+	public void delete(T entity) {
+	}
+
+	@Override
+	public void deleteAll(Iterable<? extends T> entities) {
+
+	}
+
+	@Override
+	public void deleteAll() {
+
+	}
+
+
+	@Override
+	public <S extends T> int insert(S entity) {
+		return crudClient.insert(entity);
+	}
+
+	@Override
+	public <S extends T> int update(S entity) {
+		return crudClient.update(entity);
+	}
 }

@@ -19,6 +19,7 @@ package com.vonchange.jdbc.abstractjdbc.handler;
 
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.abstractjdbc.core.CrudUtil;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +95,8 @@ public class MapBeanListHandler<T> implements ResultSetExtractor<Map<String, T>>
       T entity ;
         Map<String,Object> newMap;
           do {
-              newMap=ConvertMap.newMap(HandlerUtil.rowToMap(rs));
-              entity=(T) ConvertMap.convertMap(type,newMap);
+              newMap= HandlerUtil.rowToMap(rs);
+              entity=(T) ConvertMap.toBean(newMap,type);
               String[] keyInMaps= new String[]{keyInMap};
               if(keyInMap.indexOf(ConstantJdbc.MAPFIELDSPLIT)!=-1){
                   keyInMaps=keyInMap.split(ConstantJdbc.MAPFIELDSPLIT);

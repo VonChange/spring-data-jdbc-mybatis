@@ -2,12 +2,11 @@ package com.vonchange.jdbc.abstractjdbc.util;
 
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.abstractjdbc.model.EnumStep;
 import com.vonchange.jdbc.abstractjdbc.model.SplitMap;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.MybatisTpl;
 import com.vonchange.mybatis.tpl.OrmUtil;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
@@ -21,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.vonchange.common.util.StringPool.EMPTY;
 
 public class NameQueryUtil {
     private static final Logger log = LoggerFactory.getLogger(NameQueryUtil.class);
@@ -122,7 +119,28 @@ public class NameQueryUtil {
         }
         return "order by"+sql.toString();
     }
-    public static SqlWithParam nameSql(String method,Class<?> entityType, Map<String, Object> parameter){
+
+    private static Map<String,String> methodMap=new HashMap<>();
+    static {
+        methodMap.put("findById","select ${columns} from ${table} where ${idColumn} = ?");
+        methodMap.put("deleteById","delete  from ${table} where ${idColumn} = ?");
+        methodMap.put("deleteAll","delete from ${table}");
+        methodMap.put("existsById","select count(1)  from ${table} where ${idColumn} = ?");
+        methodMap.put("findAll","select ${columns} from ${table}");
+        methodMap.put("countAll","select count(1) {} from ${table}");
+    }
+
+    public static String simpleNameSql(String method,Class<?> entityType){
+        EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
+        return UtilAll.UString.tplByMap(methodMap.get(method),new MyHashMap().set("table",entityInfo.getTableName()).set("idColumn",entityInfo.getIdColumnName())
+                .set("columns",entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")))
+        );
+    }
+    public static SqlWithParam nameSql(String method,Class<?> entityType, List<Object> params){
+        if(methodMap.containsKey(method)){
+            String sql= simpleNameSql(method,entityType);
+            return new SqlWithParam(sql, params.toArray());
+        }
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
         if(!(method.startsWith("find")||method.startsWith("count"))){
             throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,must start with find or count,please define in the markdown",method);
@@ -144,10 +162,6 @@ public class NameQueryUtil {
         int index =0;
         SplitMap lastSplit =new SplitMap("",EnumStep.Column);
         int i=0;
-        List<Object> objectList= new ArrayList<>();
-        for (Map.Entry<String, Object> entry : parameter.entrySet()) {
-            objectList.add(entry.getValue());
-        }
         while (i<splits.length) {
             StringBuilder stringBuilder=new StringBuilder(splits[i]);
             String sqlSplit=null;
@@ -175,7 +189,7 @@ public class NameQueryUtil {
             if(null!=sqlSplit){
                 EnumStep thisStep= columnsMap.get(mapKey).getEnumStep();
                 if(thisStep.equals(EnumStep.Join)||thisStep.equals(EnumStep.End)){
-                    index=genMybatisSql(lastSplit,sql,index,objectList.get(index));
+                    index=genMybatisSql(lastSplit,sql,index,params.get(index));
                     index++;
                 }
                 sql.append(sqlSplit).append(StringPool.SPACE);
@@ -183,12 +197,12 @@ public class NameQueryUtil {
             }
         }
         if(lastSplit.getEnumStep().equals(EnumStep.Column)||lastSplit.getEnumStep().equals(EnumStep.Condition)){
-            genMybatisSql(lastSplit,sql,index,objectList.get(index));
+            genMybatisSql(lastSplit,sql,index,params.get(index));
         }
         SqlWithParam sqlWithParam = new SqlWithParam();
         sqlWithParam.setSql(sql.toString());
         List<Object> newParams= new ArrayList<>();
-        for (Object value : objectList) {
+        for (Object value : params) {
             if (value instanceof Collection) {
                 Collection<?> collection= (Collection<?>) value;
                 newParams.addAll(collection);

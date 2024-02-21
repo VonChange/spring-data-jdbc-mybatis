@@ -8,9 +8,10 @@ public class DataSourceWrapper {
     private DataSource dataSource;
     private String key;
     private Dialect dialect;
-    public DataSourceWrapper(DataSource dataSource,String key){
+    public DataSourceWrapper(DataSource dataSource,String key,Dialect dialect){
         this.dataSource=dataSource;
         this.key=key;
+        this.dialect=dialect;
     }
 
     public DataSource getDataSource() {

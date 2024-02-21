@@ -6,18 +6,18 @@ import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
 import com.vonchange.mybatis.tpl.annotation.ColumnNot;
+import com.vonchange.mybatis.tpl.annotation.InsertOnlyProperty;
 import com.vonchange.mybatis.tpl.annotation.InsertReturn;
 import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -34,12 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EntityUtil {
     private static final Map<String, EntityInfo> entityMap = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(EntityUtil.class);
-    public static void initEntityInfo(Class<?> clazz) {
+   /* public static void initEntityInfo(Class<?> clazz) {
         String entityName = clazz.getName();
         if(!entityMap.containsKey(entityName)){
             initEntity(clazz);
         }
-    }
+    }*/
 
     public static  EntityInfo getEntityInfo(Class<?> clazz){
         String entityName = clazz.getName();
@@ -50,10 +50,11 @@ public class EntityUtil {
     }
 
     private static synchronized   void initEntity(Class<?> clazz) {
-        logger.debug("初始化 {}", clazz.getName());
         if(ClazzUtils.isBaseType(clazz)){
             return;
         }
+        String entityName=clazz.getName();
+        logger.debug("init {}",entityName);
         EntityInfo entity = new EntityInfo();
         Table table=clazz.getAnnotation(Table.class);
         String tableName=null;
@@ -77,7 +78,7 @@ public class EntityUtil {
             Class<?> type = field.getType();
             writeMethod="set"+ UtilAll.UString.capitalize(field.getName());
             boolean isColumnField =methodAccessData.getMethodIndexMap()
-                    .containsKey(writeMethod);
+                    .containsKey(writeMethod)&&ClazzUtils.isBaseType(type);
             String fieldName = field.getName();
             if(!isColumnField||fieldMap.containsKey(fieldName)){
                 continue;
@@ -98,11 +99,11 @@ public class EntityUtil {
             entityField.setUpdateNotNull(false);
             Annotation[] annotations = field.getAnnotations();
             for (Annotation annotation : annotations) {
-                if (annotation instanceof ColumnNot) {
+                if (annotation instanceof Transient||annotation instanceof ColumnNot) {
                     entityField.setIsColumn(false);
                     continue;
                 }
-                if (annotation instanceof Id) {
+                if (annotation instanceof Id||annotation instanceof org.springframework.data.annotation.Id) {
                     entityField.setIsId(true);
                     entity.setIdFieldName(fieldName);
                     entity.setIdColumnName(columnName);
@@ -114,6 +115,9 @@ public class EntityUtil {
                 }
                 if (annotation instanceof UpdateNotNull) {
                     entityField.setUpdateNotNull(true);
+                }
+                if (annotation instanceof InsertOnlyProperty) {
+                    entityField.setUpdateNot(true);
                 }
             }
             entityFieldList.add(entityField);

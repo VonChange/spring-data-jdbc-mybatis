@@ -15,11 +15,8 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Interface for generic CRUD operations on a repository for a specific type.
@@ -28,19 +25,9 @@ import java.util.Optional;
  * @author Eberhard Wolff
  */
 @NoRepositoryBean
-public interface CrudJdbcRepository<T, ID> extends Repository<T, ID> {
+public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
 
-	<S extends T> int save(S entity);
-
-	/**
-	 * saveAll null will save
-	 * @param entities
-	 * @param batchSize
-	 * @param <S>
-	 */
-	<S extends T> int saveAll(List<S> entities,int batchSize);
-
-	<S extends T> int saveAllNotNull(List<S> entities,int batchSize);
+	<S extends T> int insert(S entity);
 
 	/**
 	 * update not null fields
@@ -48,18 +35,5 @@ public interface CrudJdbcRepository<T, ID> extends Repository<T, ID> {
 	 * @param <S>
 	 */
 	<S extends T> int  update(S entity);
-
-	/**
-	 *  update all fields
-	 * @param entity
-	 * @param <S>
-	 */
-	<S extends T> int  updateAllField(S entity);
-
-	T findById(ID id);
-	List<T> findAllById(List<ID> ids);
-	boolean existsById(ID id);
-	int deleteById(ID id);
-	int deleteAllById(List<? extends ID> ids);
 
 }

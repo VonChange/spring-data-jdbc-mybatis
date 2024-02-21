@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -65,12 +63,7 @@ public class BeanHandler<T> implements ResultSetExtractor<T> {
 	}
 
 	private T toBean(ResultSet rs, Class<? extends T> type) throws SQLException {
-		T entity = null;
-		try {
-			entity = ConvertMap.convertMap(type,ConvertMap.newMap(HandlerUtil.rowToMap(rs)));
-		} catch (IntrospectionException  | IllegalAccessException | InvocationTargetException e) {
-			log.error("exception",e);
-		}
+		T entity = ConvertMap.toBean(HandlerUtil.rowToMap(rs),type);
 		return entity;
 	}
 }

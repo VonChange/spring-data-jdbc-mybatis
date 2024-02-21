@@ -15,13 +15,11 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
-import com.vonchange.common.util.StringPool;
-import com.vonchange.common.util.UtilAll;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
+import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
 import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.projection.ProjectionFactory;
@@ -29,9 +27,7 @@ import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.util.Assert;
 
-import java.io.InputStream;
 import java.lang.reflect.Method;
 
 /**
@@ -45,18 +41,15 @@ import java.lang.reflect.Method;
  */
 class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 
-	private final JdbcRepository operations;
-	private final DataSourceWrapperHelper dataSourceWrapperHelper;
+	private final JdbcConfiguration jdbcConfiguration;
+	//private final DataSourceWrapperHelper dataSourceWrapperHelper;
 
 	/**
 	 * Creates a new {@link JdbcQueryLookupStrategy} for the given
 	 *
 	 */
-	JdbcQueryLookupStrategy(@Qualifier("jdbcRepository")JdbcRepository operations, DataSourceWrapperHelper dataSourceWrapperHelper) {
-
-		Assert.notNull(operations, "operations must not be null!");
-		this.operations = operations;
-		this.dataSourceWrapperHelper=dataSourceWrapperHelper;
+	JdbcQueryLookupStrategy(@Qualifier("jdbcConfiguration")JdbcConfiguration jdbcConfiguration) {
+		this.jdbcConfiguration = jdbcConfiguration;
 	}
 
 	/*
@@ -68,14 +61,14 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
 		String configLoc = JdbcMybatisUtil.interfaceNameMd(repositoryMetadata.getRepositoryInterface());
 		DataSourceKey dataSourceKey=	repositoryMetadata.getRepositoryInterface().getAnnotation(DataSourceKey.class);
-		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
+		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value(): ConstantJdbc.DataSourceDefault;
 		JdbcQueryMethod queryMethod = new JdbcQueryMethod(method, repositoryMetadata, projectionFactory);
 		ConfigInfo configInfo= new ConfigInfo();
 		configInfo.setMethod(method.getName());
 		configInfo.setLocation(configLoc);
 		configInfo.setDomainType(repositoryMetadata.getDomainType());
-		configInfo.setDataSourceWrapper(null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null);
-		return new JdbcRepositoryQuery(queryMethod, operations,configInfo);
+		CrudClient crudClient= jdbcConfiguration.getCrudClient(dataSourceKeyValue);
+		return new JdbcRepositoryQuery(queryMethod, crudClient,configInfo);
 	}
 
 

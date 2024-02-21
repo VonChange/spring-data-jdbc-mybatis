@@ -1,11 +1,11 @@
 package com.vonchange.jdbc.abstractjdbc.util;
 
+import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.OrmUtil;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 
@@ -13,9 +13,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +23,16 @@ public class ConvertMap {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Map<String, Object> toMap(T entity, Class<?> clazz) throws IntrospectionException {
+    public static <T> Map<String, Object> toMap(T entity)  {
         if (entity instanceof Map) {
             return (Map<String, Object>) entity;
         }
-        BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+        BeanInfo beanInfo = null;
+        try {
+            beanInfo = Introspector.getBeanInfo(entity.getClass());
+        } catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         String propertyName;
         Object value;
@@ -50,31 +53,25 @@ public class ConvertMap {
      * Map to JavaBean
      */
     @SuppressWarnings("unchecked")
-    public static <T> T convertMap(T entity, Class<?> type, Map<String, Object> map)
-            throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-        if (null != entity) {
-            type = entity.getClass();
-        }
-        if (null == entity) {
-            try {
-                entity = (T) type.newInstance();
-            } catch (InstantiationException e) {
-                throw new JdbcMybatisRuntimeException(
-                        "java.lang.InstantiationException {} need no-arguments constructor",type.getName());
-            }
+    public static <T> T toBean(Map<String, Object> orgMap,T entity) {
+        Assert.notNull(entity,"entity can not null");
+        Class<?> type = entity.getClass();
+        Map<String, Object> newMap=new HashMap<>();
+        for (Map.Entry<String, Object> entry : orgMap.entrySet()) {
+            newMap.put(entry.getKey().toUpperCase(),entry.getValue());
         }
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
         if (null != entityInfo) {
             List<EntityField> entityFieldList = entityInfo.getEntityFields();
             for (EntityField entityField : entityFieldList) {
-                String columnNameLower = entityField.getColumnName().toLowerCase();
-                String fieldNameLower = entityField.getFieldName().toLowerCase();
+                String columnNameUpper = entityField.getColumnName().toUpperCase();
+                String fieldNameUpper = entityField.getFieldName().toUpperCase();
                 Object value = null;
-                if (map.containsKey(fieldNameLower)) {
-                    value = map.get(fieldNameLower);
+                if (newMap.containsKey(columnNameUpper)) {
+                    value = newMap.get(columnNameUpper);
                 }
-                if (map.containsKey(columnNameLower)) {
-                    value = map.get(columnNameLower);
+                if (newMap.containsKey(fieldNameUpper)) {
+                    value = newMap.get(fieldNameUpper);
                 }
                 if (null != value) {
                     value = ConvertUtil.toObject(value, entityField.getType());
@@ -86,24 +83,19 @@ public class ConvertMap {
         return entity;
     }
 
-    public static <T> T convertMap(Class<?> type, Map<String, Object> map)
-            throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-        return convertMap(null, type, map);
-    }
-
-    public static Map<String, Object> newMap(Map<String, Object> map) {
-        if (null == map || map.isEmpty()) {
-            return new LinkedHashMap<>();
+    public static <T> T toBean(Map<String, Object> map,Class<?> type){
+        Assert.notNull(type,"need class type");
+        T   entity =null;
+        try {
+           entity = (T) type.newInstance();
+        } catch (InstantiationException e) {
+            throw new JdbcMybatisRuntimeException(
+                    "java.lang.InstantiationException {} need no-arguments constructor",type.getName());
+        } catch (IllegalAccessException e) {
+            throw new JdbcMybatisRuntimeException(
+                    "java.lang.IllegalAccessException {} need no-arguments constructor",type.getName());
         }
-        Map<String, Object> newMap = new LinkedHashMap<>();
-        String key;
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            key = entry.getKey();
-            newMap.put(key.toLowerCase(), entry.getValue());
-            key = OrmUtil.toFiled(entry.getKey());
-            newMap.put(key.toLowerCase(), entry.getValue());
-        }
-        return newMap;
+        return toBean(map,entity);
     }
 
 }

@@ -21,10 +21,10 @@ public class Constant {
     public  static final String MDID= "### id";
     public  static final String MDVERSION= "#### version";
     public  static final String MDINITVERSION= "1.0";
-    public static  class  DataSource{
+ /*   public static  class  DataSource{
         public static final String DEFAULT = "dataSource";
         public static final String FLAG = "@ds:";
-    }
+    }*/
     public static final String COUNTFLAG = "Count";
     public static final String MAPFIELDSPLIT = "#";
     public static final String TABLES = "tables";

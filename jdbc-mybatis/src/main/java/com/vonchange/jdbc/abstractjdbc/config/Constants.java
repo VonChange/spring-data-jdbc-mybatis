@@ -16,7 +16,7 @@ public class Constants {
 		public static final String IDPREF = "--";
 	}
 	public  enum EnumRWType {
-		read(0,"读"),write(0,"写");
+		read(0,"读"),write(1,"写");
 		private Integer value;
 		private String desc;
 		EnumRWType(Integer value, String desc){

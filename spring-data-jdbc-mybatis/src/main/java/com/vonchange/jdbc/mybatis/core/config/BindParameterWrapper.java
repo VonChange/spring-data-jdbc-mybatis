@@ -1,14 +1,11 @@
 package com.vonchange.jdbc.mybatis.core.config;
 
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Map;
 
 public class BindParameterWrapper<T> {
     private Pageable pageable;
-    private AbstractPageWork<T> abstractPageWork;
-    private Class<? extends T> abstractPageWorkClass;
     private Map<String, Object> parameter;
     private Object firstParam;
 
@@ -18,14 +15,6 @@ public class BindParameterWrapper<T> {
 
     public void setFirstParam(Object firstParam) {
         this.firstParam = firstParam;
-    }
-
-    public AbstractPageWork<T> getAbstractPageWork() {
-        return abstractPageWork;
-    }
-
-    public void setAbstractPageWork(AbstractPageWork<T> abstractPageWork) {
-        this.abstractPageWork = abstractPageWork;
     }
 
     public Pageable getPageable() {
@@ -44,11 +33,4 @@ public class BindParameterWrapper<T> {
         this.parameter = parameter;
     }
 
-    public Class<? extends T> getAbstractPageWorkClass() {
-        return abstractPageWorkClass;
-    }
-
-    public void setAbstractPageWorkClass(Class<? extends T> abstractPageWorkClass) {
-        this.abstractPageWorkClass = abstractPageWorkClass;
-    }
 }

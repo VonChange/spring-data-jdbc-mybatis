@@ -15,15 +15,20 @@
  */
 package com.vonchange.jdbc.mybatis.core.config;
 
-import com.vonchange.jdbc.mybatis.repository.JdbcRepositorySpringImpl;
-
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
+import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
+import com.vonchange.jdbc.abstractjdbc.core.DefaultCrudClient;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.dialect.MySQLDialect;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Beans that must be registered for Spring Data JDBC to work.
@@ -34,14 +39,48 @@ import javax.sql.DataSource;
  * @author Michael Simons
  * @author Christoph Strobl
  */
-@Configuration
+@Configuration("jdbcConfiguration")
 public class JdbcConfiguration {
-	@Bean(name = "jdbcRepository")
-	public JdbcRepository initJdbcRepository(DataSource... dataSource){
-		return new JdbcRepositorySpringImpl(dataSource);
+
+    public static final Map<String, CrudClient> crudClientMap = new ConcurrentHashMap<>();
+	private Dialect defaultDialect;
+	private DataSource dataSource;
+
+	public CrudClient getCrudClient(String key){
+		if(!crudClientMap.containsKey(key)){
+			throw new JdbcMybatisRuntimeException("datasource {} not found",key);
+		}
+		return crudClientMap.get(key);
 	}
-	@Bean
-	public DataSourceWrapperHelper initDataSourceWrapperHelper(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper){
-		return new DataSourceWrapperHelperImpl(dataSourceWrapper);
+	@Autowired
+	public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
+	@Autowired
+	public void setDefaultDialect(@Autowired(required = false) Dialect dialect) {
+		if(null==dialect){
+			defaultDialect=new MySQLDialect();
+			return;
+		}
+		this.defaultDialect=dialect;
+	}
+	@Autowired
+	public void setDataSourceWrappers(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper) {
+		for (DataSourceWrapper sourceWrapper : dataSourceWrapper) {
+			if(null==sourceWrapper.getDialect()){
+				sourceWrapper.setDialect(new MySQLDialect());
+			}
+			crudClientMap.put(sourceWrapper.getKey(),
+					new DefaultCrudClient(sourceWrapper));
+		}
+		if(!crudClientMap.containsKey(ConstantJdbc.DataSourceDefault)){
+			DataSourceWrapper defaultDataSourceWrapper=defaultDataSource();
+			crudClientMap.put(defaultDataSourceWrapper.getKey(),
+					new DefaultCrudClient(defaultDataSourceWrapper));
+		}
+	}
+	private DataSourceWrapper defaultDataSource() {
+		return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault,this.defaultDialect);
+	}
+
 }

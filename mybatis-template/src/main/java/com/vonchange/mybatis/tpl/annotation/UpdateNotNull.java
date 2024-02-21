@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *排除字段
+ * update all field, but null value not update
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})

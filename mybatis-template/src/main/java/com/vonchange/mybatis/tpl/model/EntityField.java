@@ -1,7 +1,5 @@
 package com.vonchange.mybatis.tpl.model;
 
-import java.lang.reflect.Method;
-
 /**
  * 实体字段信息
  * 
@@ -15,6 +13,7 @@ public class EntityField {
 	private Boolean isId = false;
 
 	private Boolean updateNotNull;
+	private Boolean updateNot=false;
 
 	public String getFieldName() {
 		return fieldName;
@@ -59,8 +58,13 @@ public class EntityField {
 		this.updateNotNull = updateNotNull;
 	}
 
+	public Boolean getUpdateNot() {
+		return updateNot;
+	}
 
-
+	public void setUpdateNot(Boolean updateNot) {
+		this.updateNot = updateNot;
+	}
 
 	public Class<?> getType() {
 		return type;

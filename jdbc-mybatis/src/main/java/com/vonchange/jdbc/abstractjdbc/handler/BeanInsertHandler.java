@@ -25,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -72,11 +70,7 @@ public class BeanInsertHandler<T> implements ResultSetExtractor<T> {
 		if(UtilAll.UString.isBlank(idColumnName)){
 			throw new JdbcMybatisRuntimeException("need @Id in your entity");
 		}
-		try {
-			ConvertMap.convertMap(entity,null,ConvertMap.newMap(HandlerUtil.rowToMap(rs,idColumnName)));
-		} catch (IntrospectionException  | IllegalAccessException | InvocationTargetException e) {
-			log.error("exception",e);
-		}
+		ConvertMap.toBean(HandlerUtil.rowToMap(rs,idColumnName),entity);
 		return entity;
 	}
 }

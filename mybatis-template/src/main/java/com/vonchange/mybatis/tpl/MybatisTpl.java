@@ -10,7 +10,6 @@ import com.vonchange.common.ibatis.scripting.xmltags.XMLLanguageDriver;
 import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
@@ -31,28 +30,26 @@ public class MybatisTpl {
     private MybatisTpl() {
         throw new IllegalStateException("Utility class");
     }
-    private   static final String SQL_START= "@sql";
 
-     public static SqlWithParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
-        String sqlInXml=getSql(sqlId);
-         SqlWithParam sqlWithParam= new SqlWithParam();
+     public static SqlWithParam generate(String sqlId, Map<String,Object> parameter){
+        String sqlInXml=MarkdownUtil.getContent(sqlId);
+         return generate(sqlId,sqlInXml,parameter);
+     }
+    @SuppressWarnings("unchecked")
+    public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter){
+        SqlWithParam sqlWithParam= new SqlWithParam();
         if(UtilAll.UString.isBlank(sqlInXml)){
             sqlWithParam.setSql(null);
             sqlWithParam.setParams(null);
             return  sqlWithParam;
         }
-         sqlInXml= DynamicSql.dynamicSql(sqlInXml,dialect);
-         sqlInXml=sqlInXml.trim();
-         return generate(sqlId,sqlInXml,parameter);
-     }
-    @SuppressWarnings("unchecked")
-    public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter){
+        sqlInXml= DynamicSql.dynamicSql(sqlInXml);
+        sqlInXml=sqlInXml.trim();
         if(sqlInXml.contains("</")){
             sqlInXml="<script>"+sqlInXml+"</script>";
             sqlInXml =  UtilAll.UString.replaceEach(sqlInXml,new String[]{" > "," < "," >= "," <= "," <> "},
                     new String[]{" &gt; "," &lt; "," &gt;= "," &lt;= "," &lt;&gt; "});
         }
-        SqlWithParam sqlWithParam= new SqlWithParam();
         if(null==parameter){
             parameter=new LinkedHashMap<>();
         }
@@ -106,12 +103,6 @@ public class MybatisTpl {
         sqlWithParam.setParams(args);
         sqlWithParam.setPropertyNames(propertyNames);
         return sqlWithParam;
-    }
-    private static String getSql(String sqlId) {
-        if(sqlId.startsWith(SQL_START)){
-            return sqlId.substring(SQL_START.length());
-        }
-        return MarkdownUtil.getContent(sqlId);
     }
 
 

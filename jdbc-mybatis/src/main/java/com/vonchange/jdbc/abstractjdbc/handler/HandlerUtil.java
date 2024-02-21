@@ -1,7 +1,7 @@
 package com.vonchange.jdbc.abstractjdbc.handler;
 
 
-import com.vonchange.mybatis.tpl.OrmUtil;
+import org.springframework.jdbc.support.JdbcUtils;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -15,21 +15,12 @@ import java.util.Map;
  */
 public class HandlerUtil {
     private HandlerUtil() { throw new IllegalStateException("Utility class");}
-    public static Map<String,Object> rowToMap(ResultSet rs,boolean lower,boolean orm,String idColumnName) throws SQLException {
+    public static Map<String,Object> rowToMap(ResultSet rs,String idColumnName) throws SQLException {
         Map<String,Object> resultMap = new LinkedHashMap<>();
         ResultSetMetaData rsmd = rs.getMetaData();
         int cols = rsmd.getColumnCount();
         for (int col = 1; col <= cols; col++) {
-            String columnName = rsmd.getColumnLabel(col);
-            if (null == columnName || 0 == columnName.length()) {
-                columnName = rsmd.getColumnName(col);
-            }
-            if(lower){
-                columnName=columnName.toLowerCase();
-            }
-            if(orm){
-                columnName= OrmUtil.toFiled(columnName.toLowerCase());
-            }
+            String columnName = JdbcUtils.lookupColumnName(rsmd, col);
             if(columnName.equalsIgnoreCase("GENERATED_KEY")){
                 columnName=idColumnName;
             }
@@ -40,11 +31,8 @@ public class HandlerUtil {
     public static Map<String,Object> rowToMap(ResultSet rs) throws SQLException{
         return  rowToMap(rs,false,false);
     }
-    public static Map<String,Object> rowToMap(ResultSet rs,String idColumnName) throws SQLException{
-        return  rowToMap(rs,false,false,idColumnName);
-    }
     public static Map<String,Object> rowToMap(ResultSet rs,boolean lower,boolean orm) throws SQLException {
-        return rowToMap(rs,lower,orm,null);
+        return rowToMap(rs,null);
     }
 
 }

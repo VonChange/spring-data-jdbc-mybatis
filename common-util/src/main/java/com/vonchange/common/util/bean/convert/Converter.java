@@ -71,6 +71,7 @@ public class Converter {
 		convertMap.put(Long.class, new LongConverter());
 		convertMap.put(Short.class, new ShortConverter());
 		convertMap.put(Number.class,new NumberConverter());
+		convertMap.put(CharSequence.class, new StringConverter());
 		convertMap.put(String.class, new StringConverter());
 		convertMap.put(LocalDate.class, new LocalDateConverter());
 		convertMap.put(LocalDateTime.class, new LocalDateTimeConverter());

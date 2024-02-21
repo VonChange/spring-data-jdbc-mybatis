@@ -15,30 +15,22 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
+import com.vonchange.jdbc.mybatis.core.config.BindParameterWrapper;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
-import com.vonchange.common.util.ClazzUtils;
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.mybatis.core.config.BindParameterWrapper;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A query to be executed based on a repository method, it's annotated SQL query
@@ -56,7 +48,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	private static final String PARAMETER_NEEDS_TO_BE_NAMED = "For queries with named parameters you need to provide names for method parameters. Use @Param for query method parameters, or when on Java 8+ use the javac flag -parameters.";
 
 	private final JdbcQueryMethod queryMethod;
-	private final JdbcRepository operations;
+	private final CrudClient operations;
 	private final ConfigInfo configInfo;
 
 	/**
@@ -66,7 +58,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	 * @param queryMethod must not be {@literal null}.
 	 * @param operations  must not be {@literal null}.
 	 */
-	JdbcRepositoryQuery(JdbcQueryMethod queryMethod, @Qualifier("jdbcRepository") JdbcRepository operations,
+	JdbcRepositoryQuery(JdbcQueryMethod queryMethod,  CrudClient operations,
 			ConfigInfo configInfo) {
 
 		Assert.notNull(queryMethod, "Query method must not be null!");
@@ -104,42 +96,29 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			nameQuery=true;
 			sqlId=configInfo.getMethod();
 		}
-		DataSourceWrapper dataSourceWrapper = configInfo.getDataSourceWrapper();
-		if (null == dataSourceWrapper && queryMethod.isReadDataSource()) {
-			dataSourceWrapper = operations.getReadDataSource();
-		}
 		if (queryMethod.isBatchUpdate()) {
-			return operations.batchUpdate(dataSourceWrapper, sqlId, (List<Object>) parameters.getFirstParam(),
-					queryMethod.getBatchSize());
+			return operations.sqlId(sqlId).updateBatch((List<Object>) parameters.getFirstParam());
 		}
 		if (queryMethod.isUpdateQuery() || configInfo.getMethod().startsWith("update")
-				|| configInfo.getMethod().startsWith("delete")) {
-			int updatedCount = operations.update(dataSourceWrapper, sqlId, parameters.getParameter());
+				|| configInfo.getMethod().startsWith("delete")||configInfo.getMethod().startsWith("insert")
+				|| configInfo.getMethod().startsWith("save")) {
+			int updatedCount = operations.sqlId(sqlId).params(parameters.getParameter()).update();
 			Class<?> returnedObjectType = queryMethod.getReturnedObjectType();
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
-		}
-		if (queryMethod.isInsertQuery() || configInfo.getMethod().startsWith("insert")
-				|| configInfo.getMethod().startsWith("save")) {
-			return operations.insert(dataSourceWrapper, sqlId, parameters.getParameter());
-		}
-		if (null != parameters.getAbstractPageWork()) {
-			operations.queryBigData(dataSourceWrapper, parameters.getAbstractPageWorkClass(), sqlId,
-					parameters.getAbstractPageWork(), parameters.getParameter());
 		}
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
 			if(nameQuery){
 				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
 			}
-			return operations.queryList(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-					parameters.getParameter());
+			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).list();
 		}
 		if (queryMethod.isPageQuery()) {
 			if(nameQuery){
 				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
-			}
-			return operations.queryPage(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-					parameters.getPageable(), parameters.getParameter());
+			}	//@TODO
+			//return operations.queryPage(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
+					//parameters.getPageable(), parameters.getParameter());
 		}
 
 		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
@@ -147,14 +126,12 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 				Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
 				parameters.getParameter().put(ConstantJdbc.EntityType,configInfo.getDomainType());
 			}
-			return operations.queryOneColumn(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-					parameters.getParameter());
+			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
 		}
 		if(nameQuery){
 			parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
 		}
-		return operations.queryOne(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-				parameters.getParameter());
+		return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
 	}
 
 	/*
@@ -176,16 +153,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if (objects.length > 0) {
 			if (parameters.getPageableIndex() >= 0) {
 				bindParameterWrapper.setPageable((Pageable) objects[parameters.getPageableIndex()]);
-			}
-			Class<?> type = queryMethod.getParameters().getParameter(0).getType();
-			if (ClassUtils.isAssignable(AbstractPageWork.class, type)) {
-				bindParameterWrapper.setAbstractPageWork(ClazzUtils.cast(objects[0]));
-				Type superClass = objects[0].getClass().getGenericSuperclass();
-				if (superClass instanceof ParameterizedType) {
-					ParameterizedType pType = (ParameterizedType) superClass;
-					bindParameterWrapper
-							.setAbstractPageWorkClass((Class<? extends T>) pType.getActualTypeArguments()[0]);
-				}
 			}
 			bindParameterWrapper.setFirstParam(objects[0]);
 		}

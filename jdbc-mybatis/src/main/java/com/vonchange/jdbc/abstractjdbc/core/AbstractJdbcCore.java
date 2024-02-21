@@ -24,12 +24,10 @@ import com.vonchange.jdbc.abstractjdbc.handler.ScalarHandler;
 import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.abstractjdbc.template.MyJdbcTemplate;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
-import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.abstractjdbc.util.sql.SqlFill;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.MybatisTpl;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
@@ -38,9 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.util.CollectionUtils;
 
-import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -126,7 +122,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         if (null == entityList || entityList.isEmpty()) {
             return 0;
         }
-        SqlWithParam sqlParameter = generateInsertSql(entityList.get(0),ifNullInsert);
+        SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entityList.get(0),ifNullInsert);
         String sql = sqlParameter.getSql();
         List<Object[]> list = new ArrayList<>();
         int i = 0;
@@ -139,7 +135,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
                 listSplit.add(list);
                 list = new ArrayList<>();
             }
-            list.add(generateInsertSqlParams(t,ifNullInsert));
+            list.add(CrudUtil.generateInsertSqlParams(t,ifNullInsert));
             i++;
         }
         if (!list.isEmpty()) {
@@ -155,7 +151,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public final <T> int insert(DataSourceWrapper dataSourceWrapper, T entity) {
-        SqlWithParam sqlParameter = generateInsertSql(entity,false);
+        SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entity,false);
         return insert(dataSourceWrapper, entity, sqlParameter.getSql(), sqlParameter.getColumnReturns(),
                 sqlParameter.getParams());
     }
@@ -165,7 +161,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public final <T> int update(DataSourceWrapper dataSourceWrapper, T entity) {
-        SqlWithParam sqlParameter = generateUpdateEntitySql(entity, false);
+        SqlWithParam sqlParameter = CrudUtil.generateUpdateEntitySql(entity, false);
         return update(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
@@ -174,7 +170,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public final <T> int updateAllField(DataSourceWrapper dataSourceWrapper, T entity) {
-        SqlWithParam sqlParameter = generateUpdateEntitySql(entity, true);
+        SqlWithParam sqlParameter = CrudUtil.generateUpdateEntitySql(entity, true);
         return update(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
@@ -183,111 +179,10 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
 
-    private void initEntityInfo(Class<?> clazz) {
-        EntityUtil.initEntityInfo(clazz);
-    }
-
-    private static Object getPublicPro(Object bean, String name) {
-        return BeanUtil.getProperty(bean, name);
-    }
-
-    private <T> Object[] generateInsertSqlParams(T entity,boolean ifNullInsert) {
-        initEntityInfo(entity.getClass());
-        EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
-        List<EntityField> entityFieldList = entityInfo.getEntityFields();
-        List<Object> values = new ArrayList<>();
-        Object value ;
-        for (EntityField entityField : entityFieldList) {
-             value= BeanUtil.getProperty(entity,entityField.getFieldName());
-             if(insertColumn(entityField,value,ifNullInsert)){
-                 values.add(value);
-             }
-        }
-        return values.toArray();
-    }
-    private boolean insertColumn(EntityField entityField,Object value,boolean ifNullInsert){
-        if(entityField.getIsId()){
-            if(null!=value){
-                return true;
-            }
-        }
-        if(entityField.getIsColumn()){
-            if(null!=value){
-               return true;
-            }
-            return ifNullInsert;
-        }
-        return false;
-    }
-
-    private <T> SqlWithParam generateInsertSql(T entity,boolean ifNullInsert) {
-        initEntityInfo(entity.getClass());
-        SqlWithParam sqlParameter = new SqlWithParam();
-        EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
-        String tableName = entityInfo.getTableName();
-        List<String> columns=new ArrayList<>();
-        List<String> params=new ArrayList<>();
-        List<Object> values=new ArrayList<>();
-        List<EntityField> entityFieldList = entityInfo.getEntityFields();
-        Object value;
-        for (EntityField entityField : entityFieldList) {
-            if(entityField.getIsColumn()){
-                value= BeanUtil.getProperty(entity,entityField.getFieldName());
-                if(insertColumn(entityField,value,ifNullInsert)){
-                    columns.add(entityField.getColumnName());
-                    params.add(StringPool.QUESTION_MARK);
-                    values.add(value);
-                }
-            }
-        }
-        String insertSql = UtilAll.UString.format("insert into {}({}) values ({})", tableName,
-                String.join(StringPool.COMMA,columns),String.join(StringPool.COMMA,params));
-        sqlParameter.setColumnReturns(entityInfo.getColumnReturns());
-        sqlParameter.setSql(insertSql);
-        sqlParameter.setParams(values.toArray());
-        return sqlParameter;
-    }
 
 
-    private <T> SqlWithParam generateUpdateEntitySql(T entity, boolean isNullUpdate) {
-        SqlWithParam sqlParameter = new SqlWithParam();
-        initEntityInfo(entity.getClass());
-        EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
-        String tableName = entityInfo.getTableName();
-        String idColumnName = entityInfo.getIdColumnName();
-        if (null == idColumnName) {
-            throw new JdbcMybatisRuntimeException("need entity field @ID");
-        }
-        Object idValue = getPublicPro(entity, entityInfo.getIdFieldName());
-        if (null == idValue) {
-            throw new JdbcMybatisRuntimeException("ID value is null,can not update");
-        }
-        List<EntityField> entityFieldList = entityInfo.getEntityFields();
-        List<String> columns = new ArrayList<>();
-        List<Object> values = new ArrayList<>();
-        Object value;
-        for (EntityField entityField : entityFieldList) {
-            value= BeanUtil.getProperty(entity,entityField.getFieldName());
-            if(entityField.getIsColumn()&&!entityField.getIsId()){
-                if(null!=value){
-                    columns.add(UtilAll.UString.format("{} = {}",entityField.getColumnName(),StringPool.QUESTION_MARK));
-                    values.add(value);
-                    continue;
-                }
-                if(isNullUpdate&&!entityField.getUpdateNotNull()){
-                    columns.add(UtilAll.UString.format("{} = {}",entityField.getColumnName(),StringPool.QUESTION_MARK));
-                    values.add(null);
-                }
-            }
-        }
-        values.add(idValue);
-        // 0:tableName 1:setSql 2:idName
-        String sql = UtilAll.UString.format("update {} set {} where {} = ?", tableName,
-                String.join(StringPool.COMMA,columns), idColumnName);
-        sqlParameter.setSql(sql);
-        sqlParameter.setParams(values.toArray());
-        return sqlParameter;
-    }
+
+
 
     // crud end
     public final <T,ID> T queryById(DataSourceWrapper dataSourceWrapper, Class<T> type, ID id) {
@@ -303,6 +198,8 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     public final <T,ID> T queryById(Class<T> type, ID id) {
         return queryById(null, type, id);
     }
+    //public final <T,ID> T queryById(Class<T> type, ID id) {
+    //}
     public  <ID> int deleteById(DataSourceWrapper dataSourceWrapper, Class<?> domainType, ID id){
         SqlWithParam sqlWithParam = genIdEqQuery(false,false,domainType,id);
         return update(dataSourceWrapper,sqlWithParam.getSql(), id);
@@ -323,7 +220,6 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         if(null==id){
             throw new JdbcMybatisRuntimeException("id must not null");
         }
-        initEntityInfo(type);
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
         String columnStr=null;
         if(select){
@@ -353,7 +249,6 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         if(null==ids||ids.isEmpty()){
             throw new JdbcMybatisRuntimeException("ids must not empty");
         }
-        initEntityInfo(type);
         EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
         String columnStr=null;
         if(select){
@@ -382,7 +277,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public final <T> List<T> queryList(DataSourceWrapper dataSourceWrapper, Class<T> type, String sqlId,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, parameter);
         return queryList(dataSourceWrapper, type, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
@@ -392,7 +287,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public <T> T queryOne(DataSourceWrapper dataSourceWrapper, Class<T> type, String sqlId,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper,sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, parameter);
         List<T> list = queryList(dataSourceWrapper, type, sqlParameter.getSql(), sqlParameter.getParams());
         if (list.isEmpty()) {
             return null;
@@ -409,7 +304,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public Map<String, Object> queryMapOne(DataSourceWrapper dataSourceWrapper, String sqlId,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, parameter);
         List<Map<String, Object>> list = queryListResultMap(dataSourceWrapper, sqlParameter.getSql(),
                 sqlParameter.getParams());
         if (list.isEmpty()) {
@@ -427,7 +322,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public final List<Map<String, Object>> queryMapList(DataSourceWrapper dataSourceWrapper, String sqlId,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, parameter);
         return queryListResultMap(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
@@ -441,7 +336,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public final void queryMapBigData(DataSourceWrapper dataSourceWrapper, String sqlId, AbstractMapPageWork pageWork,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper,sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, parameter);
         queryForBigData(dataSourceWrapper, sqlParameter.getSql(), pageWork, sqlParameter.getParams());
     }
 
@@ -452,7 +347,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public final <T> void queryBigData(DataSourceWrapper dataSourceWrapper, Class<? extends T> type, String sqlId,
             AbstractPageWork<T> pageWork, Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, parameter);
         queryForBigData(dataSourceWrapper, type, sqlParameter.getSql(), pageWork, sqlParameter.getParams());
     }
 
@@ -482,7 +377,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
                             Pageable pageable){
         String countSqlId=sqlId+ConstantJdbc.COUNTFLAG;
         String countSql = MarkdownUtil.getContent(sqlId+ConstantJdbc.COUNTFLAG,false);
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, parameter);
         String sql = sqlParameter.getSql();
         long totalCount = 0L;
         if (null!=countSql) {
@@ -505,56 +400,23 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         return lowerSql.contains("limit ") || lowerSql.contains("limit\n");
     }
 
-    private long countMySqlResult(DataSourceWrapper dataSourceWrapper, String sql, String countSql,
-            Map<String, Object> params) {
-        Object result = null;
-        if (!UtilAll.UString.isBlank(countSql)) {
-            result = findBy(dataSourceWrapper, countSql, params);
-        }
-        if (UtilAll.UString.isBlank(countSql)) {
-            SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sql, params);
-            countSql = generateMyCountSql(sqlParameter.getSql());
-            result = queryOneColumn(dataSourceWrapper, countSql, 1, sqlParameter.getParams());
-        }
-        if (null == result) {
-            return 0L;
-        }
-        return ConvertUtil.toLong(result);
-    }
-
     public <T> T queryOneColumn(Class<?> targetType, String sqlId, Map<String, Object> parameter) {
         return queryOneColumn(null, targetType, sqlId, parameter);
     }
 
     public <T> T queryOneColumn(DataSourceWrapper dataSourceWrapper, Class<?> targetType, String sqlId,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, parameter);
         Object result = queryOneColumn(dataSourceWrapper, sqlParameter.getSql(), 1, sqlParameter.getParams());
         return ConvertUtil.toObject(result, targetType);
     }
 
     private Object findBy(DataSourceWrapper dataSourceWrapper, String sql, Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sql, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sql, parameter);
         return queryOneColumn(dataSourceWrapper, sqlParameter.getSql(), 1, sqlParameter.getParams());
     }
 
-    private SqlWithParam getSqlParameter(DataSourceWrapper dataSourceWrapper,String sqlId,
-            Map<String, Object> parameter) {
-        if(!sqlId.contains(StringPool.DOT)){
-            //namedQuery
-            if(!parameter.containsKey(ConstantJdbc.EntityType)){
-                throw new JdbcMybatisRuntimeException("This method is not supported for converting to SQL");
-            }
-            Class<?> entityType= (Class<?>) parameter.get(ConstantJdbc.EntityType);
-            parameter.remove(ConstantJdbc.EntityType);
-            SqlWithParam sqlWithParam= NameQueryUtil.nameSql(sqlId,entityType,parameter);
-            if(null==sqlWithParam){
-                throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,please define in the markdown",sqlId);
-            }
-            return sqlWithParam;
-        }
-        return MybatisTpl.generate(sqlId,parameter, getDialect(dataSourceWrapper));
-    }
+
 
     public <T> Map<String, T> queryToMap(Class<T> c, String sqlId, String keyInMap, Map<String, Object> parameter) {
         return queryToMap(null, c, sqlId, keyInMap, parameter);
@@ -562,7 +424,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
 
     public <T> Map<String, T> queryToMap(DataSourceWrapper dataSourceWrapper, Class<T> c, String sqlId, String keyInMap,
             Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, parameter);
         return queryMapList(dataSourceWrapper, c, sqlParameter.getSql(), keyInMap, sqlParameter.getParams());
     }
 
@@ -588,13 +450,10 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
         }
 
         Map<String, Object> map = new LinkedHashMap<>();
-        try {
-            T entity = entityList.get(0);
-            map = ConvertMap.toMap(entity, entity.getClass());
-        } catch (IntrospectionException e) {
-            log.error("IntrospectionException ", e);
-        }
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, map);
+        T entity = entityList.get(0);
+        map = ConvertMap.toMap(entity);
+
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, map);
         String sql = sqlParameter.getSql();
         List<Object[]> param = new ArrayList<>();
         int i = 0;
@@ -636,7 +495,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public int update(DataSourceWrapper dataSourceWrapper, String sqlId, Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, parameter);
         return update(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
@@ -645,7 +504,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
     }
 
     public int insert(DataSourceWrapper dataSourceWrapper, String sqlId, Map<String, Object> parameter) {
-        SqlWithParam sqlParameter = getSqlParameter(dataSourceWrapper, sqlId, parameter);
+        SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, parameter);
         return insert(dataSourceWrapper, sqlParameter.getSql(), sqlParameter.getParams());
     }
 
@@ -757,5 +616,7 @@ public abstract class AbstractJdbcCore implements JdbcRepository {
             }
         }
     }
+
+
 
 }
