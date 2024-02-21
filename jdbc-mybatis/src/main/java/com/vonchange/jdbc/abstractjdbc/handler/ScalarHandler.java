@@ -16,7 +16,9 @@
  */
 package com.vonchange.jdbc.abstractjdbc.handler;
 
+import com.vonchange.common.util.ConvertUtil;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.support.JdbcUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +28,7 @@ import java.sql.SQLException;
  * <core>ResultSet</core> column into an Object. This class is thread safe.
  *
  */
-public class ScalarHandler implements ResultSetExtractor<Object> {
+public class ScalarHandler<T> implements ResultSetExtractor<T> {
 
     /**
      * The column number to retrieve.
@@ -39,12 +41,14 @@ public class ScalarHandler implements ResultSetExtractor<Object> {
      */
     private final String columnName;
 
+    private Class<T> mappedClass;
+
     /**
      * Creates a new instance of ScalarHandler. The first column will
      * be returned from <core>handle()</core>.
      */
-    public ScalarHandler() {
-        this(1, null);
+    public ScalarHandler(Class<T> mappedClass) {
+        this(mappedClass,1, null);
     }
 
     /**
@@ -53,8 +57,8 @@ public class ScalarHandler implements ResultSetExtractor<Object> {
      * @param columnIndex The index of the column to retrieve from the
      *                    <core>ResultSet</core>.
      */
-    public ScalarHandler(int columnIndex) {
-        this(columnIndex, null);
+    public ScalarHandler(Class<T> mappedClass,int columnIndex) {
+        this(mappedClass,columnIndex, null);
     }
 
     /**
@@ -63,8 +67,8 @@ public class ScalarHandler implements ResultSetExtractor<Object> {
      * @param columnName The name of the column to retrieve from the
      *                   <core>ResultSet</core>.
      */
-    public ScalarHandler(String columnName) {
-        this(1, columnName);
+    public ScalarHandler(Class<T> mappedClass,String columnName) {
+        this(mappedClass,1, columnName);
     }
 
     /**
@@ -75,7 +79,8 @@ public class ScalarHandler implements ResultSetExtractor<Object> {
      * @param columnName  The name of the column to retrieve from the
      *                    <core>ResultSet</core>.
      */
-    private ScalarHandler(int columnIndex, String columnName) {
+    private ScalarHandler(Class<T> mappedClass,int columnIndex, String columnName) {
+        this.mappedClass=mappedClass;
         this.columnIndex = columnIndex;
         this.columnName = columnName;
     }
@@ -97,12 +102,12 @@ public class ScalarHandler implements ResultSetExtractor<Object> {
     // We assume that the user has picked the correct type to match the column
     // so getObject will return the appropriate type and the cast will succeed.
     @Override
-    public Object extractData(ResultSet rs) throws SQLException {
+    public T extractData(ResultSet rs) throws SQLException {
         if (rs.next()) {
             if (this.columnName == null) {
-                return rs.getObject(this.columnIndex);
+                return ConvertUtil.toObject(JdbcUtils.getResultSetValue(rs,columnIndex),mappedClass);//rs.getObject(this.columnIndex);
             }
-            return rs.getObject(this.columnName);
+            return ConvertUtil.toObject(rs.getObject(this.columnName),mappedClass);
         }
         return null;
     }

@@ -10,6 +10,7 @@ import com.vonchange.common.ibatis.scripting.xmltags.XMLLanguageDriver;
 import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
@@ -31,19 +32,19 @@ public class MybatisTpl {
         throw new IllegalStateException("Utility class");
     }
 
-     public static SqlWithParam generate(String sqlId, Map<String,Object> parameter){
+     public static SqlWithParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
         String sqlInXml=MarkdownUtil.getContent(sqlId);
-         return generate(sqlId,sqlInXml,parameter);
+         return generate(sqlId,sqlInXml,parameter,dialect);
      }
     @SuppressWarnings("unchecked")
-    public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter){
+    public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter, Dialect dialect){
         SqlWithParam sqlWithParam= new SqlWithParam();
         if(UtilAll.UString.isBlank(sqlInXml)){
             sqlWithParam.setSql(null);
             sqlWithParam.setParams(null);
             return  sqlWithParam;
         }
-        sqlInXml= DynamicSql.dynamicSql(sqlInXml);
+        sqlInXml= DynamicSql.dynamicSql(sqlInXml,dialect);
         sqlInXml=sqlInXml.trim();
         if(sqlInXml.contains("</")){
             sqlInXml="<script>"+sqlInXml+"</script>";

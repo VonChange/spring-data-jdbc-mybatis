@@ -15,14 +15,13 @@ package com.vonchange.jdbc.abstractjdbc.core;/*
  */
 
 
-import org.springframework.dao.support.DataAccessUtils;
+import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface CrudClient {
 
@@ -30,63 +29,26 @@ public interface CrudClient {
      <T> int insert(T entity);
     <T> int insert(List<T> entities);
     <T> int update(T entity);
-    /**
-     * A statement specification for parameter bindings and query/update execution.
-     */
+
     interface StatementSpec {
 
         StatementSpec param(@Nullable Object value);
         StatementSpec param(String name, @Nullable Object value);
-
         StatementSpec params(Map<String, ?> paramMap);
-
-        //ResultQuerySpec query();
-
         <T> MappedQuerySpec<T> query(Class<T> mappedClass);
         int update();
         <T> int updateBatch(List<T> entities);
+
+        <T> void queryBatch(Class<T> mappedClass, AbstractPageWork<T> pageWork);
+
+        <T> Page<T> queryPage(Class<T> mappedClass, Pageable pageable);
     }
 
-    /**
-     * A specification for RowMapper-mapped queries.
-     *
-     * @param <T> the RowMapper-declared result type
-     */
+
     interface MappedQuerySpec<T> {
-
-
-        /**
-         * Retrieve the result as a pre-resolved list of mapped objects,
-         * retaining the order from the original database result.
-         * @return the result as a detached List, containing mapped objects
-         */
         List<T> list();
         Iterable<T> iterable();
-
-        /**
-         * Retrieve the result as an order-preserving set of mapped objects.
-         * @return the result as a detached Set, containing mapped objects
-         * @see #list()
-         * @see LinkedHashSet
-         */
-        default Set<T> set() {
-            return new LinkedHashSet<>(list());
-        }
-
-
-//        default Optional<T> optional() {
-//            return DataAccessUtils.optionalResult(list());
-//        }
-
-        /**
-         * Retrieve a single result as a required object instance.
-         * @return the single result object (never {@code null})
-         * @see #list()
-         * @see DataAccessUtils#requiredSingleResult(Collection)
-         */
-        default T single() {
-            return DataAccessUtils.requiredSingleResult(list());
-        }
+        T single();
     }
 
 }

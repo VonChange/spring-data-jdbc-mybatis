@@ -1,9 +1,13 @@
 package com.vonchange.jdbc.abstractjdbc.core;
 
+import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.abstractjdbc.count.CountSqlParser;
 import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
+import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.MybatisTpl;
@@ -22,13 +26,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CrudUtil {
 
     private static final Logger log = LoggerFactory.getLogger(CrudUtil.class);
     public static SqlWithParam getSqlParameter(String sqlId,
-                                         Map<String, Object> parameter) {
-        return MybatisTpl.generate(sqlId,parameter);
+                                         Map<String, Object> parameter, Dialect dialect) {
+        return MybatisTpl.generate(sqlId,parameter,dialect);
     }
     public static SqlWithParam nameQuery(String name,Class<?> entityType,
                                          List<Object> indexedParams) {
@@ -187,6 +193,24 @@ public class CrudUtil {
             return ifNullInsert;
         }
         return false;
+    }
+    public static SqlWithParam countSql(String sqlId,String sql, Map<String, Object> parameter, Dialect dialect){
+        String countSqlId=sqlId+ ConstantJdbc.COUNTFLAG;
+        String countSql = MarkdownUtil.getContent(sqlId+ ConstantJdbc.COUNTFLAG,false);
+        if (null!=countSql) {
+            return MybatisTpl.generate(countSqlId,parameter,dialect);
+        }
+        return new SqlWithParam(generateMyCountSql(sql),null);
+    }
+    private static String generateMyCountSql(String sql) {
+        StringBuilder sb = new StringBuilder();
+        Matcher m = Pattern.compile("(/\\*)([\\w\\s\\@\\:]*)(\\*/)").matcher(sql);
+        while (m.find()) {
+            String group = m.group();
+            sb.append(group);
+        }
+        CountSqlParser countSqlParser = new CountSqlParser();
+        return sb + countSqlParser.getSmartCountSql(sql);
     }
 
     public static Map<String,Object> rowToMap(ResultSet rs, String idColumnName) throws SQLException {

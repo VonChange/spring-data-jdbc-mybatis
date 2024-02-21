@@ -23,9 +23,8 @@ import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.support.JdbcUtils;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
      *             are created from.
      *             to use when converting rows into beans.
      */
-    public BigDataBeanListHandler(Class<? extends T> type, AbstractPageWork<T> abstractPageWork, String sql) {
+    public BigDataBeanListHandler(Class<? extends T> type, AbstractPageWork<T> abstractPageWork) {
         this.type = type;
         this.abstractPageWork = abstractPageWork;
     }
@@ -76,7 +75,7 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
         int pageSize = abstractPageWork.getPageSize();
         try {
             this.toBeanList(rs, type, pageSize);
-        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
+        } catch (SQLException e) {
             logger.error("Exception ", e);
         }
         return 1;
@@ -84,7 +83,7 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
 
     @SuppressWarnings("unchecked")
     private void toBeanList(ResultSet rs, Class<? extends T> type, int pageSize)
-            throws SQLException, IntrospectionException, IllegalAccessException, InvocationTargetException {
+            throws SQLException{
         List<T> result = new ArrayList<>();
         Map<String, Object> extData = new HashMap<>();
         if (!rs.next()) {
@@ -102,8 +101,8 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
             base = true;
         }
         do {
-            result.add(base ? ConvertUtil.toObject(rs.getObject(1), type)
-                    : ConvertMap.toBean(HandlerUtil.rowToMap(rs),type));
+            result.add(base ? ConvertUtil.toObject(JdbcUtils.getResultSetValue(rs,1), type)
+                    : ConvertMap.toBean(CrudUtil.rowToMap(rs,null),type));
             pageItem++;
             count++;
             if (pageItem == pageSize) {

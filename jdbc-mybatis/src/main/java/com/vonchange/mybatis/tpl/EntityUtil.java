@@ -13,6 +13,7 @@ import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.annotation.Transient;
 
 import javax.persistence.Column;
@@ -115,6 +116,10 @@ public class EntityUtil {
                 }
                 if (annotation instanceof UpdateNotNull) {
                     entityField.setUpdateNotNull(true);
+                }
+                if (annotation instanceof ReadOnlyProperty) {
+                    entityField.setInsertNot(true);
+                    entityField.setUpdateNot(true);
                 }
                 if (annotation instanceof InsertOnlyProperty) {
                     entityField.setUpdateNot(true);

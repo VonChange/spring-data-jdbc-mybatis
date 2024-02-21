@@ -65,10 +65,9 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
 		Class<?> domainType =repositoryInformation.getDomainType();
-		EntityUtil.getEntityInfo(domainType);
-		/*if(!domainType.equals(BaseModel.class)){//QueryRepository
-			EntityUtil.initEntityInfo(domainType);
-		}*/
+		if(!domainType.equals(QueryModel.class)){//QueryRepository
+			EntityUtil.getEntityInfo(domainType);
+		}
 		String mdFile= JdbcMybatisUtil.interfaceNameMd(repositoryInformation.getRepositoryInterface());
 		//初始化markdown数据
 		if(null!=mdFile){

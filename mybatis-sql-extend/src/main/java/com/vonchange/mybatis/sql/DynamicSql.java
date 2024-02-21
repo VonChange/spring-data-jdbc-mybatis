@@ -1,6 +1,8 @@
 package com.vonchange.mybatis.sql;
 
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.dialect.LikeTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,7 @@ public class DynamicSql {
     private static final String PALCEHOLDERA = "#{{}}";
 
 
-    public static String dynamicSql(String sql) {
+    public static String dynamicSql(String sql, Dialect dialect) {
         String startSym = "[@";
         String endSym = "]";
         int len = sql.length();
@@ -45,7 +47,7 @@ public class DynamicSql {
                 throw new IllegalArgumentException("无结尾 ] 符号 at: " + (ndx - startLen));
             }
             model = sql.substring(ndx, ndx2);
-            newSql.append(getModel(model));
+            newSql.append(getModel(model, dialect));
             i = ndx2 + endLen;
         }
         log.debug("new sql \n{}", newSql);
@@ -53,9 +55,9 @@ public class DynamicSql {
     }
 
 
-    private static String getModel(String model) {
+    private static String getModel(String model, Dialect dialect) {
         if (model.contains("#{")) {
-            return ifNull(model);
+            return ifNull(model, dialect);
         }
         model = model.trim();
         model = model.replaceAll("[\\s]+", " ");
@@ -66,14 +68,14 @@ public class DynamicSql {
         }
         if (resultList.size() == 4) {
             AnalyeNamed analyeNamed = analyeNamed(resultList);
-            return workNamed(analyeNamed);
+            return workNamed(analyeNamed, dialect);
         }
         // 扩展只有判空
         return model;
     }
 
-    private static String ifNull(String model) {
-        SqlParamResult sqlParamResult = getParamFromModel(model);
+    private static String ifNull(String model, Dialect dialect) {
+        SqlParamResult sqlParamResult = getParamFromModel(model, dialect);
         if (model.startsWith("@")) {
             return sqlParamResult.getNewSql().substring(1);
         }
@@ -86,7 +88,7 @@ public class DynamicSql {
 
     }
 
-    private static SqlParamResult getParamFromModel(String model) {
+    private static SqlParamResult getParamFromModel(String model, Dialect dialect) {
         String startSym = "#{";
         String endSym = "}";
         int len = model.length();
@@ -110,7 +112,7 @@ public class DynamicSql {
             }
             param = model.substring(ndx, ndx2);
             paramMap.put(getTrueParam(param), true);
-            newSql.append(getParamSql(param));
+            newSql.append(getParamSql(param, dialect));
             i = ndx2 + endLen;
         }
         List<String> list = new ArrayList<>();
@@ -120,12 +122,12 @@ public class DynamicSql {
         return new SqlParamResult(list, newSql.toString());
     }
 
-    private static String getParamSql(String param) {
+    private static String getParamSql(String param, Dialect dialect) {
         if (!param.contains(":")) {
             if (param.contains("%")) {
                 AnalyeNamed analyeNamed = new AnalyeNamed();
                 analyeNamed.setNamedFull(param);
-                return like(analyeNamed);
+                return like(analyeNamed, dialect);
             }
             return format(PALCEHOLDERA, param);
         }
@@ -140,7 +142,7 @@ public class DynamicSql {
         if ("like".equalsIgnoreCase(params[params.length - 1])) {
             AnalyeNamed analyeNamed = new AnalyeNamed();
             analyeNamed.setNamedFull(params[0]);
-            return like(analyeNamed);
+            return like(analyeNamed, dialect);
         }
         return format(PALCEHOLDERA, param);
     }
@@ -179,13 +181,13 @@ public class DynamicSql {
         return analyeNamed;
     }
 
-    private static String workNamed(AnalyeNamed analyeNamed) {
+    private static String workNamed(AnalyeNamed analyeNamed, Dialect dialect) {
         String named = format(PALCEHOLDERA, analyeNamed.getNamedFull());
         if ("in".equalsIgnoreCase(analyeNamed.getCondition())) {
             named = in(analyeNamed.getNamedFull(), analyeNamed.getItemProperty());
         }
         if ("like".equalsIgnoreCase(analyeNamed.getCondition())) {
-            named = like(analyeNamed);
+            named = like(analyeNamed, dialect);
         }
         boolean ifNullFlag = true;
         String link = analyeNamed.getLink();
@@ -202,14 +204,13 @@ public class DynamicSql {
         return format("{} {} </if>", ifStr, content);
     }
 
-    private static String like(AnalyeNamed analyeNamed) {
+    private static String like(AnalyeNamed analyeNamed, Dialect dialect) {
         String named = analyeNamed.getNamedFull();
         boolean all = !named.contains("%");
         boolean left = named.startsWith("%");
         boolean right = named.endsWith("%");
-        //new LikeTemplate(" CONCAT('%',#{{}},'%') "," CONCAT('%',#{{}})"," CONCAT(#{{}},'%') ")
-        //LikeTemplate likeTemplate = dialect.getLikeTemplate();
-        String str = "\"%\"#{{}}\"%\"";
+        LikeTemplate likeTemplate = dialect.getLikeTemplate();
+        String str = likeTemplate.getFull();
         if (all) {
             return format(str, named);
         }
@@ -217,12 +218,12 @@ public class DynamicSql {
             analyeNamed.setNamedFull(named.substring(1, named.length() - 1));
             return format(str, analyeNamed.getNamedFull());
         }
-        str = "#{{}}\"%\"";
+        str = likeTemplate.getRight();
         if (right) {
             analyeNamed.setNamedFull(named.substring(0, named.length() - 1));
             return format(str, analyeNamed.getNamedFull());
         }
-        str = "\"%\"#{{}}";
+        str = likeTemplate.getLeft();
         if (left) {
             analyeNamed.setNamedFull(named.substring(1));
             return format(str, analyeNamed.getNamedFull());

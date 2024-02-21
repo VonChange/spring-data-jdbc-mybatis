@@ -26,11 +26,17 @@ import org.springframework.data.repository.NoRepositoryBean;
  */
 @NoRepositoryBean
 public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
+	/**
+	 * insert not null filed
+	 * @param entity
+	 * @return
+	 * @param <S>
+	 */
 
 	<S extends T> int insert(S entity);
 
 	/**
-	 * update not null fields
+	 * update not null field
 	 * @param entity
 	 * @param <S>
 	 */

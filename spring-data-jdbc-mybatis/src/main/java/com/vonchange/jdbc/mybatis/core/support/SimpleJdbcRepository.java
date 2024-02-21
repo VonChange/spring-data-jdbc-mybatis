@@ -15,6 +15,7 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
 import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
@@ -22,6 +23,7 @@ import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> {
@@ -57,6 +59,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Optional<T> findById(ID id) {
+		Assert.notNull(id,"id can not null");
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
 		return Optional.ofNullable(crudClient.sqlId("findById").param(id).query(tClass).single());
 	}
@@ -64,42 +67,55 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	@Override
 	@SuppressWarnings("unchecked")
 	public  Iterable<T> findAllById(Iterable<ID> ids) {
+		if(!ids.iterator().hasNext()){
+			return new ArrayList<>();
+		}
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
 		return crudClient.sqlId("findByIdIn").param(ids).query(tClass).iterable();
 	}
 
 	@Override
 	public boolean existsById(ID id) {
+		Assert.notNull(id,"id can not null");
 		return  crudClient.sqlId(NameQueryUtil.simpleNameSql("existsById",configInfo.getDomainType())).param(id).query(Boolean.class).single();
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Iterable<T> findAll() {
-		return null;
+		Class<T> tClass= (Class<T>) configInfo.getDomainType();
+		return  crudClient.sqlId(NameQueryUtil.simpleNameSql("findAll",configInfo.getDomainType()))
+				.query(tClass).iterable();
 	}
 
 	@Override
 	public long count() {
-		return 0;
+		return crudClient.sqlId(NameQueryUtil.simpleNameSql("countAll",configInfo.getDomainType())).query(Long.class).single();
 	}
 
 	@Override
 	public void deleteById(ID id) {
-		 crudClient.sqlId("deleteById").param(id).update();
+		Assert.notNull(id,"id can not null");
+		 crudClient.sqlId(NameQueryUtil.simpleNameSql("deleteById",configInfo.getDomainType())).param(id).update();
 	}
 
 	@Override
 	public void delete(T entity) {
+		EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
+		Object idValue = BeanUtil.getPropertyT(entity,entityInfo.getIdFieldName());
+		deleteById((ID) idValue);
 	}
 
 	@Override
 	public void deleteAll(Iterable<? extends T> entities) {
-
+		for (T entity : entities) {
+			delete(entity);
+		}
 	}
 
 	@Override
 	public void deleteAll() {
-
+		crudClient.sqlId(NameQueryUtil.simpleNameSql("deleteAll",configInfo.getDomainType())).update();
 	}
 
 

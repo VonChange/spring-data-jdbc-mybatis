@@ -14,6 +14,7 @@ public class EntityField {
 
 	private Boolean updateNotNull;
 	private Boolean updateNot=false;
+	private Boolean insertNot=false;
 
 	public String getFieldName() {
 		return fieldName;
@@ -64,6 +65,14 @@ public class EntityField {
 
 	public void setUpdateNot(Boolean updateNot) {
 		this.updateNot = updateNot;
+	}
+
+	public Boolean getInsertNot() {
+		return insertNot;
+	}
+
+	public void setInsertNot(Boolean insertNot) {
+		this.insertNot = insertNot;
 	}
 
 	public Class<?> getType() {

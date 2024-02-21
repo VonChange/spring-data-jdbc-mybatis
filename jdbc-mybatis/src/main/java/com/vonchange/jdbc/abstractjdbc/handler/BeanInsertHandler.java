@@ -18,6 +18,7 @@ package com.vonchange.jdbc.abstractjdbc.handler;
 
 
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.jdbc.abstractjdbc.core.CrudUtil;
 import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
@@ -70,7 +71,7 @@ public class BeanInsertHandler<T> implements ResultSetExtractor<T> {
 		if(UtilAll.UString.isBlank(idColumnName)){
 			throw new JdbcMybatisRuntimeException("need @Id in your entity");
 		}
-		ConvertMap.toBean(HandlerUtil.rowToMap(rs,idColumnName),entity);
+		ConvertMap.toBean(CrudUtil.rowToMap(rs,idColumnName),entity);
 		return entity;
 	}
 }

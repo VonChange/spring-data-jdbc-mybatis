@@ -108,17 +108,10 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 					: updatedCount;
 		}
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-			if(nameQuery){
-				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
-			}
 			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).list();
 		}
 		if (queryMethod.isPageQuery()) {
-			if(nameQuery){
-				parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
-			}	//@TODO
-			//return operations.queryPage(dataSourceWrapper, queryMethod.getReturnedObjectType(), sqlId,
-					//parameters.getPageable(), parameters.getParameter());
+			return operations.sqlId(sqlId).params(parameters.getParameter()).queryPage(queryMethod.getReturnedObjectType(),parameters.getPageable());
 		}
 
 		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
@@ -127,9 +120,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 				parameters.getParameter().put(ConstantJdbc.EntityType,configInfo.getDomainType());
 			}
 			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
-		}
-		if(nameQuery){
-			parameters.getParameter().put(ConstantJdbc.EntityType,queryMethod.getReturnedObjectType());
 		}
 		return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
 	}
