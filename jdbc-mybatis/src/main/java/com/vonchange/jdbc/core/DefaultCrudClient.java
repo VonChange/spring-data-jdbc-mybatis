@@ -1,15 +1,15 @@
-package com.vonchange.jdbc.abstractjdbc.core;
+package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.abstractjdbc.config.EnumRWType;
-import com.vonchange.jdbc.abstractjdbc.config.EnumSqlRead;
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
-import com.vonchange.jdbc.abstractjdbc.handler.BeanInsertHandler;
-import com.vonchange.jdbc.abstractjdbc.handler.BigDataBeanListHandler;
-import com.vonchange.jdbc.abstractjdbc.handler.ScalarHandler;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.abstractjdbc.template.MyJdbcTemplate;
-import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
+import com.vonchange.jdbc.config.EnumRWType;
+import com.vonchange.jdbc.config.EnumSqlRead;
+import com.vonchange.jdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.handler.BeanInsertHandler;
+import com.vonchange.jdbc.handler.BigDataBeanListHandler;
+import com.vonchange.jdbc.handler.ScalarHandler;
+import com.vonchange.jdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.template.MyJdbcTemplate;
+import com.vonchange.jdbc.util.ConvertMap;
 import com.vonchange.jdbc.mapper.BeanRowMapper;
 import com.vonchange.jdbc.mapper.SingleColumnRowMapper;
 import com.vonchange.mybatis.tpl.MybatisTpl;

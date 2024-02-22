@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vonchange.jdbc.abstractjdbc.handler;
+package com.vonchange.jdbc.handler;
 
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.jdbc.abstractjdbc.core.CrudUtil;
-import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
+import com.vonchange.jdbc.core.CrudUtil;
+import com.vonchange.jdbc.util.ConvertMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;

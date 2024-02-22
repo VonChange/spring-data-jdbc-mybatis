@@ -1,7 +1,7 @@
 package com.vonchange.nine.demo.config;
 
 
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.model.DataSourceWrapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;

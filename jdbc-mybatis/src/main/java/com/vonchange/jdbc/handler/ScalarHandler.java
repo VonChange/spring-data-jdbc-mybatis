@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vonchange.jdbc.abstractjdbc.handler;
+package com.vonchange.jdbc.handler;
 
 import com.vonchange.common.util.ConvertUtil;
 import org.springframework.jdbc.core.ResultSetExtractor;

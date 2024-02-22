@@ -15,10 +15,10 @@
  */
 package com.vonchange.jdbc.mybatis.core.config;
 
-import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
-import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
-import com.vonchange.jdbc.abstractjdbc.core.DefaultCrudClient;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.core.DefaultCrudClient;
+import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;

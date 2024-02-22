@@ -1,13 +1,17 @@
-package com.vonchange.jdbc.abstractjdbc.template;
+package com.vonchange.jdbc.template;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlProvider;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
@@ -47,11 +51,6 @@ public class MyJdbcTemplate extends JdbcTemplate {
                     int result = ps.executeUpdate();
                     ResultSet resultSet = ps.getGeneratedKeys();
                     rse.extractData(resultSet);
-                    /*
-                     * if (logger.isDebugEnabled()) {
-                     * logger.debug("generatedKeys : " + generatedKeys);
-                     * }
-                     */
                     return result;
                 } finally {
                     if (pss instanceof ParameterDisposer) {
@@ -106,6 +105,49 @@ public class MyJdbcTemplate extends JdbcTemplate {
     public void setFetchSizeBigData(int fetchSizeBigData) {
         this.fetchSizeBigData = fetchSizeBigData;
     }
+
+    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs,final ResultSetExtractor<T> rse) throws DataAccessException {
+        return batchInsert(sql, batchArgs, new int[0],rse);
+    }
+    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs, final int[] argTypes,final ResultSetExtractor<T> rse) throws DataAccessException {
+        if (batchArgs.isEmpty()) {
+            return new int[0];
+        }
+
+        return batchUpdate(
+                sql,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        Object[] values = batchArgs.get(i);
+                        int colIndex = 0;
+                        for (Object value : values) {
+                            colIndex++;
+                            if (value instanceof SqlParameterValue) {
+                                SqlParameterValue paramValue = (SqlParameterValue) value;
+                                StatementCreatorUtils.setParameterValue(ps, colIndex, paramValue, paramValue.getValue());
+                            }
+                            else {
+                                int colType;
+                                if (argTypes.length < colIndex) {
+                                    colType = SqlTypeValue.TYPE_UNKNOWN;
+                                }
+                                else {
+                                    colType = argTypes[colIndex - 1];
+                                }
+                                StatementCreatorUtils.setParameterValue(ps, colIndex, colType, value);
+                            }
+                        }
+                        ResultSet resultSet = ps.getGeneratedKeys();
+                        rse.extractData(resultSet);
+                    }
+                    @Override
+                    public int getBatchSize() {
+                        return batchArgs.size();
+                    }
+                });
+    }
+
 
     public <T> T queryBigData(String sql, ResultSetExtractor<T> rse, Object... args) throws DataAccessException {
         return queryBigData(sql, newArgPreparedStatementSetter(args), rse);

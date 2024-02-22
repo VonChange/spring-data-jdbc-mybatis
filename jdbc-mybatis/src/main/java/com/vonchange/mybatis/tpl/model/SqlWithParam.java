@@ -1,6 +1,6 @@
 package com.vonchange.mybatis.tpl.model;
 
-import com.vonchange.jdbc.abstractjdbc.config.EnumSqlRead;
+import com.vonchange.jdbc.config.EnumSqlRead;
 
 import java.util.Arrays;
 import java.util.List;

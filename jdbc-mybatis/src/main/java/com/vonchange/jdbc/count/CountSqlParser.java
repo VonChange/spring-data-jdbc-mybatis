@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.vonchange.jdbc.abstractjdbc.count;
+package com.vonchange.jdbc.count;
 
 
 import com.vonchange.common.util.UtilAll;

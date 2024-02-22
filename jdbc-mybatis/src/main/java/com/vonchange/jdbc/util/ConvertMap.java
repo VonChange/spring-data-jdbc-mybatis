@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.abstractjdbc.util;
+package com.vonchange.jdbc.util;
 
 import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ClazzUtils;

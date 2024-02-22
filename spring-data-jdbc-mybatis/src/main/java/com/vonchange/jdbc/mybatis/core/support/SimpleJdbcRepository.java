@@ -17,8 +17,8 @@ package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.bean.BeanUtil;
-import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
-import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
+import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.model.EntityInfo;

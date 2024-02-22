@@ -17,8 +17,8 @@ package com.vonchange.jdbc.mybatis.core.support;
 
 
 import com.vonchange.common.util.MarkdownUtil;
-import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
-import com.vonchange.jdbc.abstractjdbc.core.CrudClient;
+import com.vonchange.jdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;

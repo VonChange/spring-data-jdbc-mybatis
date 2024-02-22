@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.abstractjdbc.model;
+package com.vonchange.jdbc.model;
 
 public class ColumnValue {
     private String column;

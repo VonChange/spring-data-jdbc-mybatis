@@ -1,14 +1,14 @@
-package com.vonchange.jdbc.abstractjdbc.core;
+package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
-import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
-import com.vonchange.jdbc.abstractjdbc.config.EnumSqlRead;
-import com.vonchange.jdbc.abstractjdbc.count.CountSqlParser;
-import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
+import com.vonchange.jdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.config.EnumSqlRead;
+import com.vonchange.jdbc.count.CountSqlParser;
+import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;

@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.abstractjdbc.core;/*
+package com.vonchange.jdbc.core;/*
  * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@ package com.vonchange.jdbc.abstractjdbc.core;/*
  */
 
 
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.model.DataSourceWrapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;

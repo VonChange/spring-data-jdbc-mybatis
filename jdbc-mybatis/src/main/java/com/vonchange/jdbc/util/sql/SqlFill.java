@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.abstractjdbc.util.sql;
+package com.vonchange.jdbc.util.sql;
 
 
 import com.vonchange.common.util.time.TimeUtil;

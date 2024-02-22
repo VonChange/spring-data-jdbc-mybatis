@@ -1,6 +1,6 @@
 package com.vonchange.nine.demo.dao;
 
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.handler.AbstractPageWork;
 import com.vonchange.jdbc.mybatis.core.query.BatchUpdate;
 import com.vonchange.jdbc.mybatis.core.support.CrudExtendRepository;
 import com.vonchange.nine.demo.domain.SearchParam;

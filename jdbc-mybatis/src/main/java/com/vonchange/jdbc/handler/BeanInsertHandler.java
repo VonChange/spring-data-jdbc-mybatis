@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vonchange.jdbc.abstractjdbc.handler;
+package com.vonchange.jdbc.handler;
 
 
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.jdbc.abstractjdbc.core.CrudUtil;
-import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
+import com.vonchange.jdbc.core.CrudUtil;
+import com.vonchange.jdbc.util.ConvertMap;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import org.slf4j.Logger;

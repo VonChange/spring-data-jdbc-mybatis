@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.abstractjdbc.config;
+package com.vonchange.jdbc.config;
 
 /**
  * Created by 冯昌义 on 2018/3/20.

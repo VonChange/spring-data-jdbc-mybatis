@@ -2,8 +2,8 @@ package com.vonchange.jdbc.mapper;
 
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.jdbc.abstractjdbc.core.CrudUtil;
-import com.vonchange.jdbc.abstractjdbc.util.ConvertMap;
+import com.vonchange.jdbc.core.CrudUtil;
+import com.vonchange.jdbc.util.ConvertMap;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.lang.Nullable;

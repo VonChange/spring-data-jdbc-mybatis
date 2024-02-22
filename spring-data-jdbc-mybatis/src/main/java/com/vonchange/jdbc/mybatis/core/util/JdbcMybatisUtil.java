@@ -2,7 +2,7 @@ package com.vonchange.jdbc.mybatis.core.util;
 
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.config.ConstantJdbc;
 
 public class JdbcMybatisUtil {
 

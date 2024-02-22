@@ -1,10 +1,10 @@
-package com.vonchange.jdbc.abstractjdbc.util;
+package com.vonchange.jdbc.util;
 
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.map.MyHashMap;
-import com.vonchange.jdbc.abstractjdbc.model.EnumStep;
-import com.vonchange.jdbc.abstractjdbc.model.SplitMap;
+import com.vonchange.jdbc.model.EnumStep;
+import com.vonchange.jdbc.model.SplitMap;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.OrmUtil;
@@ -26,7 +26,7 @@ public class NameQueryUtil {
     private static final String ParamPre="p";
     private static final Map<String, SplitMap> map=new HashMap<>();
     static {
-        map.put("eq",new SplitMap("=",EnumStep.Condition));
+        map.put("eq",new SplitMap("=", EnumStep.Condition));
         map.put("equals",new SplitMap("=",EnumStep.Condition));
         map.put("is",new SplitMap("=",EnumStep.Condition));
         map.put("lt",new SplitMap("<",EnumStep.Condition));

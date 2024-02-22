@@ -1,7 +1,7 @@
 package com.vonchange.nine.demo.dao;
 
 import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
+import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
 import com.vonchange.nine.demo.util.JsonUtil;
