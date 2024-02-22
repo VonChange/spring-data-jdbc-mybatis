@@ -21,6 +21,9 @@ public class ClazzUtils {
 				URI.class == clazz || URL.class == clazz ||
 				Locale.class == clazz || Class.class == clazz;
 	}
+	public static boolean isVersionType(Class<?> clazz) {
+		return Integer.class==clazz||Long.class==clazz;
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Class<?> clazz, Object obj) {

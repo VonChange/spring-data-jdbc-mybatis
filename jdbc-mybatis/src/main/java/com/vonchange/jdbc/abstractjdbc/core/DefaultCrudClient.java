@@ -1,7 +1,8 @@
 package com.vonchange.jdbc.abstractjdbc.core;
 
 import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.abstractjdbc.config.Constants;
+import com.vonchange.jdbc.abstractjdbc.config.EnumRWType;
+import com.vonchange.jdbc.abstractjdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import com.vonchange.jdbc.abstractjdbc.handler.BeanInsertHandler;
 import com.vonchange.jdbc.abstractjdbc.handler.BigDataBeanListHandler;
@@ -46,28 +47,42 @@ public class DefaultCrudClient implements CrudClient{
 
 
     public final <T> int insert(T entity) {
-        SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entity,false);
-        JdbcLogUtil.logSql(Constants.EnumRWType.write, sqlParameter.getSql(), sqlParameter.getParams());
+        SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entity,false,false);
+        JdbcLogUtil.logSql(EnumRWType.write, sqlParameter);
         return classicOps.insert(sqlParameter.getSql(),sqlParameter.getColumnReturns(), new BeanInsertHandler<>(entity), sqlParameter.getParams());
     }
-    public final <T> int insert(List<T> entities) {
+    public final <T> int update(T entity) {
+        SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entity, false);
+        JdbcLogUtil.logSql(EnumRWType.write, sqlParameter);
+        return classicOps.update(sqlParameter.getSql(), sqlParameter.getParams());
+    }
+    public final <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity) {
         if(CollectionUtils.isEmpty(entities)){
             return 0;
         }
-        SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entities.get(0),true);
+        SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entities.get(0),ifNullInsertByFirstEntity,true);
         String sql = sqlParameter.getSql();
-         List<List<Object[]>> list=  CrudUtil.insertBatchParam(entities,true,-1);
+         List<List<Object[]>> list=  CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames(),-1);
          int num=0;
         for (List<Object[]> objects : list) {
             num+=classicOps.batchUpdate(sql,objects).length;
         }
         return num;
     }
-    public final <T> int update(T entity) {
-        SqlWithParam sqlParameter = CrudUtil.generateUpdateEntitySql(entity, false);
-        JdbcLogUtil.logSql(Constants.EnumRWType.write, sqlParameter.getSql(), sqlParameter.getParams());
-        return classicOps.update(sqlParameter.getSql(), sqlParameter.getParams());
+    public final <T> int update(List<T> entities,boolean isNullUpdateByFirstEntity) {
+        if(CollectionUtils.isEmpty(entities)){
+            return 0;
+        }
+        SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entities.get(0),isNullUpdateByFirstEntity);
+        String sql = sqlParameter.getSql();
+        List<List<Object[]>> list=  CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames(),-1);
+        int num=0;
+        for (List<Object[]> objects : list) {
+            num+=classicOps.batchUpdate(sql,objects).length;
+        }
+        return num;
     }
+
 
 
     @Override
@@ -89,7 +104,6 @@ public class DefaultCrudClient implements CrudClient{
         }
         @Override
         public StatementSpec param(Object value) {
-            //validateIndexedParamValue(value);
             this.indexedParams.add(value);
             return this;
         }
@@ -108,19 +122,17 @@ public class DefaultCrudClient implements CrudClient{
         @Override
         public  <T> void queryBatch(Class<T> mappedClass, AbstractPageWork<T> pageWork){
             SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, this.namedParams, dataSourceWrapper.getDialect());
-            JdbcLogUtil.logSql(Constants.EnumRWType.read,sqlParameter);
+            JdbcLogUtil.logSql(EnumRWType.read,sqlParameter);
             classicOps.queryBigData(sqlParameter.getSql(), new BigDataBeanListHandler<T>(mappedClass, pageWork), sqlParameter.getParams());
         }
         public <T> Page<T>  queryPage(Class<T> mappedClass, Pageable pageable){
-            SqlWithParam sqlParameter = CrudUtil.getSqlParameter( sqlId, this.namedParams, dataSourceWrapper.getDialect());
+            SqlWithParam sqlParameter = getSqlParameter(mappedClass);
             String sql = sqlParameter.getSql();
-            SqlWithParam countSqlParam= CrudUtil.countSql(sqlId,sql,this.namedParams, dataSourceWrapper.getDialect());
-            if(null==countSqlParam.getParams()){
-                countSqlParam.setParams(sqlParameter.getParams());
-            }
-            JdbcLogUtil.logSql(Constants.EnumRWType.read,countSqlParam);
+            SqlWithParam countSqlParam= CrudUtil.countSql(sqlId,sqlParameter,this.namedParams, dataSourceWrapper.getDialect());
+            JdbcLogUtil.logSql(EnumRWType.read,sqlParameter);
             Long total = classicOps.query(countSqlParam.getSql(), new ScalarHandler<>(Long.class),
                     sqlParameter.getParams());
+            if(null==total) total=0L;
             int pageNum = Math.max(pageable.getPageNumber(), 0);
             int firstEntityIndex = pageable.getPageSize() * pageNum;
             sql = dataSourceWrapper.getDialect().getPageSql(sql, firstEntityIndex, pageable.getPageSize());
@@ -140,17 +152,24 @@ public class DefaultCrudClient implements CrudClient{
         private <T>  SqlWithParam getSqlParameter(Class<T> mappedClass){
             if(sqlId.contains(StringPool.SPACE)){
                 if(sqlId.contains("[@")||sqlId.contains("#{")){
-                    return MybatisTpl.generate("mybatis_sql",sqlId,namedParams,dataSourceWrapper.getDialect());
+                    SqlWithParam sqlWithParam= MybatisTpl.generate("mybatis_sql",sqlId,namedParams,dataSourceWrapper.getDialect());
+                    sqlWithParam.setSqlRead(EnumSqlRead.mybatis);
+                    return sqlWithParam;
                 }
                 SqlWithParam sqlWithParam = new SqlWithParam();
                 sqlWithParam.setSql(sqlId);
                 sqlWithParam.setParams(this.indexedParams.toArray());
+                sqlWithParam.setSqlRead(EnumSqlRead.sql);
                 return sqlWithParam;
             }
             if(sqlId.contains(StringPool.DOT)){
-                return CrudUtil.getSqlParameter(sqlId,namedParams,dataSourceWrapper.getDialect());
+                SqlWithParam sqlWithParam = CrudUtil.getSqlParameter(sqlId,namedParams,dataSourceWrapper.getDialect());
+                sqlWithParam.setSqlRead(EnumSqlRead.markdown);
+                return sqlWithParam;
             }
-            return CrudUtil.nameQuery(sqlId,mappedClass,this.indexedParams);
+            SqlWithParam sqlWithParam =  CrudUtil.nameQuery(sqlId,mappedClass,this.indexedParams);
+            sqlWithParam.setSqlRead(EnumSqlRead.name);
+            return sqlWithParam;
         }
 
 
@@ -159,7 +178,9 @@ public class DefaultCrudClient implements CrudClient{
         }
         @Override
         public int update() {
-            return  classicOps.update(sql,this.indexedParams.toArray());
+            // update only EnumSqlRead.markdown
+            SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId,this.namedParams,dataSourceWrapper.getDialect());
+            return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams());
         }
         public <T> int updateBatch(List<T> entities) {
             if(CollectionUtils.isEmpty(entities)){
@@ -169,7 +190,7 @@ public class DefaultCrudClient implements CrudClient{
             Map<String, Object> map = ConvertMap.toMap(entity);
             SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId,map,dataSourceWrapper.getDialect());
             String sql = sqlParameter.getSql();
-            List<List<Object[]>> list= CrudUtil.batchUpdateParam(entities,sqlParameter.getPropertyNames(),-1);
+            List<List<Object[]>> list= CrudUtil.batchUpdateParam(entities,false,sqlParameter.getPropertyNames(),-1);
             int num=0;
             for (List<Object[]> objects : list) {
                 num+=classicOps.batchUpdate(sql,objects).length;
@@ -187,7 +208,7 @@ public class DefaultCrudClient implements CrudClient{
 
             @Override
             public List<T> list() {
-                JdbcLogUtil.logSql(Constants.EnumRWType.read,sql,indexedParams.toArray());
+                JdbcLogUtil.logSql(EnumRWType.read,sql,indexedParams.toArray());
                 return classicOps.query(sql, this.rowMapper, indexedParams.toArray());
             }
 

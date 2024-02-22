@@ -12,9 +12,10 @@ public class EntityField {
 	private Boolean isColumn = false;
 	private Boolean isId = false;
 
-	private Boolean updateNotNull;
 	private Boolean updateNot=false;
 	private Boolean insertNot=false;
+
+	private Boolean version=false;
 
 	public String getFieldName() {
 		return fieldName;
@@ -51,12 +52,12 @@ public class EntityField {
 		this.isColumn = isColumn;
 	}
 
-	public Boolean getUpdateNotNull() {
-		return updateNotNull;
+	public Boolean getVersion() {
+		return version;
 	}
 
-	public void setUpdateNotNull(Boolean updateNotNull) {
-		this.updateNotNull = updateNotNull;
+	public void setVersion(Boolean version) {
+		this.version = version;
 	}
 
 	public Boolean getUpdateNot() {

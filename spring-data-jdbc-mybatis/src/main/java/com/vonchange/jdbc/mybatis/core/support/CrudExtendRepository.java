@@ -18,6 +18,8 @@ package com.vonchange.jdbc.mybatis.core.support;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.List;
+
 /**
  * Interface for generic CRUD operations on a repository for a specific type.
  *
@@ -41,5 +43,8 @@ public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
 	 * @param <S>
 	 */
 	<S extends T> int  update(S entity);
+
+	<S extends T> int insert(List<S> entities, boolean ifNullInsertByFirstEntity);
+	<S extends T> int update(List<S> entities,boolean isNullUpdateByFirstEntity);
 
 }

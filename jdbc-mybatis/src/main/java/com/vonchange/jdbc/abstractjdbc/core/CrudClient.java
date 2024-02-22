@@ -16,6 +16,7 @@ package com.vonchange.jdbc.abstractjdbc.core;/*
 
 
 import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
@@ -24,11 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 public interface CrudClient {
-
+    static CrudClient create(DataSourceWrapper dataSourceWrapper) {
+        return new DefaultCrudClient(dataSourceWrapper);
+    }
     StatementSpec sqlId(String sqlId);
      <T> int insert(T entity);
-    <T> int insert(List<T> entities);
+    <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity);
     <T> int update(T entity);
+    <T> int update(List<T> entities,boolean isNullUpdateByFirstEntity);
 
     interface StatementSpec {
 

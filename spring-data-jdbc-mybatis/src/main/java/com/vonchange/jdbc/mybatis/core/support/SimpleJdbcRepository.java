@@ -22,10 +22,15 @@ import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.mybatis.tpl.EntityUtil;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
+import org.springframework.data.util.Streamable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> {
 
 	private final CrudClient crudClient;
@@ -38,6 +43,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 
 
 	@Override
+	@Transactional
 	public <S extends T> S save(S entity) {
 		EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
 		Object idValue = BeanUtil.getPropertyT(entity,entityInfo.getIdFieldName());
@@ -49,10 +55,19 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 		return entity;
 	}
 
+	/**
+	 *  user inset update instead
+	 * @param entities must not be {@literal null}.
+	 * @return
+	 * @param <S>
+	 */
 	@Override
+	@Transactional
+	@Deprecated
 	public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
-		 crudClient.insert(entities);
-		 return entities;
+		return Streamable.of(entities).stream()
+				.map(this::save)
+				.collect(Collectors.toList());
 	}
 
 
@@ -94,12 +109,14 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	}
 
 	@Override
+	@Transactional
 	public void deleteById(ID id) {
 		Assert.notNull(id,"id can not null");
 		 crudClient.sqlId(NameQueryUtil.simpleNameSql("deleteById",configInfo.getDomainType())).param(id).update();
 	}
 
 	@Override
+	@Transactional
 	public void delete(T entity) {
 		EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
 		Object idValue = BeanUtil.getPropertyT(entity,entityInfo.getIdFieldName());
@@ -107,6 +124,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	}
 
 	@Override
+	@Transactional
 	public void deleteAll(Iterable<? extends T> entities) {
 		for (T entity : entities) {
 			delete(entity);
@@ -114,18 +132,33 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	}
 
 	@Override
+	@Transactional
 	public void deleteAll() {
 		crudClient.sqlId(NameQueryUtil.simpleNameSql("deleteAll",configInfo.getDomainType())).update();
 	}
 
 
 	@Override
+	@Transactional
 	public <S extends T> int insert(S entity) {
 		return crudClient.insert(entity);
 	}
 
 	@Override
+	@Transactional
 	public <S extends T> int update(S entity) {
 		return crudClient.update(entity);
+	}
+
+	@Override
+	@Transactional
+	public <S extends T> int insert(List<S> entities, boolean ifNullInsertByFirstEntity) {
+		return crudClient.insert(entities,ifNullInsertByFirstEntity);
+	}
+
+	@Override
+	@Transactional
+	public <S extends T> int update(List<S> entities, boolean isNullUpdateByFirstEntity) {
+		return crudClient.update(entities,isNullUpdateByFirstEntity);
 	}
 }

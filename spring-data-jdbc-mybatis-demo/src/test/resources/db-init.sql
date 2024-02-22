@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `user_info` (
   `user_name` varchar(30) DEFAULT NULL COMMENT 'user name',
   `mobile_no` varchar(13) DEFAULT NULL COMMENT 'mobile nubmer',
   `address` varchar(20) DEFAULT NULL COMMENT 'address',
+  `version` int(11)  DEFAULT '1' Not NULL COMMENT 'version',
   `is_delete` tinyint(1) DEFAULT '0' Not NULL COMMENT 'is delete',
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,

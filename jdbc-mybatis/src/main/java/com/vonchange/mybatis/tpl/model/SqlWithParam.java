@@ -1,5 +1,7 @@
 package com.vonchange.mybatis.tpl.model;
 
+import com.vonchange.jdbc.abstractjdbc.config.EnumSqlRead;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +15,8 @@ public class SqlWithParam {
     private  List<String> columnReturns;
 
     private String idFieldName;
-    private long total;
+    private EnumSqlRead sqlRead;
+
     public SqlWithParam(){
     }
     public SqlWithParam(String sql, Object[] params) {
@@ -21,12 +24,12 @@ public class SqlWithParam {
         this.params = params;
     }
 
-    public long getTotal() {
-        return total;
+    public EnumSqlRead getSqlRead() {
+        return sqlRead;
     }
 
-    public void setTotal(long total) {
-        this.total = total;
+    public void setSqlRead(EnumSqlRead sqlRead) {
+        this.sqlRead = sqlRead;
     }
 
     public String getSql() {

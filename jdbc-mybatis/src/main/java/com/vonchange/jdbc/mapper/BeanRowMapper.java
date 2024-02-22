@@ -10,6 +10,7 @@ import org.springframework.lang.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 
 public class BeanRowMapper<T> implements RowMapper<T> {
@@ -20,12 +21,13 @@ public class BeanRowMapper<T> implements RowMapper<T> {
     }
     @Override
     public T mapRow(ResultSet rs, int rowNum) throws SQLException {
-        boolean base=false;
         if(ClazzUtils.isBaseType(mappedClass)){
-            base=true;
+           return ConvertUtil.toObject(JdbcUtils.getResultSetValue(rs, 1),mappedClass);
         }
-        return base? ConvertUtil.toObject(JdbcUtils.getResultSetValue(rs, 1),mappedClass)
-                : ConvertMap.toBean(CrudUtil.rowToMap(rs,null),mappedClass);
+        if(mappedClass == Map.class){
+            return (T)CrudUtil.toOrmMap(CrudUtil.rowToMap(rs,null));
+        }
+        return ConvertMap.toBean(CrudUtil.rowToMap(rs,null),mappedClass);
     }
 
 

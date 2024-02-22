@@ -1,7 +1,6 @@
 package com.vonchange.nine.demo.dao;
 
 import com.vonchange.common.util.StringPool;
-import com.vonchange.common.util.UtilAll;
 import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
@@ -96,14 +95,25 @@ class UserInfoMethodDaoTest {
         UserInfoDO userInfoDO = new UserInfoDO();
         userInfoDO.setUserCode("L001");
         userInfoDO.setUserName("Bruce Lee");
-        userInfoDO.setHeadImageData(IOUtils.toByteArray(UtilAll.UFile.getClassResource("db-init.sql")));
+        //userInfoDO.setHeadImageData(IOUtils.toByteArray(UtilAll.UFile.getClassResource("db-init.sql")));
         userInfoMethodDao.save(userInfoDO);
         //log.info("\nresultNum {} id {}",resultNum,userInfoDO.getId());
-        UserInfoDO userInfoDOFind =userInfoMethodDao.findById(userInfoDO.getId()).get();
-        if(null!=userInfoDOFind.getHeadImageData()){
-            log.info(IOUtils.toString(userInfoDOFind.getHeadImageData(), StringPool.UTF_8));
-        }
-        log.info("\nuserInfoDOFind {}",userInfoDOFind.toString());
+        userInfoMethodDao.findById(userInfoDO.getId()).ifPresent(u->{
+            if(null!=u.getHeadImageData()){
+                try {
+                    log.info(IOUtils.toString(u.getHeadImageData(), StringPool.UTF_8));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            log.info("\nuserInfoDOFind {}",JsonUtil.toJson(u));
+        });
+        userInfoMethodDao.update(userInfoDO);
+        userInfoMethodDao.findById(userInfoDO.getId()).ifPresent(u->{
+            log.info("\nuserInfoDOFind {}",JsonUtil.toJson(u));
+        });
+
+
     }
     @Test
     @Transactional
@@ -118,22 +128,13 @@ class UserInfoMethodDaoTest {
         UserInfoDO userInfoDOFind =userInfoMethodDao.findById(1L).get();
         log.info("\nuserInfoDOFind {}",userInfoDOFind.toString());
     }
-    @Test
-    public void updateAllField() {
-        UserInfoDO userInfoDO = new UserInfoDO();
-        userInfoDO.setUserName("anyone");
-        userInfoDO.setId(1L);
-        //int result  = userInfoMethodDao.updateAllField(userInfoDO);
-        System.out.println();
-        //log.info("\nresultNum {}",result);
-        UserInfoDO userInfoDOFind =userInfoMethodDao.findById(1L).orElse(null);
-        log.info("\nuserInfoDOFind {}",userInfoDOFind.toString());
-    }
+
+
 
     @Test
     void findById() {
-        UserInfoDO userInfo = userInfoMethodDao.findById(1L).get();
-        log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
+        userInfoMethodDao.findById(1L)
+                .ifPresent(userInfoDO -> log.info("\nuserInfo {}", JsonUtil.toJson(userInfoDO)));
     }
     @Test
     void findAllById() {
@@ -170,16 +171,17 @@ class UserInfoMethodDaoTest {
      */
     @Test
     @Transactional
+    @Rollback
     public void bachSave() {
         long start = System.currentTimeMillis();
         List<UserInfoDO> list = new ArrayList<>();
         for (int i=0;i<10000;i++) {
             UserInfoDO item=  UserInfoDO.builder().userName("name:"+i).userCode("u:"+i).build();
+           // item.setVersion(1);
             //item.setIsDelete(0);
             list.add(item);
         }
-        int resultNum = 1;
-                //userInfoMethodDao.saveAllNotNull(list,5000);
+        int resultNum = userInfoMethodDao.insert(list,false);
         //@TODO return id？
         log.info("resultNum {} id First {} id Last {}",resultNum,list.get(0).getId(),
                 list.get(list.size()-1).getId());

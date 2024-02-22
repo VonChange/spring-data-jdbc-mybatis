@@ -1,6 +1,6 @@
 package com.vonchange.jdbc.abstractjdbc.core;
 
-import com.vonchange.jdbc.abstractjdbc.config.Constants;
+import com.vonchange.jdbc.abstractjdbc.config.EnumRWType;
 import com.vonchange.jdbc.abstractjdbc.util.sql.SqlFill;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import org.slf4j.Logger;
@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 
 public class JdbcLogUtil {
     private static final Logger log = LoggerFactory.getLogger(JdbcLogUtil.class);
-    public static void logSql(Constants.EnumRWType enumRWType, SqlWithParam sqlWithParam) {
+    public static void logSql(EnumRWType enumRWType, SqlWithParam sqlWithParam) {
         logSql(enumRWType,sqlWithParam.getSql(),sqlWithParam.getParams());
     }
-    public static void logSql(Constants.EnumRWType enumRWType, String sql, Object... params) {
+    public static void logSql(EnumRWType enumRWType, String sql, Object... params) {
         if (log.isDebugEnabled()) {
             try{
                 String sqlResult = SqlFill.fill(sql, params);

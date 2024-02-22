@@ -5,16 +5,17 @@ import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.annotation.ColumnNot;
 import com.vonchange.mybatis.tpl.annotation.InsertOnlyProperty;
 import com.vonchange.mybatis.tpl.annotation.InsertReturn;
-import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
 import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.annotation.Version;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -70,11 +71,12 @@ public class EntityUtil {
         List<Field> fieldList = new ArrayList<>();
         getFieldList(clazz,fieldList);
         List<EntityField> entityFieldList = new ArrayList<>();
-        Map<String,Boolean> fieldMap = new HashMap<>();
+        Map<String,Integer> fieldMap = new HashMap<>();
         Column column;
         List<String> columnReturns = new ArrayList<>();
         MethodAccessData methodAccessData = BeanUtil.methodAccessData(clazz);
         String writeMethod;
+        int i=0;
         for (Field field : fieldList) {
             Class<?> type = field.getType();
             writeMethod="set"+ UtilAll.UString.capitalize(field.getName());
@@ -97,39 +99,48 @@ public class EntityUtil {
             entityField.setColumnName(columnName);
             entityField.setType(type);
             entityField.setIsColumn(true);
-            entityField.setUpdateNotNull(false);
             Annotation[] annotations = field.getAnnotations();
             for (Annotation annotation : annotations) {
-                if (annotation instanceof Transient||annotation instanceof ColumnNot) {
-                    entityField.setIsColumn(false);
-                    continue;
-                }
                 if (annotation instanceof Id||annotation instanceof org.springframework.data.annotation.Id) {
                     entityField.setIsId(true);
                     entity.setIdFieldName(fieldName);
                     entity.setIdColumnName(columnName);
                     entity.setIdType(type.getSimpleName());
-                    entityField.setUpdateNotNull(true);
+                    continue;
                 }
-                if(annotation instanceof InsertReturn){
-                    columnReturns.add(columnName);
+                if (annotation instanceof InsertOnlyProperty) {
+                    entityField.setUpdateNot(true);
+                    continue;
                 }
-                if (annotation instanceof UpdateNotNull) {
-                    entityField.setUpdateNotNull(true);
+                if(annotation instanceof Version||annotation instanceof javax.persistence.Version){
+                    boolean flag=  ClazzUtils.isVersionType(type);
+                    if(!flag){
+                        throw new JdbcMybatisRuntimeException("@Version only support Long or Integer");
+                    }
+                    entityField.setVersion(true);
+                    continue;
                 }
                 if (annotation instanceof ReadOnlyProperty) {
                     entityField.setInsertNot(true);
                     entityField.setUpdateNot(true);
+                    continue;
                 }
-                if (annotation instanceof InsertOnlyProperty) {
-                    entityField.setUpdateNot(true);
+                if(annotation instanceof InsertReturn){
+                    columnReturns.add(columnName);
+                    continue;
+                }
+                if (annotation instanceof Transient ||annotation instanceof ColumnNot) {
+                    entityField.setIsColumn(false);
+
                 }
             }
             entityFieldList.add(entityField);
-            fieldMap.put(fieldName, true);
+            fieldMap.put(fieldName, i);
+            i++;
         }
         entity.setColumnReturns(columnReturns);
         entity.setEntityFields(entityFieldList);
+        entity.setFieldMap(fieldMap);
         entityMap.put(clazz.getName(), entity);
     }
 
