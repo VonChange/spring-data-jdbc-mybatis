@@ -1,4 +1,4 @@
-package com.vonchange.mybatis.tpl.model;
+package com.vonchange.jdbc.model;
 
 import com.vonchange.jdbc.config.EnumSqlRead;
 

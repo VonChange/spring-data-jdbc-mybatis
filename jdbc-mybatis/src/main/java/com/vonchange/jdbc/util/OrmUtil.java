@@ -1,4 +1,4 @@
-package com.vonchange.mybatis.tpl;
+package com.vonchange.jdbc.util;
 
 
 import com.vonchange.common.util.UtilAll;

@@ -20,8 +20,8 @@ import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
-import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.model.EntityInfo;
+import com.vonchange.jdbc.util.EntityUtil;
+import com.vonchange.jdbc.model.EntityInfo;
 import org.springframework.data.util.Streamable;
 import org.springframework.transaction.annotation.Transactional;
 

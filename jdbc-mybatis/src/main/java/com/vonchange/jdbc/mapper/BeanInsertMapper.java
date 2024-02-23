@@ -4,8 +4,8 @@ import com.vonchange.common.util.UtilAll;
 import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.util.ConvertMap;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
-import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.model.EntityInfo;
+import com.vonchange.jdbc.util.EntityUtil;
+import com.vonchange.jdbc.model.EntityInfo;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;

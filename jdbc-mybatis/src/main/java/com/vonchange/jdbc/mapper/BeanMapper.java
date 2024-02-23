@@ -3,8 +3,8 @@ package com.vonchange.jdbc.mapper;
 
 import com.vonchange.jdbc.config.EnumMappedClass;
 import com.vonchange.jdbc.util.ConvertMap;
-import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.model.EntityInfo;
+import com.vonchange.jdbc.util.EntityUtil;
+import com.vonchange.jdbc.model.EntityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;

@@ -6,11 +6,9 @@ import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.model.EnumStep;
 import com.vonchange.jdbc.model.SplitMap;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
-import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.OrmUtil;
-import com.vonchange.mybatis.tpl.model.EntityField;
-import com.vonchange.mybatis.tpl.model.EntityInfo;
-import com.vonchange.mybatis.tpl.model.SqlWithParam;
+import com.vonchange.jdbc.model.EntityField;
+import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.jdbc.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

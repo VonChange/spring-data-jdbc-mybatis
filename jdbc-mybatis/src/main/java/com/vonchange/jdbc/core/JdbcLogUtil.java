@@ -1,8 +1,8 @@
 package com.vonchange.jdbc.core;
 
 import com.vonchange.jdbc.config.EnumRWType;
-import com.vonchange.jdbc.util.sql.SqlFill;
-import com.vonchange.mybatis.tpl.model.SqlWithParam;
+import com.vonchange.jdbc.util.SqlFill;
+import com.vonchange.jdbc.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

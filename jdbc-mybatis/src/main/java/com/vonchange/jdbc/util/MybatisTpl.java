@@ -1,4 +1,4 @@
-package com.vonchange.mybatis.tpl;
+package com.vonchange.jdbc.util;
 
 
 import com.vonchange.common.ibatis.mapping.BoundSql;
@@ -13,7 +13,7 @@ import com.vonchange.common.util.UtilAll;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
-import com.vonchange.mybatis.tpl.model.SqlWithParam;
+import com.vonchange.jdbc.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

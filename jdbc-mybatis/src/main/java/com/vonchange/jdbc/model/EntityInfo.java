@@ -1,4 +1,4 @@
-package com.vonchange.mybatis.tpl.model;
+package com.vonchange.jdbc.model;
 
 import java.util.List;
 import java.util.Map;

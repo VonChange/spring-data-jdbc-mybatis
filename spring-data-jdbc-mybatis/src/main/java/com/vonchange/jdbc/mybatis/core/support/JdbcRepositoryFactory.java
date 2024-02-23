@@ -23,7 +23,7 @@ import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
 import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
-import com.vonchange.mybatis.tpl.EntityUtil;
+import com.vonchange.jdbc.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;

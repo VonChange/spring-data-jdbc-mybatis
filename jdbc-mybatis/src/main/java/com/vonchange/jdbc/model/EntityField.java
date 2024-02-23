@@ -1,4 +1,4 @@
-package com.vonchange.mybatis.tpl.model;
+package com.vonchange.jdbc.model;
 
 /**
  * 实体字段信息

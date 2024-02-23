@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.template;
+package com.vonchange.jdbc.core;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;

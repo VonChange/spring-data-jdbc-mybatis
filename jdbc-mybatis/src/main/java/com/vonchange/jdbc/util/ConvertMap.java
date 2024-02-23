@@ -7,8 +7,7 @@ import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.jdbc.config.EnumMappedClass;
 import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
-import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.model.EntityInfo;
+import com.vonchange.jdbc.model.EntityInfo;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import java.beans.BeanInfo;

@@ -1,4 +1,4 @@
-package com.vonchange.mybatis.tpl;
+package com.vonchange.jdbc.util;
 
 
 import com.vonchange.common.util.ClazzUtils;
@@ -6,11 +6,11 @@ import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
-import com.vonchange.mybatis.tpl.annotation.ColumnNot;
-import com.vonchange.mybatis.tpl.annotation.InsertOnlyProperty;
-import com.vonchange.mybatis.tpl.annotation.InsertReturn;
-import com.vonchange.mybatis.tpl.model.EntityField;
-import com.vonchange.mybatis.tpl.model.EntityInfo;
+import com.vonchange.jdbc.annotation.ColumnNot;
+import com.vonchange.jdbc.annotation.InsertOnlyProperty;
+import com.vonchange.jdbc.annotation.InsertReturn;
+import com.vonchange.jdbc.model.EntityField;
+import com.vonchange.jdbc.model.EntityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.ReadOnlyProperty;

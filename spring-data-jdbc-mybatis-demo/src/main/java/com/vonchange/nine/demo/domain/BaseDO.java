@@ -1,7 +1,7 @@
 package com.vonchange.nine.demo.domain;
 
 
-import com.vonchange.mybatis.tpl.annotation.InsertOnlyProperty;
+import com.vonchange.jdbc.annotation.InsertOnlyProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
