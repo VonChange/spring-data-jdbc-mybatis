@@ -1,10 +1,10 @@
 package com.vonchange.nine.demo.dao;
 
+import com.vonchange.common.util.JsonUtil;
 import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.UserInfoDO;
-import com.vonchange.nine.demo.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;

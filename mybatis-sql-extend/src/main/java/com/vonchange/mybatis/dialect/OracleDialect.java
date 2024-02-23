@@ -3,7 +3,6 @@ package com.vonchange.mybatis.dialect;
 
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.mybatis.config.Constant;
 
 
 /**
@@ -36,7 +35,7 @@ public class OracleDialect implements Dialect {
 
     @Override
     public String getDialogName() {
-        return Constant.Dialog.ORACLE;
+        return "oracle";
     }
 
     @Override

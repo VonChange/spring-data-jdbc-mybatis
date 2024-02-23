@@ -1,10 +1,10 @@
 package com.vonchange.nine.demo.dao;
 
+import com.vonchange.common.util.JsonUtil;
 import com.vonchange.jdbc.mapper.AbstractPageWork;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
-import com.vonchange.nine.demo.util.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class UserInfoRepositoryTest {
         searchParam.setSort(NameQueryUtil.orderSql("orderByCreateTimeDescId",UserInfoDO.class));
         List<UserInfoDO> userInfoDOList = userInfoRepository.findUserBySearchParam(searchParam);
         userInfoDOList.forEach(userInfoDO -> {
-            log.info("\n {}",JsonUtil.toJson(userInfoDO));
+            log.info("\n {}", JsonUtil.toJson(userInfoDO));
         });
     }
     public static Date toDate(LocalDateTime localDateTime) {

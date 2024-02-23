@@ -1,6 +1,7 @@
 package com.vonchange.nine.demo.dao;
 
-import com.vonchange.nine.demo.util.JsonUtil;
+
+import com.vonchange.common.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

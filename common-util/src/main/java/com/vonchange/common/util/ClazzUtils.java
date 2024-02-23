@@ -31,6 +31,15 @@ public class ClazzUtils {
 			throw new ClassCastException(cannotCastMsg(clazz, obj));
 		return (T) obj;
 	}
+	public static boolean isClassExists(String className) {
+		try {
+			Class.forName(className);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
+
 
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Object obj) {
