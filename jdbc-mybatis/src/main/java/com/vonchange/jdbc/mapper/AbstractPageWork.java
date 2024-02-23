@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.handler;
+package com.vonchange.jdbc.mapper;
 
 import java.util.List;
 import java.util.Map;

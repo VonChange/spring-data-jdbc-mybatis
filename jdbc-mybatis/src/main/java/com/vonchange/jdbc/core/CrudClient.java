@@ -15,7 +15,7 @@ package com.vonchange.jdbc.core;/*
  */
 
 
-import com.vonchange.jdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.mapper.AbstractPageWork;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -3,23 +3,22 @@ package com.vonchange.jdbc.core;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.config.EnumRWType;
 import com.vonchange.jdbc.config.EnumSqlRead;
-import com.vonchange.jdbc.handler.AbstractPageWork;
-import com.vonchange.jdbc.handler.BeanInsertHandler;
-import com.vonchange.jdbc.handler.BigDataBeanListHandler;
-import com.vonchange.jdbc.handler.ScalarHandler;
+import com.vonchange.jdbc.mapper.AbstractPageWork;
+import com.vonchange.jdbc.mapper.BeanInsertMapper;
+import com.vonchange.jdbc.mapper.BeanMapper;
+import com.vonchange.jdbc.mapper.BigDataBeanMapper;
+import com.vonchange.jdbc.mapper.ScalarMapper;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.template.MyJdbcTemplate;
 import com.vonchange.jdbc.util.ConvertMap;
-import com.vonchange.jdbc.mapper.BeanRowMapper;
-import com.vonchange.jdbc.mapper.SingleColumnRowMapper;
 import com.vonchange.mybatis.tpl.MybatisTpl;
 import com.vonchange.mybatis.tpl.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.CollectionUtils;
 
@@ -49,7 +48,8 @@ public class DefaultCrudClient implements CrudClient{
     public final <T> int insert(T entity) {
         SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entity,false,false);
         JdbcLogUtil.logSql(EnumRWType.write, sqlParameter);
-        return classicOps.insert(sqlParameter.getSql(),sqlParameter.getColumnReturns(), new BeanInsertHandler<>(entity), sqlParameter.getParams());
+        return classicOps.insert(sqlParameter.getSql(),sqlParameter.getColumnReturns(),
+                new BeanInsertMapper<>(entity), sqlParameter.getParams());
     }
     public final <T> int update(T entity) {
         SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entity, false);
@@ -62,12 +62,8 @@ public class DefaultCrudClient implements CrudClient{
         }
         SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entities.get(0),ifNullInsertByFirstEntity,true);
         String sql = sqlParameter.getSql();
-         List<List<Object[]>> list=  CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames(),-1);
-         int num=0;
-        for (List<Object[]> objects : list) {
-            num+=classicOps.batchUpdate(sql,objects).length;
-        }
-        return num;
+        List<Object[]> list=  CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames());
+        return classicOps.batchInsert(sql,list,sqlParameter.getColumnReturns(),new BeanInsertMapper<>(entities)).length;
     }
     public final <T> int update(List<T> entities,boolean isNullUpdateByFirstEntity) {
         if(CollectionUtils.isEmpty(entities)){
@@ -123,20 +119,21 @@ public class DefaultCrudClient implements CrudClient{
         public  <T> void queryBatch(Class<T> mappedClass, AbstractPageWork<T> pageWork){
             SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId, this.namedParams, dataSourceWrapper.getDialect());
             JdbcLogUtil.logSql(EnumRWType.read,sqlParameter);
-            classicOps.queryBigData(sqlParameter.getSql(), new BigDataBeanListHandler<T>(mappedClass, pageWork), sqlParameter.getParams());
+            classicOps.queryBigData(sqlParameter.getSql(), new BigDataBeanMapper<T>(mappedClass, pageWork), sqlParameter.getParams());
         }
         public <T> Page<T>  queryPage(Class<T> mappedClass, Pageable pageable){
             SqlWithParam sqlParameter = getSqlParameter(mappedClass);
             String sql = sqlParameter.getSql();
             SqlWithParam countSqlParam= CrudUtil.countSql(sqlId,sqlParameter,this.namedParams, dataSourceWrapper.getDialect());
             JdbcLogUtil.logSql(EnumRWType.read,sqlParameter);
-            Long total = classicOps.query(countSqlParam.getSql(), new ScalarHandler<>(Long.class),
+            Long total = classicOps.query(countSqlParam.getSql(), new ScalarMapper<>(Long.class),
                     sqlParameter.getParams());
             if(null==total) total=0L;
             int pageNum = Math.max(pageable.getPageNumber(), 0);
             int firstEntityIndex = pageable.getPageSize() * pageNum;
             sql = dataSourceWrapper.getDialect().getPageSql(sql, firstEntityIndex, pageable.getPageSize());
-            List<T> entities = classicOps.query(sql,new BeanRowMapper<>(mappedClass),sqlParameter.getParams());
+            List<T> entities = classicOps.query(sql,new BeanMapper<>(mappedClass),sqlParameter.getParams());
+            if(null==entities) entities=new ArrayList<>();
             return new PageImpl<>(entities, pageable, total);
         }
         public <T> MappedQuerySpec<T> query(Class<T> mappedClass){
@@ -144,10 +141,7 @@ public class DefaultCrudClient implements CrudClient{
             this.sql=sqlWithParam.getSql();
             this.indexedParams=new ArrayList<>();
             Collections.addAll(this.indexedParams, sqlWithParam.getParams());
-            RowMapper<?> rowMapper = rowMapperCache.computeIfAbsent(mappedClass, key ->
-                    BeanUtils.isSimpleProperty(mappedClass) ? new SingleColumnRowMapper<>(mappedClass) :
-                            new BeanRowMapper<>(mappedClass));
-            return query((RowMapper<T>) rowMapper);
+            return query(new BeanMapper<>(mappedClass));
         }
         private <T>  SqlWithParam getSqlParameter(Class<T> mappedClass){
             if(sqlId.contains(StringPool.SPACE)){
@@ -173,8 +167,8 @@ public class DefaultCrudClient implements CrudClient{
         }
 
 
-        public <T> MappedQuerySpec<T> query(RowMapper<T> rowMapper) {
-            return new IndexedParamMappedQuerySpec<>(rowMapper);
+        public <T> MappedQuerySpec<T> query(ResultSetExtractor<List<T>> resultSetExtractor) {
+            return new IndexedParamMappedQuerySpec<>(resultSetExtractor);
         }
         @Override
         public int update() {
@@ -200,16 +194,16 @@ public class DefaultCrudClient implements CrudClient{
 
         private class IndexedParamMappedQuerySpec<T> implements MappedQuerySpec<T> {
 
-            private final RowMapper<T> rowMapper;
+            private final ResultSetExtractor<List<T>> resultSetExtractor;
 
-            public IndexedParamMappedQuerySpec(RowMapper<T> rowMapper) {
-                this.rowMapper = rowMapper;
+            public IndexedParamMappedQuerySpec(ResultSetExtractor<List<T>> resultSetExtractor) {
+                this.resultSetExtractor = resultSetExtractor;
             }
 
             @Override
             public List<T> list() {
                 JdbcLogUtil.logSql(EnumRWType.read,sql,indexedParams.toArray());
-                return classicOps.query(sql, this.rowMapper, indexedParams.toArray());
+                return classicOps.query(sql, this.resultSetExtractor, indexedParams.toArray());
             }
 
            @Override

@@ -72,6 +72,7 @@ public class EntityUtil {
         getFieldList(clazz,fieldList);
         List<EntityField> entityFieldList = new ArrayList<>();
         Map<String,Integer> fieldMap = new HashMap<>();
+        Map<String,Integer> columnMap = new HashMap<>();
         Column column;
         List<String> columnReturns = new ArrayList<>();
         MethodAccessData methodAccessData = BeanUtil.methodAccessData(clazz);
@@ -136,11 +137,13 @@ public class EntityUtil {
             }
             entityFieldList.add(entityField);
             fieldMap.put(fieldName, i);
+            columnMap.put(columnName,i);
             i++;
         }
         entity.setColumnReturns(columnReturns);
         entity.setEntityFields(entityFieldList);
         entity.setFieldMap(fieldMap);
+        entity.setColumnMap(columnMap);
         entityMap.put(clazz.getName(), entity);
     }
 

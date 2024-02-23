@@ -4,17 +4,20 @@ import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.jdbc.config.EnumMappedClass;
+import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.mybatis.tpl.model.EntityField;
 import com.vonchange.mybatis.tpl.model.EntityInfo;
+import org.springframework.jdbc.support.JdbcUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ConvertMap {
@@ -55,34 +58,35 @@ public class ConvertMap {
     @SuppressWarnings("unchecked")
     public static <T> T toBean(Map<String, Object> orgMap,T entity) {
         Assert.notNull(entity,"entity can not null");
-        Class<?> type = entity.getClass();
-        Map<String, Object> newMap=new HashMap<>();
         for (Map.Entry<String, Object> entry : orgMap.entrySet()) {
-            newMap.put(entry.getKey().toUpperCase(),entry.getValue());
-        }
-        EntityInfo entityInfo = EntityUtil.getEntityInfo(type);
-        if (null != entityInfo) {
-            List<EntityField> entityFieldList = entityInfo.getEntityFields();
-            for (EntityField entityField : entityFieldList) {
-                String columnNameUpper = entityField.getColumnName().toUpperCase();
-                String fieldNameUpper = entityField.getFieldName().toUpperCase();
-                Object value = null;
-                if (newMap.containsKey(columnNameUpper)) {
-                    value = newMap.get(columnNameUpper);
-                }
-                if (newMap.containsKey(fieldNameUpper)) {
-                    value = newMap.get(fieldNameUpper);
-                }
-                if (null != value) {
-                    value = ConvertUtil.toObject(value, entityField.getType());
-                    BeanUtil.setProperty(entity,entityField.getFieldName(),value);
-                }
-            }
-            return entity;
+            BeanUtil.setProperty(entity,entry.getKey(),entry.getValue());
         }
         return entity;
     }
-
+    public static EnumMappedClass enumMappedClass(Class<?> mappedClass){
+        if(ClazzUtils.isBaseType(mappedClass)){
+            return EnumMappedClass.base;
+        }
+        if(mappedClass == Map.class){
+            return EnumMappedClass.map;
+        }
+        return EnumMappedClass.bean;
+    }
+    public static <T> T toMappedClass(ResultSet rs,  Class<?> mappedClass,EnumMappedClass enumMappedClass,EntityInfo entityInfo) throws SQLException {
+        if(null==enumMappedClass){
+            enumMappedClass=enumMappedClass(mappedClass);
+        }
+        if(enumMappedClass.equals(EnumMappedClass.base)){
+            return ConvertUtil.toObject(JdbcUtils.getResultSetValue(rs, 1),mappedClass);
+        }
+        if(enumMappedClass.equals(EnumMappedClass.map)){
+            return (T) CrudUtil.rowToMap(null,rs,null);
+        }
+        if(null==entityInfo){
+            entityInfo = EntityUtil.getEntityInfo(mappedClass);
+        }
+        return ConvertMap.toBean(CrudUtil.rowToMap(entityInfo,rs,null),mappedClass);
+    }
     public static <T> T toBean(Map<String, Object> map,Class<?> type){
         Assert.notNull(type,"need class type");
         T   entity =null;

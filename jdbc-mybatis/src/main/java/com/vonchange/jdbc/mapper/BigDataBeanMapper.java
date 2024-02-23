@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vonchange.jdbc.handler;
+package com.vonchange.jdbc.mapper;
 
 import com.vonchange.common.util.ClazzUtils;
-import com.vonchange.common.util.ConvertUtil;
-import com.vonchange.jdbc.core.CrudUtil;
+import com.vonchange.jdbc.config.EnumMappedClass;
 import com.vonchange.jdbc.util.ConvertMap;
+import com.vonchange.mybatis.tpl.EntityUtil;
+import com.vonchange.mybatis.tpl.model.EntityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.support.JdbcUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,8 +35,8 @@ import java.util.Map;
 /**
  * @param <T> the target processor type
  */
-public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(BigDataBeanListHandler.class);
+public class BigDataBeanMapper<T> implements ResultSetExtractor<Integer> {
+    private static final Logger logger = LoggerFactory.getLogger(BigDataBeanMapper.class);
     /**
      * The Class of beans produced by this handler.
      */
@@ -57,7 +57,7 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
      *             are created from.
      *             to use when converting rows into beans.
      */
-    public BigDataBeanListHandler(Class<? extends T> type, AbstractPageWork<T> abstractPageWork) {
+    public BigDataBeanMapper(Class<? extends T> type, AbstractPageWork<T> abstractPageWork) {
         this.type = type;
         this.abstractPageWork = abstractPageWork;
     }
@@ -84,6 +84,11 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
     @SuppressWarnings("unchecked")
     private void toBeanList(ResultSet rs, Class<? extends T> type, int pageSize)
             throws SQLException{
+        EnumMappedClass enumMappedClass = ConvertMap.enumMappedClass(type);
+        EntityInfo entityInfo = null;
+        if(enumMappedClass.equals(EnumMappedClass.bean)){
+            entityInfo = EntityUtil.getEntityInfo(type);
+        }
         List<T> result = new ArrayList<>();
         Map<String, Object> extData = new HashMap<>();
         if (!rs.next()) {
@@ -101,8 +106,7 @@ public class BigDataBeanListHandler<T> implements ResultSetExtractor<Integer> {
             base = true;
         }
         do {
-            result.add(base ? ConvertUtil.toObject(JdbcUtils.getResultSetValue(rs,1), type)
-                    : ConvertMap.toBean(CrudUtil.rowToMap(rs,null),type));
+            result.add(ConvertMap.toMappedClass(rs,type,enumMappedClass,entityInfo));
             pageItem++;
             count++;
             if (pageItem == pageSize) {

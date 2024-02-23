@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vonchange.jdbc.handler;
+package com.vonchange.jdbc.mapper;
 
 import com.vonchange.common.util.ConvertUtil;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * <core>ResultSet</core> column into an Object. This class is thread safe.
  *
  */
-public class ScalarHandler<T> implements ResultSetExtractor<T> {
+public class ScalarMapper<T> implements ResultSetExtractor<T> {
 
     /**
      * The column number to retrieve.
@@ -47,7 +47,7 @@ public class ScalarHandler<T> implements ResultSetExtractor<T> {
      * Creates a new instance of ScalarHandler. The first column will
      * be returned from <core>handle()</core>.
      */
-    public ScalarHandler(Class<T> mappedClass) {
+    public ScalarMapper(Class<T> mappedClass) {
         this(mappedClass,1, null);
     }
 
@@ -57,7 +57,7 @@ public class ScalarHandler<T> implements ResultSetExtractor<T> {
      * @param columnIndex The index of the column to retrieve from the
      *                    <core>ResultSet</core>.
      */
-    public ScalarHandler(Class<T> mappedClass,int columnIndex) {
+    public ScalarMapper(Class<T> mappedClass, int columnIndex) {
         this(mappedClass,columnIndex, null);
     }
 
@@ -67,7 +67,7 @@ public class ScalarHandler<T> implements ResultSetExtractor<T> {
      * @param columnName The name of the column to retrieve from the
      *                   <core>ResultSet</core>.
      */
-    public ScalarHandler(Class<T> mappedClass,String columnName) {
+    public ScalarMapper(Class<T> mappedClass, String columnName) {
         this(mappedClass,1, columnName);
     }
 
@@ -79,7 +79,7 @@ public class ScalarHandler<T> implements ResultSetExtractor<T> {
      * @param columnName  The name of the column to retrieve from the
      *                    <core>ResultSet</core>.
      */
-    private ScalarHandler(Class<T> mappedClass,int columnIndex, String columnName) {
+    private ScalarMapper(Class<T> mappedClass, int columnIndex, String columnName) {
         this.mappedClass=mappedClass;
         this.columnIndex = columnIndex;
         this.columnName = columnName;

@@ -127,6 +127,17 @@ public class CrudUtil {
         }
         return listSplit;
     }
+    public static  <T> List<Object[]> batchUpdateParam(List<T> entityList,boolean create, List<String> propertyNames) {
+        if(CollectionUtils.isEmpty(entityList)){
+            return new ArrayList<>();
+        }
+        EntityInfo entityInfo = EntityUtil.getEntityInfo(entityList.get(0).getClass());
+        List<Object[]> param = new ArrayList<>();
+        for (T t : entityList) {
+            param.add(beanToObjects(entityInfo,create,t, propertyNames));
+        }
+        return param;
+    }
     private static <T>  Object[] beanToObjects(EntityInfo entityInfo,boolean create,T t, List<String> propertyNames) {
         List<Object> result = new ArrayList<>();
         Object value;
@@ -217,28 +228,35 @@ public class CrudUtil {
         return sb + countSqlParser.getSmartCountSql(sql);
     }
 
-    public static Map<String,Object> rowToMap(ResultSet rs, String idColumnName) throws SQLException {
+    public static Map<String,Object> rowToMap(EntityInfo entityInfo,ResultSet rs, String idFieldName) throws SQLException {
         Map<String,Object> resultMap = new LinkedHashMap<>();
         ResultSetMetaData rsmd = rs.getMetaData();
         int cols = rsmd.getColumnCount();
+        String key;
         for (int col = 1; col <= cols; col++) {
             String columnName = JdbcUtils.lookupColumnName(rsmd, col);
-            if(null!=idColumnName&&columnName.equalsIgnoreCase("GENERATED_KEY")){
-                columnName=idColumnName;
+            if(null!=idFieldName&&columnName.equalsIgnoreCase("GENERATED_KEY")){
+                columnName=idFieldName;
             }
-            resultMap.put(columnName, rs.getObject(col));
+            key=mapKey(entityInfo,columnName);
+            if(null!=key){
+                resultMap.put(key, JdbcUtils.getResultSetValue(rs,col));//rs.getObject(col)
+            }
         }
         return resultMap;
     }
-    public static Map<String, Object> toOrmMap(Map<String, Object> map){
-        if (null == map || map.isEmpty()) {
-            return new HashMap<>();
+    private static String mapKey(EntityInfo entityInfo,String columnName){
+        if(null==entityInfo){
+            return OrmUtil.toFiled(columnName);
         }
-        Map<String, Object> newMap = new HashMap<>();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            newMap.put(OrmUtil.toFiled(entry.getKey()), entry.getValue());
+        if(entityInfo.getColumnMap().containsKey(columnName)){
+            return entityInfo.getEntityFields().get(entityInfo.getColumnMap().get(columnName)).getFieldName();
         }
-        return newMap;
+        if(entityInfo.getFieldMap().containsKey(columnName)){
+            return columnName;
+        }
+        return null;
     }
+
 
 }

@@ -2,6 +2,7 @@ package com.vonchange.jdbc.template;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementCallback;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlProvider;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
@@ -20,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyJdbcTemplate extends JdbcTemplate {
@@ -106,16 +109,16 @@ public class MyJdbcTemplate extends JdbcTemplate {
         this.fetchSizeBigData = fetchSizeBigData;
     }
 
-    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs,final ResultSetExtractor<T> rse) throws DataAccessException {
-        return batchInsert(sql, batchArgs, new int[0],rse);
+    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs,List<String> columnReturn,final ResultSetExtractor<T> rse) throws DataAccessException {
+        return batchInsert(sql, batchArgs, new int[0],columnReturn,rse);
     }
-    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs, final int[] argTypes,final ResultSetExtractor<T> rse) throws DataAccessException {
+    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs, final int[] argTypes,List<String> columnReturn,final ResultSetExtractor<T> rse) throws DataAccessException {
         if (batchArgs.isEmpty()) {
             return new int[0];
         }
 
-        return batchUpdate(
-                sql,
+        return batchInsert(
+                new InsertPreparedStatementCreator(sql,columnReturn),
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -138,16 +141,61 @@ public class MyJdbcTemplate extends JdbcTemplate {
                                 StatementCreatorUtils.setParameterValue(ps, colIndex, colType, value);
                             }
                         }
-                        ResultSet resultSet = ps.getGeneratedKeys();
-                        rse.extractData(resultSet);
                     }
                     @Override
                     public int getBatchSize() {
                         return batchArgs.size();
                     }
-                });
+                },rse);
     }
 
+    public <T> int[] batchInsert(PreparedStatementCreator psc,  final BatchPreparedStatementSetter pss,ResultSetExtractor<T> rse) throws DataAccessException {
+
+        int[] result = execute(psc, (PreparedStatementCallback<int[]>) ps -> {
+            try {
+                int batchSize = pss.getBatchSize();
+                InterruptibleBatchPreparedStatementSetter ipss =
+                        (pss instanceof InterruptibleBatchPreparedStatementSetter ?
+                                (InterruptibleBatchPreparedStatementSetter) pss : null);
+                if (JdbcUtils.supportsBatchUpdates(ps.getConnection())) {
+                    for (int i = 0; i < batchSize; i++) {
+                        pss.setValues(ps, i);
+                        if (ipss != null && ipss.isBatchExhausted(i)) {
+                            break;
+                        }
+                        ps.addBatch();
+                    }
+                    int[] num= ps.executeBatch();
+                    ResultSet resultSet = ps.getGeneratedKeys();
+                    rse.extractData(resultSet);
+                    return num;
+                }
+                else {
+                    List<Integer> rowsAffected = new ArrayList<>();
+                    for (int i = 0; i < batchSize; i++) {
+                        pss.setValues(ps, i);
+                        if (ipss != null && ipss.isBatchExhausted(i)) {
+                            break;
+                        }
+                        rowsAffected.add(ps.executeUpdate());
+                    }
+                    int[] rowsAffectedArray = new int[rowsAffected.size()];
+                    for (int i = 0; i < rowsAffectedArray.length; i++) {
+                        rowsAffectedArray[i] = rowsAffected.get(i);
+                    }
+                    return rowsAffectedArray;
+                }
+            }
+            finally {
+                if (pss instanceof ParameterDisposer) {
+                    ((ParameterDisposer) pss).cleanupParameters();
+                }
+            }
+        });
+
+        Assert.state(result != null, "No result array");
+        return result;
+    }
 
     public <T> T queryBigData(String sql, ResultSetExtractor<T> rse, Object... args) throws DataAccessException {
         return queryBigData(sql, newArgPreparedStatementSetter(args), rse);

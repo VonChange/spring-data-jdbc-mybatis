@@ -1,6 +1,6 @@
 package com.vonchange.nine.demo.dao;
 
-import com.vonchange.jdbc.handler.AbstractPageWork;
+import com.vonchange.jdbc.mapper.AbstractPageWork;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;

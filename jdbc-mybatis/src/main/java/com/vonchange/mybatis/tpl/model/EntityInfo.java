@@ -17,6 +17,7 @@ public class EntityInfo {
 	private List<EntityField> entityFields;
 
 	private Map<String,Integer> fieldMap;
+	private Map<String,Integer> columnMap;
 
 	public String getEntityName() {
 		return entityName;
@@ -39,6 +40,13 @@ public class EntityInfo {
 	}
 
 
+	public Map<String, Integer> getColumnMap() {
+		return columnMap;
+	}
+
+	public void setColumnMap(Map<String, Integer> columnMap) {
+		this.columnMap = columnMap;
+	}
 
 	public void setIdFieldName(String idFieldName) {
 		this.idFieldName = idFieldName;
