@@ -8,12 +8,12 @@ import java.util.Map;
 public class MethodAccessData {
     private MethodAccess methodAccess;
     private Map<String,Integer> methodIndexMap;
-    Map<String,Class>   paramTypeMap=new HashMap<>();
+    Map<Integer,Class>   paramTypeMap=new HashMap<>();
     public MethodAccessData(){
 
     }
 
-    public MethodAccessData(MethodAccess methodAccess, Map<String, Integer> methodIndexMap, Map<String, Class> paramTypeMap) {
+    public MethodAccessData(MethodAccess methodAccess, Map<String, Integer> methodIndexMap, Map<Integer, Class> paramTypeMap) {
         this.methodAccess = methodAccess;
         this.methodIndexMap = methodIndexMap;
         this.paramTypeMap = paramTypeMap;
@@ -23,11 +23,11 @@ public class MethodAccessData {
         return methodAccess;
     }
 
-    public Map<String, Class> getParamTypeMap() {
+    public Map<Integer, Class> getParamTypeMap() {
         return paramTypeMap;
     }
 
-    public void setParamTypeMap(Map<String, Class> paramTypeMap) {
+    public void setParamTypeMap(Map<Integer, Class> paramTypeMap) {
         this.paramTypeMap = paramTypeMap;
     }
 

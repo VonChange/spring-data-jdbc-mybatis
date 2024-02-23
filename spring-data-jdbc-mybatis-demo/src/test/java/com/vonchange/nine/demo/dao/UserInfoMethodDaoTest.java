@@ -95,6 +95,7 @@ class UserInfoMethodDaoTest {
         UserInfoDO userInfoDO = new UserInfoDO();
         userInfoDO.setUserCode("L001");
         userInfoDO.setUserName("Bruce Lee");
+        userInfoDO.setValid(true);
         //userInfoDO.setHeadImageData(IOUtils.toByteArray(UtilAll.UFile.getClassResource("db-init.sql")));
         userInfoMethodDao.insert(userInfoDO);
         log.info("\ninsert {}",JsonUtil.toJson(userInfoDO));

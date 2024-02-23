@@ -76,13 +76,11 @@ public class EntityUtil {
         Column column;
         List<String> columnReturns = new ArrayList<>();
         MethodAccessData methodAccessData = BeanUtil.methodAccessData(clazz);
-        String writeMethod;
         int i=0;
         for (Field field : fieldList) {
             Class<?> type = field.getType();
-            writeMethod="set"+ UtilAll.UString.capitalize(field.getName());
-            boolean isColumnField =methodAccessData.getMethodIndexMap()
-                    .containsKey(writeMethod)&&ClazzUtils.isBaseType(type);
+            boolean isColumnField =BeanUtil.containsProperty(methodAccessData,field.getName(),"set")
+                    &&ClazzUtils.isBaseType(type);
             String fieldName = field.getName();
             if(!isColumnField||fieldMap.containsKey(fieldName)){
                 continue;

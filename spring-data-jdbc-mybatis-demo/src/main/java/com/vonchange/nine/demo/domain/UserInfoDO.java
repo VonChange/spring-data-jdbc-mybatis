@@ -27,7 +27,7 @@ public class UserInfoDO extends BaseDO{
     private String userName;
     private String  mobileNo;
     private String address;
-    //private int isValid;
+    private boolean isValid;
    // private Integer status;
     private byte[] headImageData;
 

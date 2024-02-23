@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `user_info` (
   `address` varchar(20) DEFAULT NULL COMMENT 'address',
   `version` int(11)  DEFAULT '1' Not NULL COMMENT 'version',
   `is_delete` tinyint(1) DEFAULT '0' Not NULL COMMENT 'is delete',
+  `is_valid` tinyint(1) DEFAULT '0' Not NULL COMMENT 'isValid',
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   `head_image_data` blob  DEFAULT NULL,
