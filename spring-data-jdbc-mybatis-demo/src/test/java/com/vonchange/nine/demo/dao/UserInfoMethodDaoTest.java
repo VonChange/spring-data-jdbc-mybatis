@@ -91,14 +91,16 @@ class UserInfoMethodDaoTest {
     @Test
     @Transactional
     @Rollback
-    public void save() throws IOException {
+    public void insert() throws IOException {
         UserInfoDO userInfoDO = new UserInfoDO();
         userInfoDO.setUserCode("L001");
         userInfoDO.setUserName("Bruce Lee");
         //userInfoDO.setHeadImageData(IOUtils.toByteArray(UtilAll.UFile.getClassResource("db-init.sql")));
-        userInfoMethodDao.save(userInfoDO);
+        userInfoMethodDao.insert(userInfoDO);
+        log.info("\ninsert {}",JsonUtil.toJson(userInfoDO));
         //log.info("\nresultNum {} id {}",resultNum,userInfoDO.getId());
         userInfoMethodDao.findById(userInfoDO.getId()).ifPresent(u->{
+
             if(null!=u.getHeadImageData()){
                 try {
                     log.info(IOUtils.toString(u.getHeadImageData(), StringPool.UTF_8));
@@ -108,25 +110,26 @@ class UserInfoMethodDaoTest {
             }
             log.info("\nuserInfoDOFind {}",JsonUtil.toJson(u));
         });
-        userInfoMethodDao.update(userInfoDO);
-        userInfoMethodDao.findById(userInfoDO.getId()).ifPresent(u->{
-            log.info("\nuserInfoDOFind {}",JsonUtil.toJson(u));
-        });
 
 
     }
     @Test
-    @Transactional
+    //@Transactional
     //@Rollback(value = false)
     public void update() {
-        UserInfoDO userInfoDO = new UserInfoDO();
-        userInfoDO.setUserName("Jack ma");
-        userInfoDO.setId(2L);
-        userInfoMethodDao.save(userInfoDO);
+        userInfoMethodDao.findById(2L).ifPresent(u->{
+            UserInfoDO userInfoDO = new UserInfoDO();
+            userInfoDO.setUserName("Jack ma");
+            userInfoDO.setId(2L);
+            userInfoDO.setVersion(u.getVersion());
+            userInfoMethodDao.update(userInfoDO);
+        });
         //int a=0;
         //log.info((1/a);
-        UserInfoDO userInfoDOFind =userInfoMethodDao.findById(1L).get();
-        log.info("\nuserInfoDOFind {}",userInfoDOFind.toString());
+       userInfoMethodDao.findById(2L).ifPresent(u->{
+            log.info("\nuserInfoDOFind {}",JsonUtil.toJson(u));
+        });
+
     }
 
 
@@ -172,7 +175,7 @@ class UserInfoMethodDaoTest {
     @Test
     @Transactional
     @Rollback
-    public void bachSave() {
+    public void bachInsert() {
         long start = System.currentTimeMillis();
         List<UserInfoDO> list = new ArrayList<>();
         for (int i=0;i<10000;i++) {
@@ -182,12 +185,33 @@ class UserInfoMethodDaoTest {
             list.add(item);
         }
         int resultNum = userInfoMethodDao.insert(list,false);
+        //int resultNum = userInfoMethodDao.update(list,false);
         log.info("resultNum {} id First {} id Last {}",resultNum,list.get(0).getId(),
                 list.get(list.size()-1).getId());
         log.info("time {}",System.currentTimeMillis()-start);//1554
         Iterable<UserInfoDO> userInfoDOList = userInfoMethodDao.findAllById(
                 Arrays.asList(10L,100L));
         log.info(JsonUtil.toJson(userInfoDOList));
+    }
+    @Test
+    //@Transactional
+    //@Rollback
+    public void bachUpdate() {
+        long start = System.currentTimeMillis();
+        List<UserInfoDO> list = new ArrayList<>();
+        for (int i=0;i<10000;i++) {
+            UserInfoDO item=  UserInfoDO.builder().id(i+1L).userName("name:"+i).userCode("u:"+i).build();
+            //item.setVersion(1);
+            //item.setIsDelete(0);
+            list.add(item);
+        }
+        int resultNum = userInfoMethodDao.update(list,false);
+        //int resultNum = userInfoMethodDao.update(list,false);
+        log.info("resultNum {} id First {} id Last {}",resultNum,list.get(0).getId(),
+                list.get(list.size()-1).getId());
+        resultNum = userInfoMethodDao.update(list,false);
+        log.info("resultNum {}",resultNum);
+        log.info("time {}",System.currentTimeMillis()-start);//1554
     }
 
 }

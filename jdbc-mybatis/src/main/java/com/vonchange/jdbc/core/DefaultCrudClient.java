@@ -1,6 +1,7 @@
 package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.StringPool;
+import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumRWType;
 import com.vonchange.jdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.mapper.AbstractPageWork;
@@ -9,11 +10,12 @@ import com.vonchange.jdbc.mapper.BeanMapper;
 import com.vonchange.jdbc.mapper.BigDataBeanMapper;
 import com.vonchange.jdbc.mapper.ScalarMapper;
 import com.vonchange.jdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.model.SqlWithParam;
 import com.vonchange.jdbc.util.ConvertMap;
 import com.vonchange.jdbc.util.MybatisTpl;
-import com.vonchange.jdbc.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -51,9 +53,13 @@ public class DefaultCrudClient implements CrudClient{
                 new BeanInsertMapper<>(entity), sqlParameter.getParams());
     }
     public final <T> int update(T entity) {
-        SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entity, false);
+        SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entity, false,false);
         JdbcLogUtil.logSql(EnumRWType.write, sqlParameter);
-        return classicOps.update(sqlParameter.getSql(), sqlParameter.getParams());
+        int resultNum= classicOps.update(sqlParameter.getSql(), sqlParameter.getParams());
+        if(sqlParameter.getVersion()&&resultNum<1){
+            throw new OptimisticLockingFailureException(ConstantJdbc.OptimisticLockingFailureExceptionMessage);
+        }
+        return resultNum;
     }
     public final <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity) {
         if(CollectionUtils.isEmpty(entities)){
@@ -61,21 +67,15 @@ public class DefaultCrudClient implements CrudClient{
         }
         SqlWithParam sqlParameter = CrudUtil.generateInsertSql(entities.get(0),ifNullInsertByFirstEntity,true);
         String sql = sqlParameter.getSql();
-        List<Object[]> list=  CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames());
-        return classicOps.batchInsert(sql,list,sqlParameter.getColumnReturns(),new BeanInsertMapper<>(entities)).length;
+        return classicOps.insertBatch(sql,CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames()),sqlParameter.getColumnReturns(),new BeanInsertMapper<>(entities));
     }
-    public final <T> int update(List<T> entities,boolean isNullUpdateByFirstEntity) {
+    public final <T> int update(List<T> entities,boolean ifNullUpdateByFirstEntity) {
         if(CollectionUtils.isEmpty(entities)){
             return 0;
         }
-        SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entities.get(0),isNullUpdateByFirstEntity);
+        SqlWithParam sqlParameter = CrudUtil.generateUpdateSql(entities.get(0),ifNullUpdateByFirstEntity,true);
         String sql = sqlParameter.getSql();
-        List<List<Object[]>> list=  CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames(),-1);
-        int num=0;
-        for (List<Object[]> objects : list) {
-            num+=classicOps.batchUpdate(sql,objects).length;
-        }
-        return num;
+        return classicOps.updateBatch(sql,CrudUtil.batchUpdateParam(entities,false,sqlParameter.getPropertyNames()),sqlParameter.getVersion());
     }
 
 
@@ -183,12 +183,7 @@ public class DefaultCrudClient implements CrudClient{
             Map<String, Object> map = ConvertMap.toMap(entity);
             SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sqlId,map,dataSourceWrapper.getDialect());
             String sql = sqlParameter.getSql();
-            List<List<Object[]>> list= CrudUtil.batchUpdateParam(entities,false,sqlParameter.getPropertyNames(),-1);
-            int num=0;
-            for (List<Object[]> objects : list) {
-                num+=classicOps.batchUpdate(sql,objects).length;
-            }
-            return  num;
+            return  classicOps.updateBatch(sql,CrudUtil.batchUpdateParam(entities,false,sqlParameter.getPropertyNames()),false);
         }
 
         private class IndexedParamMappedQuerySpec<T> implements MappedQuerySpec<T> {

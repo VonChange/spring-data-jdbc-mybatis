@@ -1,6 +1,5 @@
 package com.vonchange.jdbc.core;
 
-import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
@@ -8,15 +7,15 @@ import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.count.CountSqlParser;
-import com.vonchange.jdbc.util.NameQueryUtil;
-import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
-import com.vonchange.jdbc.util.EntityUtil;
-import com.vonchange.jdbc.util.MybatisTpl;
-import com.vonchange.jdbc.util.OrmUtil;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
 import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.util.EntityUtil;
+import com.vonchange.jdbc.util.MybatisTpl;
+import com.vonchange.jdbc.util.NameQueryUtil;
+import com.vonchange.jdbc.util.OrmUtil;
+import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.support.JdbcUtils;
@@ -49,8 +48,7 @@ public class CrudUtil {
         return sqlWithParam;
     }
 
-    public static  <T> SqlWithParam generateUpdateSql(T entity, boolean isNullUpdate) {
-        SqlWithParam sqlParameter = new SqlWithParam();
+    public static  <T> SqlWithParam generateUpdateSql(T entity, boolean isNullUpdate,boolean mybatis) {
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
         String tableName = entityInfo.getTableName();
         String idColumnName = entityInfo.getIdColumnName();
@@ -64,69 +62,53 @@ public class CrudUtil {
         List<EntityField> entityFieldList = entityInfo.getEntityFields();
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
+        Map<String,Object> valueMap = new HashMap<>();
         Object value;
-        Long version=null;
-        String versionColumn=null;
+        EntityField versionField = null;
         for (EntityField entityField : entityFieldList) {
             if(entityField.getUpdateNot()){
                 continue;
             }
             value= BeanUtil.getProperty(entity,entityField.getFieldName());
             if(entityField.getVersion()&&null!=value){
-                versionColumn=entityField.getColumnName();
-                version=ConvertUtil.toLong(value);
-                value= version+1L;
+                versionField=entityField;
+                columns.add(UtilAll.UString.format("{} = {}+1",
+                        entityField.getColumnName(),entityField.getColumnName()));
+                continue;
             }
             if(entityField.getIsColumn()&&!entityField.getIsId()){
-                if(null!=value){
-                    columns.add(UtilAll.UString.format("{} = {}",entityField.getColumnName(),StringPool.QUESTION_MARK));
-                    values.add(value);
-                    continue;
-                }
-                if(isNullUpdate){
-                    columns.add(UtilAll.UString.format("{} = {}",entityField.getColumnName(),StringPool.QUESTION_MARK));
-                    values.add(null);
+                if(null!=value||isNullUpdate){
+                    columns.add(UtilAll.UString.format("{} = {}",
+                            entityField.getColumnName(),mybatis?mybatisNamedParam(entityField.getFieldName()):StringPool.QUESTION_MARK));
+                    if(mybatis){valueMap.put(entityField.getFieldName(),value);}else{values.add(value);}
                 }
             }
         }
         values.add(idValue);
+        valueMap.put(entityInfo.getIdFieldName(),idValue);
         // 0:tableName 1:setSql 2:idName
-        String sql = UtilAll.UString.format("update {} set {} where {} = ?", tableName,
-                String.join(StringPool.COMMA,columns), idColumnName);
-        if(null!=versionColumn){
-            sql=sql+" and "+versionColumn +" = ?";
-            values.add(version);
+        String sql = UtilAll.UString.format("update {} set {} where {} = {}", tableName,
+                String.join(StringPool.COMMA,columns), idColumnName,mybatis?mybatisNamedParam(entityInfo.getIdFieldName()):StringPool.QUESTION_MARK);
+
+        if(null!=versionField){
+            sql=sql+UtilAll.UString.format(" and {} = {}",versionField.getColumnName(),mybatis?mybatisNamedParam(versionField.getFieldName()):StringPool.QUESTION_MARK);
+            Object versionValue= BeanUtil.getProperty(entity,versionField.getFieldName());
+            if(mybatis){valueMap.put(versionField.getFieldName(),versionValue);}else{values.add(versionValue);}
         }
-        sqlParameter.setSql(sql);
-        sqlParameter.setParams(values.toArray());
+        SqlWithParam sqlParameter = new SqlWithParam(sql,values.toArray());
+        if(mybatis){
+            sqlParameter= MybatisTpl.generate("update_sql",sql,valueMap,null);
+        }
+        if(null!=versionField){
+            sqlParameter.setVersion(true);
+        }
         return sqlParameter;
     }
 
-    private static final Integer batchSizeDefault=2000;
-    public static  <T> List<List<Object[]>> batchUpdateParam(List<T> entityList,boolean create, List<String> propertyNames,int batchSize) {
-        if(CollectionUtils.isEmpty(entityList)){
-            return new ArrayList<>();
-        }
-        EntityInfo entityInfo = EntityUtil.getEntityInfo(entityList.get(0).getClass());
-        List<Object[]> param = new ArrayList<>();
-        int i = 0;
-        List<List<Object[]>> listSplit = new ArrayList<>();
-        if (batchSize <= 0) {
-            batchSize = batchSizeDefault;
-        }
-        for (T t : entityList) {
-            if (i != 0 && i % batchSize == 0) {
-                listSplit.add(param);
-                param = new ArrayList<>();
-            }
-            param.add(beanToObjects(entityInfo,create,t, propertyNames));
-            i++;
-        }
-        if (!param.isEmpty()) {
-            listSplit.add(param);
-        }
-        return listSplit;
+    private static String mybatisNamedParam(String fieldName){
+        return "#{"+fieldName+"}";
     }
+
     public static  <T> List<Object[]> batchUpdateParam(List<T> entityList,boolean create, List<String> propertyNames) {
         if(CollectionUtils.isEmpty(entityList)){
             return new ArrayList<>();
@@ -144,7 +126,7 @@ public class CrudUtil {
         for (String propertyName : propertyNames) {
             if(entityInfo.getFieldMap().containsKey(propertyName)){
                 value=BeanUtil.getProperty(t, propertyName);
-                if(create&&null==value&&entityInfo.getEntityFields().get(entityInfo.getFieldMap().get(propertyName)).getVersion()){
+                if(create&&null==value&&entityInfo.getFieldMap().containsKey(propertyName)&&entityInfo.getEntityFields().get(entityInfo.getFieldMap().get(propertyName)).getVersion()){
                     value=1;
                 }
                 result.add(value);
@@ -156,7 +138,6 @@ public class CrudUtil {
 
     public static  <T> SqlWithParam generateInsertSql(T entity, boolean ifNullInsert,boolean mybatis) {
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
-        //sqlParameter.setIdFieldName(entityInfo.getIdFieldName());
         String tableName = entityInfo.getTableName();
         List<String> columns=new ArrayList<>();
         List<String> params=new ArrayList<>();
@@ -174,17 +155,16 @@ public class CrudUtil {
                 }
                 if(insertColumn(entityField,value,ifNullInsert)){
                     columns.add(entityField.getColumnName());
-                    params.add(mybatis?"#{"+entityField.getFieldName()+"}":StringPool.QUESTION_MARK);
-                    valueMap.put(entityField.getFieldName(),value);
-                    values.add(value);
+                    params.add(mybatis?mybatisNamedParam(entityField.getFieldName()):StringPool.QUESTION_MARK);
+                    if(mybatis){valueMap.put(entityField.getFieldName(),value);}else{values.add(value);}
                 }
             }
         }
         String insertSql = UtilAll.UString.format("insert into {}({}) values ({})", tableName,
                 String.join(StringPool.COMMA,columns),String.join(StringPool.COMMA,params));
         SqlWithParam sqlParameter = mybatis?MybatisTpl.generate("insert",insertSql,valueMap,null):new SqlWithParam();
+        sqlParameter.setColumnReturns(entityInfo.getColumnReturns());
         if(!mybatis){
-             sqlParameter.setColumnReturns(entityInfo.getColumnReturns());
              sqlParameter.setSql(insertSql);
              sqlParameter.setParams(values.toArray());
         }
@@ -246,14 +226,16 @@ public class CrudUtil {
         return resultMap;
     }
     private static String mapKey(EntityInfo entityInfo,String columnName){
+        String lowerColumn=columnName.toLowerCase();
         if(null==entityInfo){
-            return OrmUtil.toFiled(columnName);
+            return OrmUtil.toFiled(lowerColumn);
         }
-        if(entityInfo.getColumnMap().containsKey(columnName)){
-            return entityInfo.getEntityFields().get(entityInfo.getColumnMap().get(columnName)).getFieldName();
+        if(entityInfo.getColumnMap().containsKey(lowerColumn)){
+            return entityInfo.getEntityFields().get(entityInfo.getColumnMap().get(lowerColumn)).getFieldName();
         }
-        if(entityInfo.getFieldMap().containsKey(columnName)){
-            return columnName;
+        String field=OrmUtil.toFiled(lowerColumn);
+        if(entityInfo.getFieldMap().containsKey(field)){
+            return field;
         }
         return null;
     }

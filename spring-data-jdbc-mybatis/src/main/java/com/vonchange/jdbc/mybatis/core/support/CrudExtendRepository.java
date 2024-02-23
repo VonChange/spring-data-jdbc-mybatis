@@ -45,6 +45,6 @@ public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
 	<S extends T> int  update(S entity);
 
 	<S extends T> int insert(List<S> entities, boolean ifNullInsertByFirstEntity);
-	<S extends T> int update(List<S> entities,boolean isNullUpdateByFirstEntity);
+	<S extends T> int update(List<S> entities,boolean ifNullUpdateByFirstEntity);
 
 }

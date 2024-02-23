@@ -158,7 +158,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 
 	@Override
 	@Transactional
-	public <S extends T> int update(List<S> entities, boolean isNullUpdateByFirstEntity) {
-		return crudClient.update(entities,isNullUpdateByFirstEntity);
+	public <S extends T> int update(List<S> entities, boolean ifNullUpdateByFirstEntity) {
+		return crudClient.update(entities,ifNullUpdateByFirstEntity);
 	}
 }

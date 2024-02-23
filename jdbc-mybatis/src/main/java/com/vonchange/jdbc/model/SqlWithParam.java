@@ -14,6 +14,7 @@ public class SqlWithParam {
     private List<String> propertyNames;
     private  List<String> columnReturns;
 
+    private Boolean version=false;
     private String idFieldName;
     private EnumSqlRead sqlRead;
 
@@ -34,6 +35,14 @@ public class SqlWithParam {
 
     public String getSql() {
         return sql;
+    }
+
+    public Boolean getVersion() {
+        return version;
+    }
+
+    public void setVersion(Boolean version) {
+        this.version = version;
     }
 
     public List<String> getPropertyNames() {

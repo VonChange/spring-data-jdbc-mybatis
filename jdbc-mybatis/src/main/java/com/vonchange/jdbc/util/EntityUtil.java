@@ -107,6 +107,7 @@ public class EntityUtil {
                     entity.setIdFieldName(fieldName);
                     entity.setIdColumnName(columnName);
                     entity.setIdType(type.getSimpleName());
+                    columnReturns.add(columnName);
                     continue;
                 }
                 if (annotation instanceof InsertOnlyProperty) {

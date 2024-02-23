@@ -1,6 +1,8 @@
 package com.vonchange.jdbc.core;
 
+import com.vonchange.jdbc.config.ConstantJdbc;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,7 +16,9 @@ import org.springframework.jdbc.core.SqlProvider;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -22,7 +26,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyJdbcTemplate extends JdbcTemplate {
@@ -44,24 +47,29 @@ public class MyJdbcTemplate extends JdbcTemplate {
             final ResultSetExtractor<T> rse) throws DataAccessException {
 
         logger.debug("Executing prepared SQL update");
-        return execute(psc, new PreparedStatementCallback<Integer>() {
-
-            public Integer doInPreparedStatement(PreparedStatement ps) throws SQLException {
-                try {
-                    if (pss != null) {
-                        pss.setValues(ps);
-                    }
-                    int result = ps.executeUpdate();
-                    ResultSet resultSet = ps.getGeneratedKeys();
-                    rse.extractData(resultSet);
-                    return result;
-                } finally {
-                    if (pss instanceof ParameterDisposer) {
-                        ((ParameterDisposer) pss).cleanupParameters();
-                    }
+        return insertCount(execute(psc, ps -> {
+            try {
+                if (pss != null) {
+                    pss.setValues(ps);
+                }
+                int result = ps.executeUpdate();
+                ResultSet resultSet = ps.getGeneratedKeys();
+                rse.extractData(resultSet);
+                return result;
+            } finally {
+                if (pss instanceof ParameterDisposer) {
+                    ((ParameterDisposer) pss).cleanupParameters();
                 }
             }
-        });
+        }));
+    }
+    private static int insertCount(@Nullable Integer result) {
+        Assert.state(result != null, "No update count");
+        return result;
+    }
+    private static int updateCount(@Nullable Integer result) {
+        Assert.state(result != null, "No update count");
+        return result;
     }
 
     private <T> int insert(String sql, List<String> columnReturn, PreparedStatementSetter pss,
@@ -76,22 +84,19 @@ public class MyJdbcTemplate extends JdbcTemplate {
     private static class InsertPreparedStatementCreator implements PreparedStatementCreator, SqlProvider {
 
         private final String sql;
-        // private final List<String> columnReturn;
+         private final List<String> columnReturn;
 
         public InsertPreparedStatementCreator(String sql, List<String> columnReturn) {
             Assert.notNull(sql, "SQL must not be null");
             this.sql = sql;
-            // this.columnReturn = columnReturn;
+             this.columnReturn = columnReturn;
         }
 
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            /*
-             * if(null==columnReturn||columnReturn.isEmpty()){
-             * return con.prepareStatement(this.sql, Statement.RETURN_GENERATED_KEYS);
-             * }
-             */
+            if(!CollectionUtils.isEmpty(columnReturn)){
+                return con.prepareStatement(this.sql, columnReturn.toArray(new String[0]));
+            }
             return con.prepareStatement(this.sql, Statement.RETURN_GENERATED_KEYS);
-            // return con.prepareStatement(this.sql, columnReturn.toArray(new String[0]));
         }
 
         public String getSql() {
@@ -109,15 +114,15 @@ public class MyJdbcTemplate extends JdbcTemplate {
         this.fetchSizeBigData = fetchSizeBigData;
     }
 
-    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs,List<String> columnReturn,final ResultSetExtractor<T> rse) throws DataAccessException {
-        return batchInsert(sql, batchArgs, new int[0],columnReturn,rse);
+    public <T> int insertBatch(String sql, List<Object[]> batchArgs,List<String> columnReturn,final ResultSetExtractor<T> rse) throws DataAccessException {
+        return insertBatch(sql, batchArgs, new int[0],columnReturn,rse);
     }
-    public <T> int[] batchInsert(String sql, List<Object[]> batchArgs, final int[] argTypes,List<String> columnReturn,final ResultSetExtractor<T> rse) throws DataAccessException {
+    public <T> int insertBatch(String sql, List<Object[]> batchArgs, final int[] argTypes,List<String> columnReturn,final ResultSetExtractor<T> rse) throws DataAccessException {
         if (batchArgs.isEmpty()) {
-            return new int[0];
+            return 0;
         }
 
-        return batchInsert(
+        return insertBatch(
                 new InsertPreparedStatementCreator(sql,columnReturn),
                 new BatchPreparedStatementSetter() {
                     @Override
@@ -149,9 +154,9 @@ public class MyJdbcTemplate extends JdbcTemplate {
                 },rse);
     }
 
-    public <T> int[] batchInsert(PreparedStatementCreator psc,  final BatchPreparedStatementSetter pss,ResultSetExtractor<T> rse) throws DataAccessException {
+    public <T> int insertBatch(PreparedStatementCreator psc,  final BatchPreparedStatementSetter pss,ResultSetExtractor<T> rse) throws DataAccessException {
 
-        int[] result = execute(psc, (PreparedStatementCallback<int[]>) ps -> {
+        return insertCount(execute(psc, (PreparedStatementCallback<Integer>) ps -> {
             try {
                 int batchSize = pss.getBatchSize();
                 InterruptibleBatchPreparedStatementSetter ipss =
@@ -166,24 +171,26 @@ public class MyJdbcTemplate extends JdbcTemplate {
                         ps.addBatch();
                     }
                     int[] num= ps.executeBatch();
+                    int resultNum=0;
+                    for (int i : num) {
+                        if(Statement.SUCCESS_NO_INFO==i||i>0){
+                            resultNum++;
+                        }
+                    }
                     ResultSet resultSet = ps.getGeneratedKeys();
                     rse.extractData(resultSet);
-                    return num;
+                    return resultNum;
                 }
                 else {
-                    List<Integer> rowsAffected = new ArrayList<>();
+                    int resultNum=0;
                     for (int i = 0; i < batchSize; i++) {
                         pss.setValues(ps, i);
                         if (ipss != null && ipss.isBatchExhausted(i)) {
                             break;
                         }
-                        rowsAffected.add(ps.executeUpdate());
+                        resultNum+=ps.executeUpdate()>0?1:0;
                     }
-                    int[] rowsAffectedArray = new int[rowsAffected.size()];
-                    for (int i = 0; i < rowsAffectedArray.length; i++) {
-                        rowsAffectedArray[i] = rowsAffected.get(i);
-                    }
-                    return rowsAffectedArray;
+                    return resultNum;
                 }
             }
             finally {
@@ -191,10 +198,7 @@ public class MyJdbcTemplate extends JdbcTemplate {
                     ((ParameterDisposer) pss).cleanupParameters();
                 }
             }
-        });
-
-        Assert.state(result != null, "No result array");
-        return result;
+        }));
     }
 
     public <T> T queryBigData(String sql, ResultSetExtractor<T> rse, Object... args) throws DataAccessException {
@@ -231,5 +235,96 @@ public class MyJdbcTemplate extends JdbcTemplate {
         public String getSql() {
             return this.sql;
         }
+    }
+
+    public int updateBatch(String sql, List<Object[]> batchArgs,boolean version) throws DataAccessException {
+        return updateBatch(sql, batchArgs, new int[0],version);
+    }
+    public int updateBatch(String sql, List<Object[]> batchArgs, final int[] argTypes,boolean version) throws DataAccessException {
+        if (batchArgs.isEmpty()) {
+            return 0;
+        }
+
+        return updateBatch(
+                sql,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        Object[] values = batchArgs.get(i);
+                        int colIndex = 0;
+                        for (Object value : values) {
+                            colIndex++;
+                            if (value instanceof SqlParameterValue) {
+                                SqlParameterValue paramValue = (SqlParameterValue) value;
+                                StatementCreatorUtils.setParameterValue(ps, colIndex, paramValue, paramValue.getValue());
+                            }
+                            else {
+                                int colType;
+                                if (argTypes.length < colIndex) {
+                                    colType = SqlTypeValue.TYPE_UNKNOWN;
+                                }
+                                else {
+                                    colType = argTypes[colIndex - 1];
+                                }
+                                StatementCreatorUtils.setParameterValue(ps, colIndex, colType, value);
+                            }
+                        }
+                    }
+                    @Override
+                    public int getBatchSize() {
+                        return batchArgs.size();
+                    }
+                },version);
+    }
+
+    public int updateBatch(String sql, final BatchPreparedStatementSetter pss,boolean version) throws DataAccessException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executing SQL batch update [" + sql + "]");
+        }
+
+        return updateCount(execute(sql, (PreparedStatementCallback<Integer>) ps -> {
+            try {
+                int batchSize = pss.getBatchSize();
+                InterruptibleBatchPreparedStatementSetter ipss =
+                        (pss instanceof InterruptibleBatchPreparedStatementSetter ?
+                                (InterruptibleBatchPreparedStatementSetter) pss : null);
+                if (JdbcUtils.supportsBatchUpdates(ps.getConnection())) {
+                    for (int i = 0; i < batchSize; i++) {
+                        pss.setValues(ps, i);
+                        if (ipss != null && ipss.isBatchExhausted(i)) {
+                            break;
+                        }
+                        ps.addBatch();
+                    }
+                    int[] num= ps.executeBatch();
+                    int resultNum=0;
+                    for (int i : num) {
+                        if(version&&i<1){
+                            throw new OptimisticLockingFailureException(ConstantJdbc.OptimisticLockingFailureExceptionMessage);
+                        }
+                        if(i>0){
+                            resultNum++;
+                        }
+                    }
+                    return resultNum;
+                }
+                else {
+                    int resultNum=0;
+                    for (int i = 0; i < batchSize; i++) {
+                        pss.setValues(ps, i);
+                        if (ipss != null && ipss.isBatchExhausted(i)) {
+                            break;
+                        }
+                        resultNum=resultNum+ps.executeUpdate()>0?1:0;
+                    }
+                    return resultNum;
+                }
+            }
+            finally {
+                if (pss instanceof ParameterDisposer) {
+                    ((ParameterDisposer) pss).cleanupParameters();
+                }
+            }
+        }));
     }
 }

@@ -32,7 +32,7 @@ public interface CrudClient {
      <T> int insert(T entity);
     <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity);
     <T> int update(T entity);
-    <T> int update(List<T> entities,boolean isNullUpdateByFirstEntity);
+    <T> int update(List<T> entities,boolean ifNullUpdateByFirstEntity);
 
     interface StatementSpec {
 
