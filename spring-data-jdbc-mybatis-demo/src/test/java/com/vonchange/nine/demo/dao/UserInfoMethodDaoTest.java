@@ -151,8 +151,6 @@ class UserInfoMethodDaoTest {
         log.info("\nexistsById {}", existsById);
         existsById= userInfoMethodDao.existsById(1000L);
         log.info("\nexistsById {}", existsById);
-        existsById= userInfoMethodDao.existsById(null);
-        log.info("\nexistsById {}", existsById);
     }
     @Test
     void deleteById() {

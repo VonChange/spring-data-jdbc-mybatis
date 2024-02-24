@@ -3,8 +3,10 @@ package com.vonchange.jdbc.util;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.map.MyHashMap;
+import com.vonchange.jdbc.config.EnumNameQueryType;
 import com.vonchange.jdbc.model.EnumStep;
 import com.vonchange.jdbc.model.SplitMap;
+import com.vonchange.mybatis.exception.EnumErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
@@ -134,24 +136,40 @@ public class NameQueryUtil {
                 .set("columns",entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")))
         );
     }
+    private static EnumNameQueryType nameQueryType(String method){
+        if(!method.contains("By")){
+            return null;
+        }
+        if(method.startsWith("find")){
+            return EnumNameQueryType.Find;
+        }
+        if(method.startsWith("count")){
+            return EnumNameQueryType.Count;
+        }
+        if(method.startsWith("exist")){
+            return EnumNameQueryType.Exists;
+        }
+        return null;
+    }
     public static SqlWithParam nameSql(String method,Class<?> entityType, List<Object> params){
         if(methodMap.containsKey(method)){
             String sql= simpleNameSql(method,entityType);
             return new SqlWithParam(sql, params.toArray());
         }
-        EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
-        if(!(method.startsWith("find")||method.startsWith("count"))){
-            throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,must start with find or count,please define in the markdown",method);
+        EnumNameQueryType enumNameQueryType = nameQueryType(method);
+        if(null==enumNameQueryType)  throw new JdbcMybatisRuntimeException(EnumErrorCode.CanNotGenNameQuery,EnumErrorCode.CanNotGenNameQueryMessage,method);
+        EntityInfo  entityInfo=EntityUtil.getEntityInfo(entityType);
+        boolean found=false;
+        if(enumNameQueryType.equals(EnumNameQueryType.Find)){
+            found=true;
         }
         String newMethod=UtilAll.UString.substringAfter(method,"By");
-        if("".equals(newMethod)){
-            return null;
-        }
         String[] splits=  OrmUtil.toSql(newMethod).split(StringPool.UNDERSCORE);
         StringBuilder sql=new StringBuilder();
-        sql.append("select ")
-                .append(entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")))
-                .append(" from ").append(entityInfo.getTableName()).append(" where ");
+        sql.append(UtilAll.UString.format("select {} from {} where ",
+                found?entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")):"count(*)",
+                entityInfo.getTableName()
+        ));
         Map<String,SplitMap> columnsMap= new HashMap<>();
         for (EntityField entityField : entityInfo.getEntityFields()) {
             columnsMap.put(entityField.getColumnName(),new SplitMap(entityField.getColumnName(),EnumStep.Column));

@@ -98,8 +98,8 @@ public class DefaultCrudClient implements CrudClient{
             this.sqlId = sqlId;
         }
         @Override
-        public StatementSpec param(Object value) {
-            this.indexedParams.add(value);
+        public StatementSpec param(Object... values) {
+            Collections.addAll(this.indexedParams,values);
             return this;
         }
 

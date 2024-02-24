@@ -36,7 +36,7 @@ public interface CrudClient {
 
     interface StatementSpec {
 
-        StatementSpec param(@Nullable Object value);
+        StatementSpec param(Object... value);
         StatementSpec param(String name, @Nullable Object value);
         StatementSpec params(Map<String, ?> paramMap);
         <T> MappedQuerySpec<T> query(Class<T> mappedClass);

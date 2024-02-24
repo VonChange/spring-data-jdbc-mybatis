@@ -18,15 +18,17 @@ package com.vonchange.jdbc.mybatis.core.support;
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.model.SqlWithParam;
 import com.vonchange.jdbc.mybatis.core.config.BindParameterWrapper;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
+import com.vonchange.jdbc.util.NameQueryUtil;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +119,8 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
 			if(nameQuery){
 				Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
-				parameters.getParameter().put(ConstantJdbc.EntityType,configInfo.getDomainType());
+				SqlWithParam sqlWithParam =NameQueryUtil.nameSql(sqlId,configInfo.getDomainType(), new ArrayList<>(parameters.getParameter().values()));
+				return operations.sqlId(sqlWithParam.getSql()).param(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).single();
 			}
 			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
 		}

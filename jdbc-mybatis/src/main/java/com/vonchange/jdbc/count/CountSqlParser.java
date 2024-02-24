@@ -180,7 +180,7 @@ public class CountSqlParser {
      * @param sql
      */
     public String getSmartCountSql(String sql) {
-        return getSmartCountSql(sql, "0");
+        return getSmartCountSql(sql, "*");
     }
     private String generateMyCountSql(String sql) {
         String lowerSql = sql.toLowerCase();

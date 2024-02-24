@@ -41,11 +41,7 @@ public class CrudUtil {
     }
     public static SqlWithParam nameQuery(String name,Class<?> entityType,
                                          List<Object> indexedParams) {
-        SqlWithParam sqlWithParam= NameQueryUtil.nameSql(name,entityType,indexedParams);
-        if(null==sqlWithParam){
-            throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,please define in the markdown",name);
-        }
-        return sqlWithParam;
+        return NameQueryUtil.nameSql(name,entityType,indexedParams);
     }
 
     public static  <T> SqlWithParam generateUpdateSql(T entity, boolean isNullUpdate,boolean mybatis) {
