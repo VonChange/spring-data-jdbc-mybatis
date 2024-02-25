@@ -193,7 +193,7 @@ public class CrudUtil {
         }
         return new SqlWithParam(generateMyCountSql(sqlWithParam.getSql()),sqlWithParam.getParams());
     }
-    private static String generateMyCountSql(String sql) {
+    public static String generateMyCountSql(String sql) {
         StringBuilder sb = new StringBuilder();
         Matcher m = Pattern.compile("(/\\*)([\\w\\s\\@\\:]*)(\\*/)").matcher(sql);
         while (m.find()) {

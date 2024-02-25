@@ -17,7 +17,6 @@ package com.vonchange.jdbc.mybatis.core.config;
 
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
-import com.vonchange.jdbc.core.DefaultCrudClient;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.dialect.MySQLDialect;
@@ -27,8 +26,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Beans that must be registered for Spring Data JDBC to work.
@@ -42,16 +39,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Configuration("jdbcConfiguration")
 public class JdbcConfiguration {
 
-    public static final Map<String, CrudClient> crudClientMap = new ConcurrentHashMap<>();
 	private Dialect defaultDialect;
 	private DataSource dataSource;
 
-	public CrudClient getCrudClient(String key){
-		if(!crudClientMap.containsKey(key)){
-			throw new JdbcMybatisRuntimeException("datasource {} not found",key);
-		}
-		return crudClientMap.get(key);
-	}
 	@Autowired
 	public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
 		this.dataSource = dataSource;
@@ -64,20 +54,18 @@ public class JdbcConfiguration {
 		}
 		this.defaultDialect=dialect;
 	}
+	public CrudClient getCrudClient(String key){
+		if(!CrudClient.crudClientMap.containsKey(key)){
+			throw new JdbcMybatisRuntimeException("datasource {} not found",key);
+		}
+		return CrudClient.crudClientMap.get(key);
+	}
 	@Autowired
 	public void setDataSourceWrappers(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper) {
 		for (DataSourceWrapper sourceWrapper : dataSourceWrapper) {
-			if(null==sourceWrapper.getDialect()){
-				sourceWrapper.setDialect(new MySQLDialect());
-			}
-			crudClientMap.put(sourceWrapper.getKey(),
-					new DefaultCrudClient(sourceWrapper));
+			CrudClient.create(sourceWrapper);
 		}
-		if(!crudClientMap.containsKey(ConstantJdbc.DataSourceDefault)){
-			DataSourceWrapper defaultDataSourceWrapper=defaultDataSource();
-			crudClientMap.put(defaultDataSourceWrapper.getKey(),
-					new DefaultCrudClient(defaultDataSourceWrapper));
-		}
+		CrudClient.create(defaultDataSource());
 	}
 	private DataSourceWrapper defaultDataSource() {
 		return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault,this.defaultDialect);

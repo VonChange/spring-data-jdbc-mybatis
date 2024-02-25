@@ -11,6 +11,6 @@ public class ConstantJdbc {
     public  static final String SqlPackage= "sql";
     public  static final String SQL_START= "@sql";
     public static final String COUNTFLAG = "Count";
-    public static final String MAPFIELDSPLIT = "#";
+    public static final String MybatisIndexParam = "p";
     public static final  String OptimisticLockingFailureExceptionMessage="Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)";
 }

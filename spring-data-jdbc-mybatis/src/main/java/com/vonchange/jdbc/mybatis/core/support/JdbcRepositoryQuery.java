@@ -16,8 +16,8 @@
 package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.common.util.ClazzUtils;
-import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
+import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.model.SqlWithParam;
 import com.vonchange.jdbc.mybatis.core.config.BindParameterWrapper;
@@ -29,10 +29,9 @@ import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A query to be executed based on a repository method, it's annotated SQL query
@@ -85,46 +84,44 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 
 	@SuppressWarnings("unchecked")
 	private <T> Object executeDo(Object[] objects) {
-		BindParameterWrapper<T> parameters = bindParameter(objects);
-		String sqlId;
-		boolean nameQuery=false;
+		BindParameterWrapper<T> bindParameter = bindParameter(objects);
+		String sqlId=configInfo.getMethod();
+		boolean nameQuery=true;
+		SqlWithParam sqlWithParam = null;
 		if(null!=configInfo.getLocation()){
-			 sqlId = configInfo.getLocation() + StringPool.DOT + configInfo.getMethod();
-		}else{
-			sqlId=configInfo.getMethod();
+			nameQuery =false;
+			sqlId = configInfo.getLocation() + StringPool.DOT + configInfo.getMethod();
 		}
-		String sql = MarkdownUtil.getContent(sqlId,false);
-		if(null==sql){
-			nameQuery=true;
-			sqlId=configInfo.getMethod();
+		if(nameQuery){
+			Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
+			sqlWithParam = NameQueryUtil.nameSql(sqlId,configInfo.getDomainType(), bindParameter.getIndexedParams());
+		}
+		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
+			return nameQuery?operations.jdbc().sql(sqlWithParam.getSql()).params(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).list():
+					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).list();
+		}
+		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
+			return nameQuery?operations.jdbc().sql(sqlWithParam.getSql()).params(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
+					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
+		}
+		if (queryMethod.isPageQuery()) {
+			return operations.sqlId(sqlId).params(bindParameter.getNamedParams())
+					.queryPage(queryMethod.getReturnedObjectType(),bindParameter.getPageable());
 		}
 		if (queryMethod.isBatchUpdate()) {
-			return operations.sqlId(sqlId).updateBatch((List<Object>) parameters.getFirstParam());
+			return operations.sqlId(sqlId).updateBatch((List<Object>) bindParameter.getFirstParam());
 		}
 		if (queryMethod.isUpdateQuery() || configInfo.getMethod().startsWith("update")
 				|| configInfo.getMethod().startsWith("delete")||configInfo.getMethod().startsWith("insert")
 				|| configInfo.getMethod().startsWith("save")) {
-			int updatedCount = operations.sqlId(sqlId).params(parameters.getParameter()).update();
+			int updatedCount = operations.sqlId(sqlId).params(bindParameter.getNamedParams()).update();
 			Class<?> returnedObjectType = queryMethod.getReturnedObjectType();
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
 		}
-		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).list();
-		}
-		if (queryMethod.isPageQuery()) {
-			return operations.sqlId(sqlId).params(parameters.getParameter()).queryPage(queryMethod.getReturnedObjectType(),parameters.getPageable());
-		}
+		return nameQuery?operations.jdbc().sql(sqlWithParam.getSql()).params(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
+				operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
 
-		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
-			if(nameQuery){
-				Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
-				SqlWithParam sqlWithParam =NameQueryUtil.nameSql(sqlId,configInfo.getDomainType(), new ArrayList<>(parameters.getParameter().values()));
-				return operations.sqlId(sqlWithParam.getSql()).param(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).single();
-			}
-			return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
-		}
-		return operations.sqlId(sqlId).params(parameters.getParameter()).query(queryMethod.getReturnedObjectType()).single();
 	}
 
 	/*
@@ -141,7 +138,8 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 	@SuppressWarnings("unchecked")
 	private <T> BindParameterWrapper<T> bindParameter(Object[] objects) {
 		Parameters<?, ?> parameters = queryMethod.getParameters();
-		Map<String, Object> map = new LinkedHashMap<>();
+		Map<String, Object> namedParams = new HashMap<>();
+		List<Object> indexedParams=new ArrayList<>();
 		BindParameterWrapper<T> bindParameterWrapper = new BindParameterWrapper<>();
 		if (objects.length > 0) {
 			if (parameters.getPageableIndex() >= 0) {
@@ -152,14 +150,14 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		if (queryMethod.isBatchUpdate()) {
 			return bindParameterWrapper;
 		}
-		AtomicInteger i= new AtomicInteger();
 		queryMethod.getParameters().getBindableParameters().forEach(p -> {
-			String parameterName = p.getName().orElse(i.toString());
+			String parameterName = p.getName().orElse(ConstantJdbc.MybatisIndexParam+p.getIndex());
 					//.orElseThrow(() -> new IllegalStateException(PARAMETER_NEEDS_TO_BE_NAMED));
-			map.put(parameterName, objects[p.getIndex()]);
-			i.getAndIncrement();
+			namedParams.put(parameterName, objects[p.getIndex()]);
+			indexedParams.add(objects[p.getIndex()]);
 		});
-		bindParameterWrapper.setParameter(map);
+		bindParameterWrapper.setNamedParams(namedParams);
+		bindParameterWrapper.setIndexedParams(indexedParams);
 		return bindParameterWrapper;
 	}
 

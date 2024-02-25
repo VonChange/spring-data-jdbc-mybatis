@@ -1,6 +1,6 @@
 package com.vonchange.jdbc.core;
 
-import com.vonchange.common.util.StringPool;
+import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumRWType;
 import com.vonchange.jdbc.config.EnumSqlRead;
@@ -12,7 +12,6 @@ import com.vonchange.jdbc.mapper.ScalarMapper;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.model.SqlWithParam;
 import com.vonchange.jdbc.util.ConvertMap;
-import com.vonchange.jdbc.util.MybatisTpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -24,7 +23,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultCrudClient implements CrudClient{
     private static final Logger log = LoggerFactory.getLogger(DefaultCrudClient.class);
     private final MyJdbcTemplate classicOps;
-    private  DataSourceWrapper dataSourceWrapper;
+    private final DataSourceWrapper dataSourceWrapper;
 
     private final Map<Class<?>, RowMapper<?>> rowMapperCache = new ConcurrentHashMap<>();
 
@@ -85,11 +83,15 @@ public class DefaultCrudClient implements CrudClient{
         return new DefaultStatementSpec(sqlId);
     }
 
+    @Override
+    public JdbcClient jdbc() {
+        return JdbcClient.create(this.dataSourceWrapper);
+    }
 
     private class DefaultStatementSpec implements StatementSpec {
         private final String sqlId;
-        private  String sql;
-        private  List<Object> indexedParams = new ArrayList<>();
+
+        private SqlWithParam sqlWithParam;
 
         private final Map<String,Object> namedParams = new LinkedHashMap<>();
 
@@ -97,11 +99,7 @@ public class DefaultCrudClient implements CrudClient{
         public DefaultStatementSpec(String sqlId) {
             this.sqlId = sqlId;
         }
-        @Override
-        public StatementSpec param(Object... values) {
-            Collections.addAll(this.indexedParams,values);
-            return this;
-        }
+
 
         @Override
         public StatementSpec param(String name, Object value) {
@@ -136,14 +134,14 @@ public class DefaultCrudClient implements CrudClient{
             return new PageImpl<>(entities, pageable, total);
         }
         public <T> MappedQuerySpec<T> query(Class<T> mappedClass){
-            SqlWithParam sqlWithParam=getSqlParameter(mappedClass);
-            this.sql=sqlWithParam.getSql();
-            this.indexedParams=new ArrayList<>();
-            Collections.addAll(this.indexedParams, sqlWithParam.getParams());
+            this.sqlWithParam=getSqlParameter(mappedClass);
             return query(new BeanMapper<>(mappedClass));
         }
         private <T>  SqlWithParam getSqlParameter(Class<T> mappedClass){
-            if(sqlId.contains(StringPool.SPACE)){
+            SqlWithParam sqlWithParam = CrudUtil.getSqlParameter(sqlId,namedParams,dataSourceWrapper.getDialect());
+            sqlWithParam.setSqlRead(EnumSqlRead.markdown);
+            return sqlWithParam;
+        /*    if(sqlId.contains(StringPool.SPACE)){
                 if(sqlId.contains("[@")||sqlId.contains("#{")){
                     SqlWithParam sqlWithParam= MybatisTpl.generate("mybatis_sql",sqlId,namedParams,dataSourceWrapper.getDialect());
                     sqlWithParam.setSqlRead(EnumSqlRead.mybatis);
@@ -154,15 +152,13 @@ public class DefaultCrudClient implements CrudClient{
                 sqlWithParam.setParams(this.indexedParams.toArray());
                 sqlWithParam.setSqlRead(EnumSqlRead.sql);
                 return sqlWithParam;
-            }
-            if(sqlId.contains(StringPool.DOT)){
-                SqlWithParam sqlWithParam = CrudUtil.getSqlParameter(sqlId,namedParams,dataSourceWrapper.getDialect());
-                sqlWithParam.setSqlRead(EnumSqlRead.markdown);
-                return sqlWithParam;
-            }
-            SqlWithParam sqlWithParam =  CrudUtil.nameQuery(sqlId,mappedClass,this.indexedParams);
-            sqlWithParam.setSqlRead(EnumSqlRead.name);
-            return sqlWithParam;
+            }*/
+            //if(sqlId.contains(StringPool.DOT)){
+
+            //}
+            //SqlWithParam sqlWithParam =  CrudUtil.nameQuery(sqlId,mappedClass,this.indexedParams);
+           // sqlWithParam.setSqlRead(EnumSqlRead.name);
+           // return null;
         }
 
 
@@ -196,8 +192,8 @@ public class DefaultCrudClient implements CrudClient{
 
             @Override
             public List<T> list() {
-                JdbcLogUtil.logSql(EnumRWType.read,sql,indexedParams.toArray());
-                return classicOps.query(sql, this.resultSetExtractor, indexedParams.toArray());
+                JdbcLogUtil.logSql(EnumRWType.read,sqlWithParam.getSql(),sqlWithParam.getParams());
+                return classicOps.query(sqlWithParam.getSql(), this.resultSetExtractor, sqlWithParam.getParams());
             }
 
            @Override

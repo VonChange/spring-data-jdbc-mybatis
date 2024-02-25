@@ -58,7 +58,8 @@ class UserInfoMethodDaoTest {
 
     @Test
     void countByUserCode() {
-        long  countNum = userInfoMethodDao.countByUserCodeIn(Arrays.asList("u001","u002"));
+        boolean  countNum =
+                userInfoMethodDao.countByUserCodeIn(Arrays.asList("u001","u002"));
         log.info("\ncountNum {}", countNum);
     }
 

@@ -25,6 +25,9 @@
 
 package com.vonchange.common.util.bean.convert.impl;
 
+import com.vonchange.common.util.bean.convert.TypeConversionException;
+import com.vonchange.common.util.bean.convert.TypeConvertCommon;
+
 import static com.vonchange.common.util.StringPool.FALSE;
 import static com.vonchange.common.util.StringPool.N;
 import static com.vonchange.common.util.StringPool.NO;
@@ -35,9 +38,6 @@ import static com.vonchange.common.util.StringPool.TRUE;
 import static com.vonchange.common.util.StringPool.Y;
 import static com.vonchange.common.util.StringPool.YES;
 import static com.vonchange.common.util.StringPool.ZERO;
-
-import com.vonchange.common.util.bean.convert.TypeConversionException;
-import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 
 /**
  * Converts given object to <code>Boolean</code>.
@@ -61,6 +61,9 @@ public class BooleanConverter extends TypeConvertCommon<Boolean> {
 		if (value.getClass() == Boolean.class) {
 			return (Boolean) value;
 		}
+		if (value instanceof Number) {
+			return ((Number)value).longValue()>0;
+		}
 
 		String stringValue = value.toString();
 		if (stringValue.isEmpty()) {
@@ -82,6 +85,7 @@ public class BooleanConverter extends TypeConvertCommon<Boolean> {
 				stringValue.equals(ZERO)) {
 			return Boolean.FALSE;
 		}
+
 
 		throw new TypeConversionException(value);
 	}

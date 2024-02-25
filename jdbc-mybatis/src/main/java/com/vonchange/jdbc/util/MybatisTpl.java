@@ -9,11 +9,12 @@ import com.vonchange.common.ibatis.scripting.LanguageDriver;
 import com.vonchange.common.ibatis.scripting.xmltags.XMLLanguageDriver;
 import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.MarkdownUtil;
+import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.jdbc.model.SqlWithParam;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
-import com.vonchange.jdbc.model.SqlWithParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,9 @@ public class MybatisTpl {
     }
 
      public static SqlWithParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
+         if(!sqlId.contains(StringPool.DOT)||sqlId.contains(StringPool.SPACE)){
+              throw new JdbcMybatisRuntimeException("{} sqlId error can not found in markdown",sqlId);
+         }
         String sqlInXml=MarkdownUtil.getContent(sqlId);
          return generate(sqlId,sqlInXml,parameter,dialect);
      }

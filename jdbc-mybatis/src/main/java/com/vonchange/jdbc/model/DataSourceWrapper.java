@@ -5,6 +5,8 @@ import com.vonchange.mybatis.dialect.Dialect;
 import javax.sql.DataSource;
 
 public class DataSourceWrapper {
+
+
     private DataSource dataSource;
     private String key;
     private Dialect dialect;
@@ -13,7 +15,9 @@ public class DataSourceWrapper {
         this.key=key;
         this.dialect=dialect;
     }
-
+    public void setKey(String key) {
+        this.key = key;
+    }
     public DataSource getDataSource() {
         return dataSource;
     }
