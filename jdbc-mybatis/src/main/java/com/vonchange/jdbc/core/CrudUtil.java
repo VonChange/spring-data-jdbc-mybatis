@@ -9,7 +9,7 @@ import com.vonchange.jdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.count.CountSqlParser;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
-import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.util.EntityUtil;
 import com.vonchange.jdbc.util.MybatisTpl;
 import com.vonchange.jdbc.util.NameQueryUtil;
@@ -35,16 +35,16 @@ import java.util.regex.Pattern;
 public class CrudUtil {
 
     private static final Logger log = LoggerFactory.getLogger(CrudUtil.class);
-    public static SqlWithParam getSqlParameter(String sqlId,
-                                         Map<String, Object> parameter, Dialect dialect) {
+    public static SqlParam getSqlParameter(String sqlId,
+                                           Map<String, Object> parameter, Dialect dialect) {
         return MybatisTpl.generate(sqlId,parameter,dialect);
     }
-    public static SqlWithParam nameQuery(String name,Class<?> entityType,
-                                         List<Object> indexedParams) {
+    public static SqlParam nameQuery(String name, Class<?> entityType,
+                                     List<Object> indexedParams) {
         return NameQueryUtil.nameSql(name,entityType,indexedParams);
     }
 
-    public static  <T> SqlWithParam generateUpdateSql(T entity, boolean isNullUpdate,boolean mybatis) {
+    public static  <T> SqlParam generateUpdateSql(T entity, boolean isNullUpdate, boolean mybatis) {
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
         String tableName = entityInfo.getTableName();
         String idColumnName = entityInfo.getIdColumnName();
@@ -72,7 +72,7 @@ public class CrudUtil {
                         entityField.getColumnName(),entityField.getColumnName()));
                 continue;
             }
-            if(entityField.getIsColumn()&&!entityField.getIsId()){
+            if(entityField.getIfColumn()&&!entityField.getIfId()){
                 if(null!=value||isNullUpdate){
                     columns.add(UtilAll.UString.format("{} = {}",
                             entityField.getColumnName(),mybatis?mybatisNamedParam(entityField.getFieldName()):StringPool.QUESTION_MARK));
@@ -91,7 +91,7 @@ public class CrudUtil {
             Object versionValue= BeanUtil.getProperty(entity,versionField.getFieldName());
             if(mybatis){valueMap.put(versionField.getFieldName(),versionValue);}else{values.add(versionValue);}
         }
-        SqlWithParam sqlParameter = new SqlWithParam(sql,values.toArray());
+        SqlParam sqlParameter = new SqlParam(sql,values);
         if(mybatis){
             sqlParameter= MybatisTpl.generate("update_sql",sql,valueMap,null);
         }
@@ -132,7 +132,7 @@ public class CrudUtil {
     }
 
 
-    public static  <T> SqlWithParam generateInsertSql(T entity, boolean ifNullInsert,boolean mybatis) {
+    public static  <T> SqlParam generateInsertSql(T entity, boolean ifNullInsert, boolean mybatis) {
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
         String tableName = entityInfo.getTableName();
         List<String> columns=new ArrayList<>();
@@ -142,7 +142,7 @@ public class CrudUtil {
         List<EntityField> entityFieldList = entityInfo.getEntityFields();
         Object value;
         for (EntityField entityField : entityFieldList) {
-            if(entityField.getIsColumn()){
+            if(entityField.getIfColumn()){
                 value= BeanUtil.getProperty(entity,entityField.getFieldName());
                 if(entityField.getVersion()){
                     if(null==value){
@@ -158,24 +158,20 @@ public class CrudUtil {
         }
         String insertSql = UtilAll.UString.format("insert into {}({}) values ({})", tableName,
                 String.join(StringPool.COMMA,columns),String.join(StringPool.COMMA,params));
-        SqlWithParam sqlParameter = mybatis?MybatisTpl.generate("insert",insertSql,valueMap,null):new SqlWithParam();
+        SqlParam sqlParameter = mybatis?MybatisTpl.generate("insert",insertSql,valueMap,null):new SqlParam(insertSql,values);
         sqlParameter.setColumnReturns(entityInfo.getColumnReturns());
-        if(!mybatis){
-             sqlParameter.setSql(insertSql);
-             sqlParameter.setParams(values.toArray());
-        }
         return sqlParameter;
     }
     private static boolean insertColumn(EntityField entityField,Object value,boolean ifNullInsert){
         if(entityField.getInsertNot()){
             return false;
         }
-        if(entityField.getIsId()){
+        if(entityField.getIfId()){
             if(null!=value){
                 return true;
             }
         }
-        if(entityField.getIsColumn()){
+        if(entityField.getIfColumn()){
             if(null!=value){
                 return true;
             }
@@ -183,15 +179,15 @@ public class CrudUtil {
         }
         return false;
     }
-    public static SqlWithParam countSql(String sqlId,SqlWithParam sqlWithParam, Map<String, Object> parameter, Dialect dialect){
-        if(sqlWithParam.getSqlRead().equals(EnumSqlRead.markdown)){
+    public static SqlParam countSql(String sqlId, SqlParam sqlParam, Map<String, Object> parameter, Dialect dialect){
+        if(null!=sqlId&& sqlParam.getSqlRead().equals(EnumSqlRead.markdown)){
             String countSqlId=sqlId+ ConstantJdbc.COUNTFLAG;
             String countSql = MarkdownUtil.getContent(sqlId+ ConstantJdbc.COUNTFLAG,false);
             if (null!=countSql) {
                 return MybatisTpl.generate(countSqlId,parameter,dialect);
             }
         }
-        return new SqlWithParam(generateMyCountSql(sqlWithParam.getSql()),sqlWithParam.getParams());
+        return new SqlParam(generateMyCountSql(sqlParam.getSql()), sqlParam.getParams());
     }
     public static String generateMyCountSql(String sql) {
         StringBuilder sb = new StringBuilder();

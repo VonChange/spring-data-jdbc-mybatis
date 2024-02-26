@@ -55,12 +55,14 @@ public interface JdbcClient {
         StatementSpec params(Map<String, ?> paramMap);
         <T> MappedQuerySpec<T> query(Class<T> mappedClass);
         int update();
-        <T> Page<T> queryPage(Class<T> mappedClass, Pageable pageable);
     }
 
 
     interface MappedQuerySpec<T> {
         List<T> list();
+
+        Page<T> page(Pageable pageable);
+
         Iterable<T> iterable();
         T single();
     }

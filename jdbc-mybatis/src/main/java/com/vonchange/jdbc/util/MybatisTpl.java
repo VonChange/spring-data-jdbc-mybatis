@@ -11,7 +11,7 @@ import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MybatisTpl {
         throw new IllegalStateException("Utility class");
     }
 
-     public static SqlWithParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
+     public static SqlParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
          if(!sqlId.contains(StringPool.DOT)||sqlId.contains(StringPool.SPACE)){
               throw new JdbcMybatisRuntimeException("{} sqlId error can not found in markdown",sqlId);
          }
@@ -41,12 +42,9 @@ public class MybatisTpl {
          return generate(sqlId,sqlInXml,parameter,dialect);
      }
     @SuppressWarnings("unchecked")
-    public static SqlWithParam generate(String sqlId,String sqlInXml, Map<String,Object> parameter, Dialect dialect){
-        SqlWithParam sqlWithParam= new SqlWithParam();
+    public static SqlParam generate(String sqlId, String sqlInXml, Map<String,Object> parameter, Dialect dialect){
         if(UtilAll.UString.isBlank(sqlInXml)){
-            sqlWithParam.setSql(null);
-            sqlWithParam.setParams(null);
-            return  sqlWithParam;
+            throw new JdbcMybatisRuntimeException("{} sql in markdown null",sqlId);
         }
         sqlInXml= DynamicSql.dynamicSql(sqlInXml,dialect);
         sqlInXml=sqlInXml.trim();
@@ -104,10 +102,9 @@ public class MybatisTpl {
         }
         Object[] args=argList.toArray();
         String sql=boundSql.getSql();
-        sqlWithParam.setSql(sql);
-        sqlWithParam.setParams(args);
-        sqlWithParam.setPropertyNames(propertyNames);
-        return sqlWithParam;
+        SqlParam sqlParam = new SqlParam(sql, Arrays.asList(args));
+        sqlParam.setPropertyNames(propertyNames);
+        return sqlParam;
     }
 
 

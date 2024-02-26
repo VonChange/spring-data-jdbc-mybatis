@@ -9,7 +9,7 @@ import com.vonchange.jdbc.core.MyJdbcTemplate;
 import com.vonchange.jdbc.mapper.BeanMapper;
 import com.vonchange.jdbc.mapper.ScalarMapper;
 import com.vonchange.jdbc.model.DataSourceWrapper;
-import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.util.MybatisTpl;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class DefaultJdbcClient implements JdbcClient{
 
         private final List<Object> indexedParams = new ArrayList<>();
         private final Map<String,Object> namedParams = new HashMap<>();
-        private  SqlWithParam sqlWithParam;
+        private SqlParam sqlParam;
 
         public DefaultStatementSpec(String sql) {
             this.sql = sql;
@@ -80,36 +80,23 @@ public class DefaultJdbcClient implements JdbcClient{
             this.namedParams.putAll(paramMap);
             return this;
         }
-        public <T> Page<T> queryPage(Class<T> mappedClass, Pageable pageable){
-            this.sqlWithParam =getSqlParameter(this.sql);
-            Long total = classicOps.query(CrudUtil.generateMyCountSql(sqlWithParam.getSql()), new ScalarMapper<>(Long.class),
-                    this.sqlWithParam.getParams());
-            if(null==total) total=0L;
-            int pageNum = Math.max(pageable.getPageNumber(), 0);
-            int firstEntityIndex = pageable.getPageSize() * pageNum;
-            String sqlPage = dataSourceWrapper.getDialect().getPageSql(sqlWithParam.getSql(), firstEntityIndex, pageable.getPageSize());
-            List<T> entities = classicOps.query(sqlPage,new BeanMapper<>(mappedClass),this.sqlWithParam.getParams());
-            if(null==entities) entities=new ArrayList<>();
-            return new PageImpl<>(entities, pageable, total);
-        }
+
         public <T> MappedQuerySpec<T> query(Class<T> mappedClass){
-            this.sqlWithParam =getSqlParameter(this.sql);
+            this.sqlParam =getSqlParameter(this.sql);
             return query(new BeanMapper<>(mappedClass));
         }
-        private <T>  SqlWithParam getSqlParameter(String sql){
+        private <T> SqlParam getSqlParameter(String sql){
             if(!sql.contains(StringPool.SPACE)){
                 throw new JdbcMybatisRuntimeException("{} error",sql);
             }
             if(sql.contains("[@")||sql.contains("#{")){
-                SqlWithParam sqlWithParam= MybatisTpl.generate("mybatis_sql",sql,namedParams,dataSourceWrapper.getDialect());
-                sqlWithParam.setSqlRead(EnumSqlRead.mybatis);
-                return sqlWithParam;
+                SqlParam sqlParam = MybatisTpl.generate("mybatis_sql",sql,namedParams,dataSourceWrapper.getDialect());
+                sqlParam.setSqlRead(EnumSqlRead.mybatis);
+                return sqlParam;
             }
-            SqlWithParam sqlWithParam = new SqlWithParam();
-            sqlWithParam.setSql(sql);
-            sqlWithParam.setParams(this.indexedParams.toArray());
-            sqlWithParam.setSqlRead(EnumSqlRead.sql);
-            return sqlWithParam;
+            SqlParam sqlParam = new SqlParam(sql,this.indexedParams);
+            sqlParam.setSqlRead(EnumSqlRead.sql);
+            return sqlParam;
         }
 
 
@@ -119,7 +106,7 @@ public class DefaultJdbcClient implements JdbcClient{
         @Override
         public int update() {
             // update only EnumSqlRead.markdown
-            SqlWithParam sqlParameter = CrudUtil.getSqlParameter(sql,this.namedParams,dataSourceWrapper.getDialect());
+            SqlParam sqlParameter = CrudUtil.getSqlParameter(sql,this.namedParams,dataSourceWrapper.getDialect());
             return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams());
         }
 
@@ -134,8 +121,20 @@ public class DefaultJdbcClient implements JdbcClient{
 
             @Override
             public List<T> list() {
-                JdbcLogUtil.logSql(EnumRWType.read,sqlWithParam);
-                return classicOps.query(sqlWithParam.getSql(), this.resultSetExtractor, sqlWithParam.getParams());
+                JdbcLogUtil.logSql(EnumRWType.read, sqlParam);
+                return classicOps.query(sqlParam.getSql(), this.resultSetExtractor, sqlParam.getParams());
+            }
+            @Override
+            public Page<T> page(Pageable pageable){
+                Long total = classicOps.query(CrudUtil.generateMyCountSql(sqlParam.getSql()), new ScalarMapper<>(Long.class),
+                        sqlParam.getParams());
+                if(null==total) total=0L;
+                int pageNum = Math.max(pageable.getPageNumber(), 0);
+                int firstEntityIndex = pageable.getPageSize() * pageNum;
+                String sqlPage = dataSourceWrapper.getDialect().getPageSql(sqlParam.getSql(), firstEntityIndex, pageable.getPageSize());
+                List<T> entities = classicOps.query(sqlPage,this.resultSetExtractor, sqlParam.getParams());
+                if(null==entities) entities=new ArrayList<>();
+                return new PageImpl<>(entities, pageable, total);
             }
 
             @Override

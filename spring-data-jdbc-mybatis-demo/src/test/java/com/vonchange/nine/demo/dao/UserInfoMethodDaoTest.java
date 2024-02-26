@@ -2,7 +2,7 @@ package com.vonchange.nine.demo.dao;
 
 import com.vonchange.common.util.JsonUtil;
 import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.UserInfoDO;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +32,10 @@ class UserInfoMethodDaoTest {
 
     @Test
     public  void methodSql() {
-        SqlWithParam sqlWithParam = NameQueryUtil.nameSql(
+        SqlParam sqlParam = NameQueryUtil.nameSql(
                 "findListByUserCodeIn",UserInfoDO.class,Arrays.asList(new String[]{"233","333"},9));
-        if(null!=sqlWithParam){
-            log.info("\nnameSql {}", sqlWithParam.getSql());
+        if(null!= sqlParam){
+            log.info("\nnameSql {}", sqlParam.getSql());
         }
     }
     @Test

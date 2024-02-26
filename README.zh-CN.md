@@ -31,8 +31,8 @@ SELECT  [@id column] FROM user_info
 ```
 ## 特性
 * 支持按方法名查询 但不推荐过度使用 [method-name-query.md](method-name-query.md)
-* @Id @Table @Column 极少的注解
-* crud 继成 CrudJdbcRepository 不是CrudRepository 因为需要新增和去掉部分方法
+* @Id @Table @Column @Version @Transient极少的注解
+* 请使用CrudExtendRepository 新增insert update  find
 * 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 * 批量更新 [bach-update.md](bach-update.md)
 * [多数据源.md](multi-datasource.md)
@@ -40,7 +40,7 @@ SELECT  [@id column] FROM user_info
 ## Getting Started with JDBC mybatis
 
 ```java
-public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
+public interface UserInfoRepository extends CrudExtendRepository<UserInfoDO, Long> {
     List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
     List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam); 
 }

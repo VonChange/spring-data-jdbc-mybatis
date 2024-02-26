@@ -66,7 +66,7 @@ public class UserInfoRepositoryTest {
         Pageable pageable = PageRequest.of(0,10);
         Page<UserInfoDO> userInfoDOPage = userInfoRepository
                 .findUserList(pageable,Arrays.asList("u000","u001","u002"),
-                        "ch",LocalDateTime.now().plusHours(1L));
+                        "",LocalDateTime.now().plusHours(1L));
         log.info("\n {}",userInfoDOPage.getTotalElements());
         userInfoDOPage.getContent().forEach(UserInfoDO -> {
             log.info("\n {}",UserInfoDO.toString());

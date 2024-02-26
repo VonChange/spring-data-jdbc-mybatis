@@ -19,7 +19,7 @@ import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
-import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.mybatis.core.config.BindParameterWrapper;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.util.NameQueryUtil;
@@ -87,26 +87,26 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		BindParameterWrapper<T> bindParameter = bindParameter(objects);
 		String sqlId=configInfo.getMethod();
 		boolean nameQuery=true;
-		SqlWithParam sqlWithParam = null;
+		SqlParam sqlParam = null;
 		if(null!=configInfo.getLocation()){
 			nameQuery =false;
 			sqlId = configInfo.getLocation() + StringPool.DOT + configInfo.getMethod();
 		}
 		if(nameQuery){
 			Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
-			sqlWithParam = NameQueryUtil.nameSql(sqlId,configInfo.getDomainType(), bindParameter.getIndexedParams());
+			sqlParam = NameQueryUtil.nameSql(sqlId,configInfo.getDomainType(), bindParameter.getIndexedParams());
 		}
 		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-			return nameQuery?operations.jdbc().sql(sqlWithParam.getSql()).params(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).list():
+			return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).list():
 					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).list();
 		}
 		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
-			return nameQuery?operations.jdbc().sql(sqlWithParam.getSql()).params(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
+			return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
 					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
 		}
 		if (queryMethod.isPageQuery()) {
 			return operations.sqlId(sqlId).params(bindParameter.getNamedParams())
-					.queryPage(queryMethod.getReturnedObjectType(),bindParameter.getPageable());
+					.query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable());
 		}
 		if (queryMethod.isBatchUpdate()) {
 			return operations.sqlId(sqlId).updateBatch((List<Object>) bindParameter.getFirstParam());
@@ -119,7 +119,7 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
 		}
-		return nameQuery?operations.jdbc().sql(sqlWithParam.getSql()).params(sqlWithParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
+		return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
 				operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
 
 	}

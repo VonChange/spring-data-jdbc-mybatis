@@ -5,51 +5,22 @@ package com.vonchange.jdbc.model;
  * 
  * @author vonchange@163.com
  */
-public class EntityField {
-	private String fieldName;
-	private String columnName;
-	private Class<?> type;
-	private Boolean isColumn = false;
-	private Boolean isId = false;
+public class EntityField extends BaseEntityField{
+
+	private Boolean ifId = false;
 
 	private Boolean updateNot=false;
 	private Boolean insertNot=false;
 
 	private Boolean version=false;
 
-	public String getFieldName() {
-		return fieldName;
+
+	public Boolean getIfId() {
+		return ifId;
 	}
 
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
-
-
-	public String getColumnName() {
-		return columnName;
-	}
-
-
-	public void setColumnName(String columnName) {
-		this.columnName = columnName;
-	}
-
-
-	public Boolean getIsId() {
-		return isId;
-	}
-
-	public void setIsId(Boolean isId) {
-		this.isId = isId;
-	}
-
-	public Boolean getIsColumn() {
-		return isColumn;
-	}
-
-	public void setIsColumn(Boolean isColumn) {
-		this.isColumn = isColumn;
+	public void setIfId(Boolean ifId) {
+		this.ifId = ifId;
 	}
 
 	public Boolean getVersion() {
@@ -76,11 +47,4 @@ public class EntityField {
 		this.insertNot = insertNot;
 	}
 
-	public Class<?> getType() {
-		return type;
-	}
-
-	public void setType(Class<?> type) {
-		this.type = type;
-	}
 }

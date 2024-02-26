@@ -46,7 +46,10 @@ public interface CrudClient {
         return crudClient;
     }
     StatementSpec sqlId(String sqlId);
+
     JdbcClient jdbc();
+
+    <T,S> MappedQuerySpec<T> findByExample(S example);
      <T> int insert(T entity);
     <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity);
     <T> int update(T entity);
@@ -61,12 +64,14 @@ public interface CrudClient {
 
         <T> void queryBatch(Class<T> mappedClass, AbstractPageWork<T> pageWork);
 
-        <T> Page<T> queryPage(Class<T> mappedClass, Pageable pageable);
     }
 
 
     interface MappedQuerySpec<T> {
         List<T> list();
+
+        Page<T> page(Pageable pageable);
+
         Iterable<T> iterable();
         T single();
     }

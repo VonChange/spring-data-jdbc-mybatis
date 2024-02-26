@@ -5,6 +5,7 @@ import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
+import com.vonchange.jdbc.model.BaseEntityField;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.jdbc.annotation.ColumnNot;
 import com.vonchange.jdbc.annotation.InsertOnlyProperty;
@@ -35,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class EntityUtil {
     private static final Map<String, EntityInfo> entityMap = new ConcurrentHashMap<>();
+    private static final Map<String, List<BaseEntityField>> entitySimpleMap = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(EntityUtil.class);
    /* public static void initEntityInfo(Class<?> clazz) {
         String entityName = clazz.getName();
@@ -50,7 +52,58 @@ public class EntityUtil {
         }
         return entityMap.get(entityName);
     }
-
+    public static  List<BaseEntityField> getEntitySimple(Class<?> clazz){
+        String entityName = clazz.getName();
+        if(!entitySimpleMap.containsKey(entityName)){
+            initSimpleEntity(clazz);
+        }
+        return entitySimpleMap.get(entityName);
+    }
+    private static synchronized   void initSimpleEntity(Class<?> clazz) {
+        if(ClazzUtils.isBaseType(clazz)){
+            return;
+        }
+        String entityName=clazz.getName();
+        logger.debug("initSimpleEntity {}",entityName);
+        List<Field> fieldList = new ArrayList<>();
+        getFieldList(clazz,fieldList);
+        List<BaseEntityField> entityFieldList = new ArrayList<>();
+        Map<String,Integer> fieldMap = new HashMap<>();
+        Column column;
+        MethodAccessData methodAccessData = BeanUtil.methodAccessData(clazz);
+        int i=0;
+        for (Field field : fieldList) {
+            Class<?> type = field.getType();
+            boolean isColumnField =BeanUtil.containsProperty(methodAccessData,field.getName(),"set")
+                    &&ClazzUtils.isBaseType(type);
+            String fieldName = field.getName();
+            if(!isColumnField||fieldMap.containsKey(fieldName)){
+                continue;
+            }
+            BaseEntityField entityField = new BaseEntityField();
+            entityField.setFieldName(fieldName);
+            column=field.getAnnotation(Column.class);
+            String columnName =null;
+            if(null!=column){
+                columnName=column.name();
+            }
+            if(UtilAll.UString.isBlank(columnName)){
+                columnName = OrmUtil.toSql(fieldName);
+            }
+            entityField.setColumnName(columnName);
+            entityField.setType(type);
+            Annotation[] annotations = field.getAnnotations();
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof Transient ||annotation instanceof ColumnNot) {
+                    entityField.setIfColumn(false);
+                }
+            }
+            entityFieldList.add(entityField);
+            fieldMap.put(fieldName, i);
+            i++;
+        }
+        entitySimpleMap.put(clazz.getName(), entityFieldList);
+    }
     private static synchronized   void initEntity(Class<?> clazz) {
         if(ClazzUtils.isBaseType(clazz)){
             return;
@@ -97,11 +150,10 @@ public class EntityUtil {
             }
             entityField.setColumnName(columnName);
             entityField.setType(type);
-            entityField.setIsColumn(true);
             Annotation[] annotations = field.getAnnotations();
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Id||annotation instanceof org.springframework.data.annotation.Id) {
-                    entityField.setIsId(true);
+                    entityField.setIfId(true);
                     entity.setIdFieldName(fieldName);
                     entity.setIdColumnName(columnName);
                     entity.setIdType(type.getSimpleName());
@@ -130,7 +182,7 @@ public class EntityUtil {
                     continue;
                 }
                 if (annotation instanceof Transient ||annotation instanceof ColumnNot) {
-                    entityField.setIsColumn(false);
+                    entityField.setIfColumn(false);
 
                 }
             }

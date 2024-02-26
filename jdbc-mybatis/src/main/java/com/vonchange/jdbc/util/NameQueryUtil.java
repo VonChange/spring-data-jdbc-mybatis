@@ -1,21 +1,27 @@
 package com.vonchange.jdbc.util;
 
+import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.map.MyHashMap;
 import com.vonchange.jdbc.config.EnumNameQueryType;
-import com.vonchange.jdbc.model.EnumStep;
-import com.vonchange.jdbc.model.SplitMap;
-import com.vonchange.mybatis.exception.EnumErrorCode;
-import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
+import com.vonchange.jdbc.model.BaseEntityField;
+import com.vonchange.jdbc.model.BaseSqlParam;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
-import com.vonchange.jdbc.model.SqlWithParam;
+import com.vonchange.jdbc.model.EnumStep;
+import com.vonchange.jdbc.model.SplitMap;
+import com.vonchange.jdbc.model.SqlParam;
+import com.vonchange.mybatis.exception.EnumErrorCode;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +30,7 @@ import java.util.stream.Collectors;
 public class NameQueryUtil {
     private static final Logger log = LoggerFactory.getLogger(NameQueryUtil.class);
     private static final String ParamPre="p";
+
     private static final Map<String, SplitMap> map=new HashMap<>();
     static {
         map.put("eq",new SplitMap("=", EnumStep.Condition));
@@ -151,18 +158,68 @@ public class NameQueryUtil {
         }
         return null;
     }
-    public static SqlWithParam nameSql(String method,Class<?> entityType, List<Object> params){
+    public static  <S> SqlParam exampleSql(EnumNameQueryType enumNameQueryType,
+                                           Class<?> entityClass, S example, Class<?> mapperClass){
+        if(null==example||!ClazzUtils.isBaseType(example.getClass())){
+            throw new JdbcMybatisRuntimeException("not support {}",example);
+        }
+        if(!ClazzUtils.isBaseType(entityClass)){
+            throw new JdbcMybatisRuntimeException("entityClass not support {}",entityClass);
+        }
+        boolean found=enumNameQueryType.equals(EnumNameQueryType.Find);
+        EntityInfo  entityInfo =EntityUtil.getEntityInfo(entityClass);
+        List<BaseEntityField>  baseEntityFields=EntityUtil.getEntitySimple(example.getClass());
+        StringBuilder sql=new StringBuilder();
+        sql.append(UtilAll.UString.format("select {} from {} where ",
+                found?entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")):"count(*)",
+                entityInfo.getTableName()
+        ));
+        for (BaseEntityField baseEntityField : baseEntityFields) {
+            sql.append(fieldQuery(example,baseEntityField));
+        }
+        return null;
+
+    }
+    private static <S> BaseSqlParam fieldQuery(S example,BaseEntityField baseEntityField){
+        String fieldColumn= baseEntityField.getColumnName();
+        Object value = BeanUtil.getPropertyT(example,baseEntityField.getFieldName());
+        String[] splits=  fieldColumn.split(StringPool.UNDERSCORE);
+        if(splits.length==1){
+            return new BaseSqlParam(fieldColumn+"=? ",Collections.singletonList(value));
+        }
+        int size = splits.length;
+        String last = splits[size-1];
+        String lastTwo = splits[size-2];
+        if(map.containsKey(last)){
+            if(map.get(last).getEnumStep().equals(EnumStep.Condition)){
+                String two=lastTwo+StringPool.UNDERSCORE+last;
+                if(map.containsKey(two)){
+                    //匹配了2个
+                    if(size<3){
+                        return null;
+                    }
+                    String param=" ? ";
+                    List<Object> params= new ArrayList<>();
+                    if(two.equals("not_in")){
+                        params=listParam(value);
+                       // param=
+                    }
+                    return new SqlParam(fieldColumn+map.get(two)+param,params);
+                }
+            }
+        }
+
+        return null;
+    }
+    public static SqlParam nameSql(String method, Class<?> entityType, List<Object> params){
         if(methodMap.containsKey(method)){
             String sql= simpleNameSql(method,entityType);
-            return new SqlWithParam(sql, params.toArray());
+            return new SqlParam(sql, params);
         }
         EnumNameQueryType enumNameQueryType = nameQueryType(method);
         if(null==enumNameQueryType)  throw new JdbcMybatisRuntimeException(EnumErrorCode.CanNotGenNameQuery,EnumErrorCode.CanNotGenNameQueryMessage,method);
         EntityInfo  entityInfo=EntityUtil.getEntityInfo(entityType);
-        boolean found=false;
-        if(enumNameQueryType.equals(EnumNameQueryType.Find)){
-            found=true;
-        }
+        boolean found=enumNameQueryType.equals(EnumNameQueryType.Find);
         String newMethod=UtilAll.UString.substringAfter(method,"By");
         String[] splits=  OrmUtil.toSql(newMethod).split(StringPool.UNDERSCORE);
         StringBuilder sql=new StringBuilder();
@@ -215,20 +272,21 @@ public class NameQueryUtil {
         if(lastSplit.getEnumStep().equals(EnumStep.Column)||lastSplit.getEnumStep().equals(EnumStep.Condition)){
             genMybatisSql(lastSplit,sql,index,params.get(index));
         }
-        SqlWithParam sqlWithParam = new SqlWithParam();
-        sqlWithParam.setSql(sql.toString());
         List<Object> newParams= new ArrayList<>();
-        for (Object value : params) {
-            if (value instanceof Collection) {
-                Collection<?> collection= (Collection<?>) value;
-                newParams.addAll(collection);
-            }else{
-                newParams.add(value);
-            }
+        for (Object param : params) {
+            newParams.addAll(Arrays.asList(listParam(param)));
         }
-        sqlWithParam.setParams(newParams.toArray());
        log.debug("gen sql {}",sql);
-       return sqlWithParam;
+       return  new SqlParam(sql.toString(),newParams);
+    }
+    private static List<Object> listParam(Object value){
+        if (value instanceof Collection) {
+            return (List<Object>) value;
+        }
+        if (value.getClass().isArray()) {
+            return Arrays.asList((Object[]) value);
+        }
+        return Collections.singletonList(value);
     }
 
     private static int genMybatisSql(SplitMap lastSplit, StringBuilder sql, int index,Object value){
@@ -237,21 +295,7 @@ public class NameQueryUtil {
             sql.append(" = ");
         }
         if(split.equals("in")||split.equals("not in")){
-             if (!(value instanceof Collection||value.getClass().isArray())){
-                 throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
-             }
-            StringBuilder inSb=new StringBuilder("(");
-            if (value instanceof Collection) {
-                for (Object o : (Collection<?>) value) {
-                    inSb.append("?,");
-                }
-            }
-            if (value.getClass().isArray()) {
-                for (Object o : (Object[]) value) {
-                    inSb.append("?,");
-                }
-            }
-            sql.append(inSb.substring(0,inSb.length()-1)).append(")");
+            sql.append(inSql(value));
             return index;
         }
         if(split.equals("between")){
@@ -261,6 +305,23 @@ public class NameQueryUtil {
         sql.append("? ");
         return index;
 
+    }
+    private static String inSql(Object value){
+        if (!(value instanceof Collection||value.getClass().isArray())){
+            throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
+        }
+        StringBuilder inSb=new StringBuilder("(");
+        if (value instanceof Collection) {
+            for (Object o : (Collection<?>) value) {
+                inSb.append("?,");
+            }
+        }
+        if (value.getClass().isArray()) {
+            for (Object o : (Object[]) value) {
+                inSb.append("?,");
+            }
+        }
+        return inSb.substring(0,inSb.length()-1)+")";
     }
 
 
