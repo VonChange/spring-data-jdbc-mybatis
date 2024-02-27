@@ -6,7 +6,7 @@ import com.vonchange.common.util.Pair;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
-import com.vonchange.common.util.map.MyHashMap;
+import com.vonchange.common.util.map.VarMap;
 import com.vonchange.jdbc.config.EnumNameQueryType;
 import com.vonchange.jdbc.model.BaseEntityField;
 import com.vonchange.jdbc.model.BaseSqlParam;
@@ -141,7 +141,8 @@ public class NameQueryUtil {
 
     public static String simpleNameSql(String method,Class<?> entityType){
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entityType);
-        return UtilAll.UString.tplByMap(methodMap.get(method),new MyHashMap().set("table",entityInfo.getTableName()).set("idColumn",entityInfo.getIdColumnName())
+        return UtilAll.UString.tplByMap(methodMap.get(method),
+                new VarMap().set("table",entityInfo.getTableName()).set("idColumn",entityInfo.getIdColumnName())
                 .set("columns",entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")))
         );
     }

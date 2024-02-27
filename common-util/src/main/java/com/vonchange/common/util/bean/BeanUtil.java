@@ -29,6 +29,18 @@ public class BeanUtil {
         }
         return methodAccessData.getMethodAccess().invoke(entity,index);
     }
+    public static Integer getPropertyIndex(MethodAccessData methodAccessData, String property){
+        Integer index = methodAccessData.getMethodIndexMap().get("get" + UtilAll.UString.capitalize(property));
+        if(null==index){
+            if(property.startsWith("is")){
+                index=methodAccessData.getMethodIndexMap().get(property);
+            }
+            if(null==index){
+                return null;
+            }
+        }
+        return index;
+    }
     public static MethodAccessData methodAccessData(Class type){
         String id= type.getName();
         if(methodAccessDataMap.containsKey(id)){

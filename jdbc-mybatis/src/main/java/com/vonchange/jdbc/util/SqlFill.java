@@ -1,7 +1,7 @@
 package com.vonchange.jdbc.util;
 
 
-import com.vonchange.common.util.time.TimeUtil;
+import com.vonchange.common.util.TimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

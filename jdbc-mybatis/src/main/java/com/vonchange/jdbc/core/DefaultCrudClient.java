@@ -1,5 +1,6 @@
 package com.vonchange.jdbc.core;
 
+import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumRWType;
@@ -11,7 +12,6 @@ import com.vonchange.jdbc.mapper.BigDataBeanMapper;
 import com.vonchange.jdbc.mapper.ScalarMapper;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.model.SqlParam;
-import com.vonchange.jdbc.util.ConvertMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -145,7 +145,7 @@ public class DefaultCrudClient implements CrudClient{
                 return 0;
             }
             T entity = entities.get(0);
-            Map<String, Object> map = ConvertMap.toMap(entity);
+            Map<String, Object> map = ConvertUtil.toMap(entity);
             SqlParam sqlParameter = CrudUtil.getSqlParameter(sqlId,map,dataSourceWrapper.getDialect());
             String sql = sqlParameter.getSql();
             return  classicOps.updateBatch(sql,CrudUtil.batchUpdateParam(entities,false,sqlParameter.getPropertyNames()),false);

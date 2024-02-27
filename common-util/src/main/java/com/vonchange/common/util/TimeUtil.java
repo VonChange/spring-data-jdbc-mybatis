@@ -23,7 +23,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-package com.vonchange.common.util.time;
+package com.vonchange.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

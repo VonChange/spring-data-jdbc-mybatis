@@ -4,7 +4,7 @@ import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.convert.TypeConversionException;
 import com.vonchange.common.util.bean.convert.TypeConvertCommon;
 import com.vonchange.common.util.exception.ParseException;
-import com.vonchange.common.util.time.TimeUtil;
+import com.vonchange.common.util.TimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
