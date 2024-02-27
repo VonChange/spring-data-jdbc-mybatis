@@ -94,7 +94,7 @@ public class EntityUtil {
             entityField.setType(type);
             Annotation[] annotations = field.getAnnotations();
             for (Annotation annotation : annotations) {
-                if (annotation instanceof Transient ||annotation instanceof ColumnNot) {
+                if (annotation instanceof Transient ||annotation instanceof javax.persistence.Transient ||annotation instanceof ColumnNot) {
                     entityField.setIfColumn(false);
                 }
             }
@@ -181,7 +181,7 @@ public class EntityUtil {
                     columnReturns.add(columnName);
                     continue;
                 }
-                if (annotation instanceof Transient ||annotation instanceof ColumnNot) {
+                if (annotation instanceof Transient ||annotation instanceof javax.persistence.Transient||annotation instanceof ColumnNot) {
                     entityField.setIfColumn(false);
 
                 }

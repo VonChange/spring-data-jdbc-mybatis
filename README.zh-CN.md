@@ -29,10 +29,18 @@ SELECT  [@id column] FROM user_info
 <if test="null!=createTime">  and create_time < #{createTime}  </if>
 </where>
 ```
+* 扩展findByExample 按实体属性名查询扩展 入参是任意符合规范的实体
+```
+userInfoMethodDao.findAll(UserExample.builder()
+.userCodeIn(Arrays.asList("u001","u002"))
+.userNameLike("ch%")
+.createTimeDesc(true).build());
+```
+
 ## 特性
-* 支持按方法名查询 但不推荐过度使用 [method-name-query.md](method-name-query.md)
+* 支持按方法名查询  [method-name-query.md](method-name-query.md) 以及findAll
 * @Id @Table @Column @Version @Transient极少的注解
-* 请使用CrudExtendRepository 新增insert update  find
+* 请使用CrudExtendRepository 新增insert update  findAll findOne findPage
 * 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 * 批量更新 [bach-update.md](bach-update.md)
 * [多数据源.md](multi-datasource.md)
