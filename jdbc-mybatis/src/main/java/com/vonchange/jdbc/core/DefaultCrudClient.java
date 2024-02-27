@@ -48,12 +48,12 @@ public class DefaultCrudClient implements CrudClient{
         SqlParam sqlParameter = CrudUtil.generateInsertSql(entity,false,false);
         JdbcLogUtil.logSql(EnumRWType.write, sqlParameter);
         return classicOps.insert(sqlParameter.getSql(),sqlParameter.getColumnReturns(),
-                new BeanInsertMapper<>(entity), sqlParameter.getParams());
+                new BeanInsertMapper<>(entity), sqlParameter.getParams().toArray());
     }
     public final <T> int update(T entity) {
         SqlParam sqlParameter = CrudUtil.generateUpdateSql(entity, false,false);
         JdbcLogUtil.logSql(EnumRWType.write, sqlParameter);
-        int resultNum= classicOps.update(sqlParameter.getSql(), sqlParameter.getParams());
+        int resultNum= classicOps.update(sqlParameter.getSql(), sqlParameter.getParams().toArray());
         if(sqlParameter.getVersion()&&resultNum<1){
             throw new OptimisticLockingFailureException(ConstantJdbc.OptimisticLockingFailureExceptionMessage);
         }
@@ -88,10 +88,6 @@ public class DefaultCrudClient implements CrudClient{
         return JdbcClient.create(this.dataSourceWrapper);
     }
 
-    @Override
-    public <T, S> MappedQuerySpec<T> findByExample(S example) {
-        return null;
-    }
 
     private class DefaultStatementSpec implements StatementSpec {
         private final String sqlId;
@@ -121,7 +117,7 @@ public class DefaultCrudClient implements CrudClient{
         public  <T> void queryBatch(Class<T> mappedClass, AbstractPageWork<T> pageWork){
             SqlParam sqlParameter = CrudUtil.getSqlParameter(sqlId, this.namedParams, dataSourceWrapper.getDialect());
             JdbcLogUtil.logSql(EnumRWType.read,sqlParameter);
-            classicOps.queryBigData(sqlParameter.getSql(), new BigDataBeanMapper<T>(mappedClass, pageWork), sqlParameter.getParams());
+            classicOps.queryBigData(sqlParameter.getSql(), new BigDataBeanMapper<T>(mappedClass, pageWork), sqlParameter.getParams().toArray());
         }
 
         public <T> MappedQuerySpec<T> query(Class<T> mappedClass){
@@ -142,7 +138,7 @@ public class DefaultCrudClient implements CrudClient{
         public int update() {
             // update only EnumSqlRead.markdown
             SqlParam sqlParameter = CrudUtil.getSqlParameter(sqlId,this.namedParams,dataSourceWrapper.getDialect());
-            return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams());
+            return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams().toArray());
         }
         public <T> int updateBatch(List<T> entities) {
             if(CollectionUtils.isEmpty(entities)){
@@ -166,7 +162,7 @@ public class DefaultCrudClient implements CrudClient{
             @Override
             public List<T> list() {
                 JdbcLogUtil.logSql(EnumRWType.read, sqlParam.getSql(), sqlParam.getParams());
-                return classicOps.query(sqlParam.getSql(), this.resultSetExtractor, sqlParam.getParams());
+                return classicOps.query(sqlParam.getSql(), this.resultSetExtractor, sqlParam.getParams().toArray());
             }
             @Override
             public  Page<T> page(Pageable pageable){
@@ -174,12 +170,12 @@ public class DefaultCrudClient implements CrudClient{
                 SqlParam countSqlParam= CrudUtil.countSql(sqlId, sqlParam,namedParams, dataSourceWrapper.getDialect());
                 JdbcLogUtil.logSql(EnumRWType.read,countSqlParam);
                 Long total = classicOps.query(countSqlParam.getSql(), new ScalarMapper<>(Long.class),
-                        countSqlParam.getParams());
+                        countSqlParam.getParams().toArray());
                 if(null==total) total=0L;
                 int pageNum = Math.max(pageable.getPageNumber(), 0);
                 int firstEntityIndex = pageable.getPageSize() * pageNum;
                 sql = dataSourceWrapper.getDialect().getPageSql(sql, firstEntityIndex, pageable.getPageSize());
-                List<T> entities = classicOps.query(sql,this.resultSetExtractor, sqlParam.getParams());
+                List<T> entities = classicOps.query(sql,this.resultSetExtractor, sqlParam.getParams().toArray());
                 if(null==entities) entities=new ArrayList<>();
                 return new PageImpl<>(entities, pageable, total);
             }

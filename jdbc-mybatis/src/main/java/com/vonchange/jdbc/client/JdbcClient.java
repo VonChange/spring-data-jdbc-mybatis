@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,9 +48,9 @@ public interface JdbcClient {
     interface StatementSpec {
         StatementSpec param(Object value);
 
-        StatementSpec params(Object... values);
+        //StatementSpec params(Object... values);
 
-        StatementSpec params(List<?> values);
+        StatementSpec params(Collection<?> values);
 
         StatementSpec param(String name, @Nullable Object value);
         StatementSpec params(Map<String, ?> paramMap);

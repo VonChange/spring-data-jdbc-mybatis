@@ -5,13 +5,13 @@ import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
-import com.vonchange.jdbc.model.BaseEntityField;
-import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.jdbc.annotation.ColumnNot;
 import com.vonchange.jdbc.annotation.InsertOnlyProperty;
 import com.vonchange.jdbc.annotation.InsertReturn;
+import com.vonchange.jdbc.model.BaseEntityField;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -75,7 +75,7 @@ public class EntityUtil {
         for (Field field : fieldList) {
             Class<?> type = field.getType();
             boolean isColumnField =BeanUtil.containsProperty(methodAccessData,field.getName(),"set")
-                    &&ClazzUtils.isBaseType(type);
+                    &&ClazzUtils.isBaseTypeWithArray(type);
             String fieldName = field.getName();
             if(!isColumnField||fieldMap.containsKey(fieldName)){
                 continue;

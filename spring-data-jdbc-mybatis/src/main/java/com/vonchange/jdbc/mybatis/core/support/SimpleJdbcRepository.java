@@ -17,11 +17,16 @@ package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.jdbc.client.JdbcClient;
+import com.vonchange.jdbc.config.EnumNameQueryType;
 import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.util.EntityUtil;
 import com.vonchange.jdbc.util.NameQueryUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Streamable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -162,5 +167,32 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	@Transactional
 	public <S extends T> int update(List<S> entities, boolean ifNullUpdateByFirstEntity) {
 		return crudClient.update(entities,ifNullUpdateByFirstEntity);
+	}
+
+
+	private <X>  JdbcClient.MappedQuerySpec<?> findByExample(X example){
+		Class<?> tClass= configInfo.getDomainType();
+		SqlParam sqlParam= NameQueryUtil.exampleSql(EnumNameQueryType.Find,tClass,example);
+		return crudClient.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams())
+				.query(tClass);
+	}
+	@Override
+	public <T, X> List<T> findAll(X example) {
+		return (List<T>) findByExample(example).list();
+	}
+	@Override
+	public <T, X> Optional<T> findOne(X example) {
+		return  Optional.ofNullable((T)findByExample(example).single());
+	}
+	@Override
+	public <T, X> Page<T> findAll(X example, Pageable pageable) {
+		return (Page<T>) findByExample(example).page(pageable);
+	}
+	@Override
+	public <X> Long count(X example){
+		Class<?> tClass= configInfo.getDomainType();
+		SqlParam sqlParam= NameQueryUtil.exampleSql(EnumNameQueryType.Count,tClass,example);
+		return crudClient.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams())
+				.query(Long.class).single();
 	}
 }

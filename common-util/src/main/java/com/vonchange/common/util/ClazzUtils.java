@@ -4,6 +4,7 @@ import com.vonchange.common.util.bean.convert.Converter;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Locale;
 
 public class ClazzUtils {
@@ -20,6 +21,9 @@ public class ClazzUtils {
 		Enum.class.isAssignableFrom(clazz) ||
 				URI.class == clazz || URL.class == clazz ||
 				Locale.class == clazz || Class.class == clazz;
+	}
+	public static boolean isBaseTypeWithArray(Class<?> clazz) {
+		return isBaseType(clazz)||(clazz.isArray()&& isBaseType(clazz.getComponentType()))|| Collection.class.isAssignableFrom(clazz) ;
 	}
 	public static boolean isVersionType(Class<?> clazz) {
 		return Integer.class==clazz||Long.class==clazz;

@@ -49,7 +49,6 @@ public interface CrudClient {
 
     JdbcClient jdbc();
 
-    <T,S> MappedQuerySpec<T> findByExample(S example);
      <T> int insert(T entity);
     <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity);
     <T> int update(T entity);

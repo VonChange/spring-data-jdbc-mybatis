@@ -1,6 +1,8 @@
 package com.vonchange.jdbc.util;
 
+import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ClazzUtils;
+import com.vonchange.common.util.Pair;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
@@ -127,7 +129,7 @@ public class NameQueryUtil {
         return "order by"+sql.toString();
     }
 
-    private static Map<String,String> methodMap=new HashMap<>();
+    private static final Map<String,String> methodMap=new HashMap<>();
     static {
         methodMap.put("findById","select ${columns} from ${table} where ${idColumn} = ?");
         methodMap.put("deleteById","delete  from ${table} where ${idColumn} = ?");
@@ -159,58 +161,107 @@ public class NameQueryUtil {
         return null;
     }
     public static  <S> SqlParam exampleSql(EnumNameQueryType enumNameQueryType,
-                                           Class<?> entityClass, S example, Class<?> mapperClass){
-        if(null==example||!ClazzUtils.isBaseType(example.getClass())){
-            throw new JdbcMybatisRuntimeException("not support {}",example);
+                                           Class<?> entityClass, S example){
+        Assert.notNull(example,"param can not null");
+        if(ClazzUtils.isBaseType(example.getClass())){
+            throw new JdbcMybatisRuntimeException("not support {} {}",example,example.getClass());
         }
-        if(!ClazzUtils.isBaseType(entityClass)){
+        if(ClazzUtils.isBaseType(entityClass)){
             throw new JdbcMybatisRuntimeException("entityClass not support {}",entityClass);
         }
         boolean found=enumNameQueryType.equals(EnumNameQueryType.Find);
         EntityInfo  entityInfo =EntityUtil.getEntityInfo(entityClass);
         List<BaseEntityField>  baseEntityFields=EntityUtil.getEntitySimple(example.getClass());
-        StringBuilder sql=new StringBuilder();
-        sql.append(UtilAll.UString.format("select {} from {} where ",
+        String  sql=UtilAll.UString.format("select {} from {}",
                 found?entityInfo.getEntityFields().stream().map(EntityField::getColumnName).collect(Collectors.joining(",")):"count(*)",
-                entityInfo.getTableName()
-        ));
+                entityInfo.getTableName());
+        List<String> orders = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
+        List<String> querySql=new ArrayList<>();
         for (BaseEntityField baseEntityField : baseEntityFields) {
-            sql.append(fieldQuery(example,baseEntityField));
+            BaseSqlParam baseSqlParam = fieldQuery(example,baseEntityField);
+            if(null==baseSqlParam){
+                continue;
+            }
+            if(null==baseSqlParam.getParams()){
+                orders.add(baseSqlParam.getSql());
+                continue;
+            }
+            querySql.add(baseSqlParam.getSql());
+            values.addAll(baseSqlParam.getParams());
         }
-        return null;
+        if(!querySql.isEmpty()){
+            sql=sql+ " where " + String.join(" and ", querySql);
+        }
+        if(found&&!orders.isEmpty()){
+            sql=sql+" order by "+String.join(",", orders);
+        }
+        if(querySql.isEmpty()){
+            //@TODO 添加limit
+        }
+        return new SqlParam(sql,values);
 
     }
+
+    public static void main(String[] args) {
+        Pair<String,Integer> pair = Pair.of("张三", 18);
+        int age=  pair.getSecond();
+
+        System.out.println(age);
+    }
     private static <S> BaseSqlParam fieldQuery(S example,BaseEntityField baseEntityField){
-        String fieldColumn= baseEntityField.getColumnName();
+        String ormField= baseEntityField.getColumnName();
         Object value = BeanUtil.getPropertyT(example,baseEntityField.getFieldName());
-        String[] splits=  fieldColumn.split(StringPool.UNDERSCORE);
+        if(null==value){
+            return null;
+        }
+        String[] splits=  ormField.split(StringPool.UNDERSCORE);
         if(splits.length==1){
-            return new BaseSqlParam(fieldColumn+"=? ",Collections.singletonList(value));
+            return new BaseSqlParam(ormField+" = ? ",Collections.singletonList(value));
         }
         int size = splits.length;
         String last = splits[size-1];
         String lastTwo = splits[size-2];
+        String sql;
+        String column;
+        int ormFieldSize=ormField.length();
         if(map.containsKey(last)){
+            column= ormField.substring(0,ormFieldSize-last.length()-1);
             if(map.get(last).getEnumStep().equals(EnumStep.Condition)){
                 String two=lastTwo+StringPool.UNDERSCORE+last;
                 if(map.containsKey(two)){
                     //匹配了2个
                     if(size<3){
-                        return null;
+                        throw new JdbcMybatisRuntimeException("{} field not allowed",two);
                     }
-                    String param=" ? ";
-                    List<Object> params= new ArrayList<>();
+                    column=ormField.substring(0,ormField.length()-two.length()-1);
+                    sql=column+StringPool.SPACE+two;
+                    BaseSqlParam baseSqlParam =new BaseSqlParam(sql+" ? ",Collections.singletonList(value));
                     if(two.equals("not_in")){
-                        params=listParam(value);
-                       // param=
+                        baseSqlParam=inSql(sql,value);
                     }
-                    return new SqlParam(fieldColumn+map.get(two)+param,params);
+                    return baseSqlParam;
                 }
+                sql=column+StringPool.SPACE+last;
+                BaseSqlParam baseSqlParam =new BaseSqlParam(sql+" ? ",Collections.singletonList(value));
+                if(last.equals("in")){
+                    baseSqlParam=inSql(sql,value);
+                }
+                if(last.equals("between")){
+                    baseSqlParam=betweenSql(sql,value);
+                }
+                return baseSqlParam;
+            }
+            if(map.get(last).getEnumStep().equals(EnumStep.ORDER)){
+                sql=column+StringPool.SPACE+last;
+                return new SqlParam(sql,null);
             }
         }
-
-        return null;
+        return new BaseSqlParam(ormField+" = ? ",Collections.singletonList(value));
     }
+
+
+
     public static SqlParam nameSql(String method, Class<?> entityType, List<Object> params){
         if(methodMap.containsKey(method)){
             String sql= simpleNameSql(method,entityType);
@@ -274,14 +325,14 @@ public class NameQueryUtil {
         }
         List<Object> newParams= new ArrayList<>();
         for (Object param : params) {
-            newParams.addAll(Arrays.asList(listParam(param)));
+            newParams.addAll(listParam(param));
         }
        log.debug("gen sql {}",sql);
        return  new SqlParam(sql.toString(),newParams);
     }
-    private static List<Object> listParam(Object value){
+    private static Collection<?> listParam(Object value){
         if (value instanceof Collection) {
-            return (List<Object>) value;
+            return (Collection<?>) value;
         }
         if (value.getClass().isArray()) {
             return Arrays.asList((Object[]) value);
@@ -295,7 +346,7 @@ public class NameQueryUtil {
             sql.append(" = ");
         }
         if(split.equals("in")||split.equals("not in")){
-            sql.append(inSql(value));
+            sql.append(inSql(StringPool.EMPTY,value).getSql());
             return index;
         }
         if(split.equals("between")){
@@ -306,22 +357,48 @@ public class NameQueryUtil {
         return index;
 
     }
-    private static String inSql(Object value){
+    private static BaseSqlParam betweenSql(String sql, Object value) {
         if (!(value instanceof Collection||value.getClass().isArray())){
-            throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
+            throw new  JdbcMybatisRuntimeException("between query parameter must collection or array");
         }
-        StringBuilder inSb=new StringBuilder("(");
+        String betweenSql=sql+" ? and ? ";
+        Collection<Object> collection = new ArrayList<>();
         if (value instanceof Collection) {
             for (Object o : (Collection<?>) value) {
-                inSb.append("?,");
+                collection.add(o);
             }
         }
         if (value.getClass().isArray()) {
+            assert value instanceof Object[];
             for (Object o : (Object[]) value) {
-                inSb.append("?,");
+                collection.add(o);
             }
         }
-        return inSb.substring(0,inSb.length()-1)+")";
+        if(collection.size()>2||collection.size()<1){
+            throw new JdbcMybatisRuntimeException("between query param error");
+        }
+        return new BaseSqlParam(betweenSql,collection);
+    }
+    private static BaseSqlParam inSql(String sql,Object value){
+        if (!(value instanceof Collection||value.getClass().isArray())){
+            throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
+        }
+        StringBuilder inSb=new StringBuilder(sql+" (");
+        Collection<Object> collection = new ArrayList<>();
+        if (value instanceof Collection) {
+            for (Object o : (Collection<?>) value) {
+                inSb.append("?,");
+                collection.add(o);
+            }
+        }
+        if (value.getClass().isArray()) {
+            assert value instanceof Object[];
+            for (Object o : (Object[]) value) {
+                inSb.append("?,");
+                collection.add(o);
+            }
+        }
+        return new BaseSqlParam(inSb.substring(0,inSb.length()-1)+")",collection);
     }
 
 

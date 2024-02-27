@@ -49,6 +49,28 @@ class UserInfoMethodDaoTest {
         UserInfoDO userInfo = userInfoMethodDao.findByUserCode("u001");
         log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
     }
+
+    @Test
+    void findAllByExample() {
+        List<UserInfoDO> userInfo = userInfoMethodDao
+                .findAll(UserExample.builder().userCodeIn(Arrays.asList("u001","u002"))
+                        .userNameLike("ch%").createTimeDesc(true).build());
+        log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
+    }
+    @Test
+    void findOneByExample() {
+        List<UserInfoDO> userInfo = userInfoMethodDao
+                .findAll(UserExample.builder().userCodeIn(Arrays.asList("u001","u002"))
+                        .userNameLike("ch%").createTimeDesc(true).build());
+        log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
+    }
+    @Test
+    void countByExample() {
+        Long num = userInfoMethodDao
+                .count(UserExample.builder().userCodeIn(Arrays.asList("u000","u001","u002"))
+                        .userNameLike("ch%").createTimeDesc(true).build());
+        log.info("\nuserInfo count {}", num);
+    }
     @Test
     void findByCreateTimeBetween() {
         List<UserInfoDO> userInfoList = userInfoMethodDao.findByCreateTimeBetween(

@@ -22,7 +22,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,13 +59,13 @@ public class DefaultJdbcClient implements JdbcClient{
             this.indexedParams.add(value);
             return this;
         }
-        @Override
+      /*  @Override
         public StatementSpec params(Object... values) {
             Collections.addAll(this.indexedParams, values);
             return this;
-        }
+        }*/
         @Override
-        public StatementSpec params(List<?> values) {
+        public StatementSpec params(Collection<?> values) {
             this.indexedParams.addAll(values);
             return this;
         }
@@ -107,7 +107,7 @@ public class DefaultJdbcClient implements JdbcClient{
         public int update() {
             // update only EnumSqlRead.markdown
             SqlParam sqlParameter = CrudUtil.getSqlParameter(sql,this.namedParams,dataSourceWrapper.getDialect());
-            return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams());
+            return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams().toArray());
         }
 
 
@@ -122,17 +122,17 @@ public class DefaultJdbcClient implements JdbcClient{
             @Override
             public List<T> list() {
                 JdbcLogUtil.logSql(EnumRWType.read, sqlParam);
-                return classicOps.query(sqlParam.getSql(), this.resultSetExtractor, sqlParam.getParams());
+                return classicOps.query(sqlParam.getSql(), this.resultSetExtractor, sqlParam.getParams().toArray());
             }
             @Override
             public Page<T> page(Pageable pageable){
                 Long total = classicOps.query(CrudUtil.generateMyCountSql(sqlParam.getSql()), new ScalarMapper<>(Long.class),
-                        sqlParam.getParams());
+                        sqlParam.getParams().toArray());
                 if(null==total) total=0L;
                 int pageNum = Math.max(pageable.getPageNumber(), 0);
                 int firstEntityIndex = pageable.getPageSize() * pageNum;
                 String sqlPage = dataSourceWrapper.getDialect().getPageSql(sqlParam.getSql(), firstEntityIndex, pageable.getPageSize());
-                List<T> entities = classicOps.query(sqlPage,this.resultSetExtractor, sqlParam.getParams());
+                List<T> entities = classicOps.query(sqlPage,this.resultSetExtractor, sqlParam.getParams().toArray());
                 if(null==entities) entities=new ArrayList<>();
                 return new PageImpl<>(entities, pageable, total);
             }

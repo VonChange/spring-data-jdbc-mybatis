@@ -15,10 +15,13 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interface for generic CRUD operations on a repository for a specific type.
@@ -47,4 +50,11 @@ public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
 	<S extends T> int insert(List<S> entities, boolean ifNullInsertByFirstEntity);
 	<S extends T> int update(List<S> entities,boolean ifNullUpdateByFirstEntity);
 
+	<T,X> List<T> findAll(X example);
+
+	<T2, X> Optional<T2> findOne(X example);
+
+	<T2, X> Page<T2> findAll(X example, Pageable pageable);
+
+	<X> Long count(X example);
 }

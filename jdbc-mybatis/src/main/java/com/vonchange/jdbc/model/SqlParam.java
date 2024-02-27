@@ -2,6 +2,7 @@ package com.vonchange.jdbc.model;
 
 import com.vonchange.jdbc.config.EnumSqlRead;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class SqlParam extends BaseSqlParam{
     private Boolean version=false;
     private EnumSqlRead sqlRead;
 
-    public SqlParam(String sql, List<Object> params) {
+    public SqlParam(String sql, Collection<?> params) {
         super(sql,params);
     }
 

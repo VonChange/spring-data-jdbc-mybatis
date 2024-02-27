@@ -1,12 +1,12 @@
 package com.vonchange.jdbc.model;
 
-import java.util.List;
+import java.util.Collection;
 
 public class BaseSqlParam {
     private String sql;
-    private List<Object> params;
+    private Collection<?> params;
 
-    public BaseSqlParam(String sql, List<Object> params) {
+    public BaseSqlParam(String sql, Collection<?> params) {
         this.sql = sql;
         this.params = params;
     }
@@ -15,7 +15,7 @@ public class BaseSqlParam {
         return sql;
     }
 
-    public List<Object> getParams() {
+    public Collection<?> getParams() {
         return params;
     }
 }
