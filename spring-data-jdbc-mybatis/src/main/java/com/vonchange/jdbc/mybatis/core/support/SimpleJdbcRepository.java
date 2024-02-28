@@ -124,9 +124,12 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 
 	@Override
 	@Transactional
+	@SuppressWarnings("unchecked")
 	public void delete(T entity) {
+		Assert.notNull(entity,"entity  can not null");
 		EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
 		Object idValue = BeanUtil.getPropertyT(entity,entityInfo.getIdFieldName());
+		Assert.notNull(idValue,"entity id value can not null");
 		deleteById((ID) idValue);
 	}
 
@@ -159,34 +162,34 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 
 	@Override
 	@Transactional
-	public <S extends T> int insert(List<S> entities, boolean ifNullInsertByFirstEntity) {
-		return crudClient.insert(entities,ifNullInsertByFirstEntity);
+	public <S extends T> int insertBatch(List<S> entities, boolean ifNullInsertByFirstEntity) {
+		return crudClient.insertBatch(entities,ifNullInsertByFirstEntity);
 	}
 
 	@Override
 	@Transactional
-	public <S extends T> int update(List<S> entities, boolean ifNullUpdateByFirstEntity) {
-		return crudClient.update(entities,ifNullUpdateByFirstEntity);
+	public <S extends T> int updateBatch(List<S> entities, boolean ifNullUpdateByFirstEntity) {
+		return crudClient.updateBatch(entities,ifNullUpdateByFirstEntity);
 	}
 
-
-	private <X>  JdbcClient.MappedQuerySpec<?> findByExample(X example){
-		Class<?> tClass= configInfo.getDomainType();
+	@SuppressWarnings("unchecked")
+	private <X>  JdbcClient.MappedQuerySpec<T> findByExample(X example){
+		Class<T> tClass= (Class<T>) configInfo.getDomainType();
 		SqlParam sqlParam= NameQueryUtil.exampleSql(EnumNameQueryType.Find,tClass,example);
 		return crudClient.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams())
 				.query(tClass);
 	}
 	@Override
-	public <T, X> List<T> findAll(X example) {
-		return (List<T>) findByExample(example).list();
+	public <X> List<T> findAll(X example) {
+		return  findByExample(example).list();
 	}
 	@Override
-	public <T, X> Optional<T> findOne(X example) {
-		return  Optional.ofNullable((T)findByExample(example).single());
+	public <X> Optional<T> findOne(X example) {
+		return  Optional.ofNullable(findByExample(example).single());
 	}
 	@Override
-	public <T, X> Page<T> findAll(X example, Pageable pageable) {
-		return (Page<T>) findByExample(example).page(pageable);
+	public < X> Page<T> findAll(X example, Pageable pageable) {
+		return  findByExample(example).page(pageable);
 	}
 	@Override
 	public <X> Long count(X example){

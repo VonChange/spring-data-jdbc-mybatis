@@ -31,7 +31,7 @@ public interface UserInfoRepository extends CrudExtendRepository<UserInfoDO, Lon
 
   int updateIsDelete(@Param("isDelete") Integer isDelete,@Param("id") Long id);
 
-  @BatchUpdate(size = 1000)
+  @BatchUpdate
   int batchUpdate(List<UserInfoDO> list);
 
   void findBigData(@Param("abstractPageWork")AbstractPageWork<UserInfoDO> abstractPageWork,@Param("userName") String userName);

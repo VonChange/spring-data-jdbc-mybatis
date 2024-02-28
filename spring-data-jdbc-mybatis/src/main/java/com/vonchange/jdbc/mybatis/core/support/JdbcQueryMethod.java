@@ -46,10 +46,7 @@ public class JdbcQueryMethod extends QueryMethod {
 		return AnnotationUtils.findAnnotation(method, BatchUpdate.class) != null;
 	}
 
-	public int getBatchSize() {
-		BatchUpdate annotation = AnnotationUtils.findAnnotation(method, BatchUpdate.class);
-		return null != annotation ? annotation.size() : 1000;
-	}
+
 
 	public boolean isUpdateQuery() {
 		return AnnotationUtils.findAnnotation(method, Modifying.class) != null;

@@ -38,9 +38,9 @@ userInfoMethodDao.findAll(UserExample.builder()
 ```
 
 ## 特性
-* 支持按方法名查询  [method-name-query.md](method-name-query.md) 以及findAll
+* 支持按方法名查询  [method-name-query.md](method-name-query.md) 以及扩展版findByExample
 * @Id @Table @Column @Version @Transient极少的注解
-* 请使用CrudExtendRepository 新增insert update  findAll findOne findPage
+* 请使用CrudExtendRepository 新增insert update insertBatch updateBatch 扩展版findByExample
 * 不提供@Query或QueryDSL,sql统一写在markdown文件里面
 * 批量更新 [bach-update.md](bach-update.md)
 * [多数据源.md](multi-datasource.md)

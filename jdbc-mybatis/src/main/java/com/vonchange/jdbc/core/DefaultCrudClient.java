@@ -59,7 +59,7 @@ public class DefaultCrudClient implements CrudClient{
         }
         return resultNum;
     }
-    public final <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity) {
+    public final <T> int insertBatch(List<T> entities,boolean ifNullInsertByFirstEntity) {
         if(CollectionUtils.isEmpty(entities)){
             return 0;
         }
@@ -67,7 +67,7 @@ public class DefaultCrudClient implements CrudClient{
         String sql = sqlParameter.getSql();
         return classicOps.insertBatch(sql,CrudUtil.batchUpdateParam(entities,true,sqlParameter.getPropertyNames()),sqlParameter.getColumnReturns(),new BeanInsertMapper<>(entities));
     }
-    public final <T> int update(List<T> entities,boolean ifNullUpdateByFirstEntity) {
+    public final <T> int updateBatch(List<T> entities,boolean ifNullUpdateByFirstEntity) {
         if(CollectionUtils.isEmpty(entities)){
             return 0;
         }

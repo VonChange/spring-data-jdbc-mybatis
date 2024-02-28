@@ -50,9 +50,9 @@ public interface CrudClient {
     JdbcClient jdbc();
 
      <T> int insert(T entity);
-    <T> int insert(List<T> entities,boolean ifNullInsertByFirstEntity);
+    <T> int insertBatch(List<T> entities,boolean ifNullInsertByFirstEntity);
     <T> int update(T entity);
-    <T> int update(List<T> entities,boolean ifNullUpdateByFirstEntity);
+    <T> int updateBatch(List<T> entities,boolean ifNullUpdateByFirstEntity);
     interface StatementSpec {
 
         StatementSpec param(String name, @Nullable Object value);

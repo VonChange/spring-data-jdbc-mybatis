@@ -206,7 +206,7 @@ class UserInfoMethodDaoTest {
             //item.setIsDelete(0);
             list.add(item);
         }
-        int resultNum = userInfoMethodDao.insert(list,false);
+        int resultNum = userInfoMethodDao.insertBatch(list,false);
         //int resultNum = userInfoMethodDao.update(list,false);
         log.info("resultNum {} id First {} id Last {}",resultNum,list.get(0).getId(),
                 list.get(list.size()-1).getId());
@@ -227,11 +227,11 @@ class UserInfoMethodDaoTest {
             //item.setIsDelete(0);
             list.add(item);
         }
-        int resultNum = userInfoMethodDao.update(list,false);
+        int resultNum = userInfoMethodDao.updateBatch(list,false);
         //int resultNum = userInfoMethodDao.update(list,false);
         log.info("resultNum {} id First {} id Last {}",resultNum,list.get(0).getId(),
                 list.get(list.size()-1).getId());
-        resultNum = userInfoMethodDao.update(list,false);
+        resultNum = userInfoMethodDao.updateBatch(list,false);
         log.info("resultNum {}",resultNum);
         log.info("time {}",System.currentTimeMillis()-start);//1554
     }

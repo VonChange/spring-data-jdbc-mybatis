@@ -47,14 +47,14 @@ public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
 	 */
 	<S extends T> int  update(S entity);
 
-	<S extends T> int insert(List<S> entities, boolean ifNullInsertByFirstEntity);
-	<S extends T> int update(List<S> entities,boolean ifNullUpdateByFirstEntity);
+	<S extends T> int insertBatch(List<S> entities, boolean ifNullInsertByFirstEntity);
+	<S extends T> int updateBatch(List<S> entities,boolean ifNullUpdateByFirstEntity);
 
-	<T,X> List<T> findAll(X example);
+	<X> List<T> findAll(X example);
 
-	<T2, X> Optional<T2> findOne(X example);
+	<X> Optional<T> findOne(X example);
 
-	<T2, X> Page<T2> findAll(X example, Pageable pageable);
+	<X> Page<T> findAll(X example, Pageable pageable);
 
 	<X> Long count(X example);
 }
