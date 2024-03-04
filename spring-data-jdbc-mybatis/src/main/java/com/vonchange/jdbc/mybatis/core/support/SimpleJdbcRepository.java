@@ -16,15 +16,19 @@
 package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.common.util.Assert;
+import com.vonchange.common.util.JsonUtil;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.EnumNameQueryType;
 import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.model.EntityInfo;
 import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.util.EntityUtil;
 import com.vonchange.jdbc.util.NameQueryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Streamable;
@@ -37,7 +41,7 @@ import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> {
-
+	private static final Logger log = LoggerFactory.getLogger(SimpleJdbcRepository.class);
 	private final CrudClient crudClient;
 	private final ConfigInfo configInfo;
 
@@ -81,7 +85,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	public Optional<T> findById(ID id) {
 		Assert.notNull(id,"id can not null");
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
-		return Optional.ofNullable(crudClient.jdbc().sql("findById")
+		return Optional.ofNullable(crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("findById",tClass))
 				.param(id).query(tClass).single());
 	}
 
@@ -92,7 +96,7 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 			return new ArrayList<>();
 		}
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
-		return crudClient.jdbc().sql("findByIdIn").param(ids).query(tClass).iterable();
+		return crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("findByIdIn",tClass)).param(ids).query(tClass).iterable();
 	}
 
 	@Override
@@ -118,8 +122,12 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	@Transactional
 	public void deleteById(ID id) {
 		Assert.notNull(id,"id can not null");
-		 crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("deleteById",configInfo.getDomainType())).param(id)
-				 .update();
+		findById(id).ifPresent(item->{
+			SqlParam sqlParam= CrudUtil.generateInsertSql(item,false,false);
+			log.info("jdbc delete {}", JsonUtil.toJson(item));
+			crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("deleteById",configInfo.getDomainType())).param(id)
+					.update();
+		});
 	}
 
 	@Override
@@ -144,7 +152,9 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	@Override
 	@Transactional
 	public void deleteAll() {
-		crudClient.sqlId(NameQueryUtil.simpleNameSql("deleteAll",configInfo.getDomainType())).update();
+		for (T t : findAll()) {
+			delete(t);
+		}
 	}
 
 

@@ -35,9 +35,7 @@ class UserInfoMethodDaoTest {
         //OrderByCreateTimeDesc findByUserCodeInAndCreateTimeOrderByCreateTimeDesc
         SqlParam sqlParam = NameQueryUtil.nameSql(
                 "findByUserCode",UserInfoDO.class,Arrays.asList(new String[]{"233","333"},9));
-        if(null!= sqlParam){
-            log.info("\nnameSql {}", sqlParam.getSql());
-        }
+        log.info("\nnameSql {}", sqlParam.getSql());
     }
     @Test
     public  void orderSql() {

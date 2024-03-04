@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class JdbcLogUtil {
     private static final Logger log = LoggerFactory.getLogger(JdbcLogUtil.class);
     public static void logSql(EnumRWType enumRWType, SqlParam sqlParam) {
-        logSql(enumRWType, sqlParam.getSql(), sqlParam.getParams());
+        logSql(enumRWType, sqlParam.getSql(), sqlParam.getParams().toArray());
     }
     public static void logSql(EnumRWType enumRWType, String sql, Object... params) {
         if (log.isDebugEnabled()) {

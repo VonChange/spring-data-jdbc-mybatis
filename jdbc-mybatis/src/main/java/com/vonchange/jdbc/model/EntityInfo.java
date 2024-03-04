@@ -12,8 +12,8 @@ public class EntityInfo {
 	private String tableName;
 	private String idFieldName;
 	private String idColumnName;
-	private String deleteColumn;
 	private String idType;
+
 	private  List<String> columnReturns;
 	private List<EntityField> entityFields;
 
@@ -93,11 +93,4 @@ public class EntityInfo {
 		this.columnReturns = columnReturns;
 	}
 
-	public String getDeleteColumn() {
-		return deleteColumn;
-	}
-
-	public void setDeleteColumn(String deleteColumn) {
-		this.deleteColumn = deleteColumn;
-	}
 }

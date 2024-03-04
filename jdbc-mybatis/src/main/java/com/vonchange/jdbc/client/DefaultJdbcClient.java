@@ -106,7 +106,8 @@ public class DefaultJdbcClient implements JdbcClient{
         @Override
         public int update() {
             // update only EnumSqlRead.markdown
-            SqlParam sqlParameter = CrudUtil.getSqlParameter(sql,this.namedParams,dataSourceWrapper.getDialect());
+            SqlParam sqlParameter = getSqlParameter(sql);
+            //Object[] args= sqlParameter.getParams().toArray();
             return  classicOps.update(sqlParameter.getSql(),sqlParameter.getParams().toArray());
         }
 
