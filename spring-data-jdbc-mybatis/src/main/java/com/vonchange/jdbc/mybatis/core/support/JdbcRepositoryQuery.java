@@ -105,7 +105,8 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
 		}
 		if (queryMethod.isPageQuery()) {
-			return operations.sqlId(sqlId).params(bindParameter.getNamedParams())
+			return  nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable()):
+					operations.sqlId(sqlId).params(bindParameter.getNamedParams())
 					.query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable());
 		}
 		if (queryMethod.isBatchUpdate()) {

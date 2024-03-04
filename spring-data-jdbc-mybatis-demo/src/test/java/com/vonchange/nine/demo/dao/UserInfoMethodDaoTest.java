@@ -32,8 +32,9 @@ class UserInfoMethodDaoTest {
 
     @Test
     public  void methodSql() {
+        //OrderByCreateTimeDesc findByUserCodeInAndCreateTimeOrderByCreateTimeDesc
         SqlParam sqlParam = NameQueryUtil.nameSql(
-                "findListByUserCodeIn",UserInfoDO.class,Arrays.asList(new String[]{"233","333"},9));
+                "findByUserCode",UserInfoDO.class,Arrays.asList(new String[]{"233","333"},9));
         if(null!= sqlParam){
             log.info("\nnameSql {}", sqlParam.getSql());
         }
@@ -41,7 +42,7 @@ class UserInfoMethodDaoTest {
     @Test
     public  void orderSql() {
         String  sql = NameQueryUtil.orderSql(
-                "orderByCreateTimeDescId",UserInfoDO.class);
+                "orderByCreateTimeDesc",UserInfoDO.class);
         log.info("\nsql {}", sql);
     }
     @Test
@@ -92,6 +93,8 @@ class UserInfoMethodDaoTest {
         userInfoDOList.forEach(UserInfoDO -> {
             log.info("\nUserInfoDOList {}", JsonUtil.toJson(UserInfoDO));
         });
+        userInfoDOList = userInfoMethodDao.findByUserCodeIn(
+                null);
     }
 
     @Test

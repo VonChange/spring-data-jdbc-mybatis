@@ -8,8 +8,9 @@ import java.util.List;
 /**
  * @author 冯昌义
  */
-public class SqlParam extends BaseSqlParam{
-
+public class SqlParam{
+    private String sql;
+    private Collection<?> params;
     private List<String> propertyNames;
     private  List<String> columnReturns;
 
@@ -17,9 +18,16 @@ public class SqlParam extends BaseSqlParam{
     private EnumSqlRead sqlRead;
 
     public SqlParam(String sql, Collection<?> params) {
-        super(sql,params);
+        this.sql = sql;
+        this.params = params;
+    }
+    public String getSql() {
+        return sql;
     }
 
+    public Collection<?> getParams() {
+        return params;
+    }
     public EnumSqlRead getSqlRead() {
         return sqlRead;
     }

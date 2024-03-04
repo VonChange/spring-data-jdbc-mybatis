@@ -1,6 +1,7 @@
 package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.MarkdownUtil;
+import com.vonchange.common.util.Pair;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
@@ -9,6 +10,8 @@ import com.vonchange.jdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.count.CountSqlParser;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.jdbc.model.EnumCondition;
+import com.vonchange.jdbc.model.QueryColumn;
 import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.util.EntityUtil;
 import com.vonchange.jdbc.util.MybatisTpl;
@@ -25,6 +28,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -85,7 +90,6 @@ public class CrudUtil {
         // 0:tableName 1:setSql 2:idName
         String sql = UtilAll.UString.format("update {} set {} where {} = {}", tableName,
                 String.join(StringPool.COMMA,columns), idColumnName,mybatis?mybatisNamedParam(entityInfo.getIdFieldName()):StringPool.QUESTION_MARK);
-
         if(null!=versionField){
             sql=sql+UtilAll.UString.format(" and {} = {}",versionField.getColumnName(),mybatis?mybatisNamedParam(versionField.getFieldName()):StringPool.QUESTION_MARK);
             Object versionValue= BeanUtil.getProperty(entity,versionField.getFieldName());
@@ -99,6 +103,70 @@ public class CrudUtil {
             sqlParameter.setVersion(true);
         }
         return sqlParameter;
+    }
+
+
+    public static Pair<String,Collection<?>> conditionSql(QueryColumn queryColumn){
+        if(null==queryColumn||null==queryColumn.getValue()){
+            return null;
+        }
+        String condition=queryColumn.getCondition();
+        if(null==condition){
+            condition= EnumCondition.Eq.getCondition();
+        }
+        String pre=StringPool.SPACE+(null!=queryColumn.getJoin()?queryColumn.getJoin():StringPool.EMPTY)+StringPool.SPACE+
+                queryColumn.getColumn()+StringPool.SPACE+condition+StringPool.SPACE;
+        if(condition.equals("in")||condition.equals("not in")){
+            return inSql(pre, queryColumn.getValue());
+        }
+        if(condition.equals("between")){
+            return betweenSql(pre,queryColumn.getValue());
+        }
+        return Pair.of(pre+StringPool.QUESTION_MARK+StringPool.SPACE,
+                Collections.singleton(queryColumn.getValue()));
+    }
+    private static Pair<String,Collection<?>> inSql(String sql, Object value){
+        if (!(value instanceof Collection ||value.getClass().isArray())){
+            throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
+        }
+        StringBuilder inSb=new StringBuilder(sql+" (");
+        Collection<Object> collection = new ArrayList<>();
+        if (value instanceof Collection) {
+            for (Object o : (Collection<?>) value) {
+                inSb.append("?,");
+                collection.add(o);
+            }
+        }
+        if (value.getClass().isArray()) {
+            assert value instanceof Object[];
+            for (Object o : (Object[]) value) {
+                inSb.append("?,");
+                collection.add(o);
+            }
+        }
+        return Pair.of(inSb.substring(0,inSb.length()-1)+")",collection);
+    }
+    private static Pair<String,Collection<?>> betweenSql(String sql, Object value) {
+        if (!(value instanceof Collection||value.getClass().isArray())){
+            throw new  JdbcMybatisRuntimeException("between query parameter must collection or array");
+        }
+        String betweenSql=sql+" ? and ? ";
+        Collection<Object> collection = new ArrayList<>();
+        if (value instanceof Collection) {
+            for (Object o : (Collection<?>) value) {
+                collection.add(o);
+            }
+        }
+        if (value.getClass().isArray()) {
+            assert value instanceof Object[];
+            for (Object o : (Object[]) value) {
+                collection.add(o);
+            }
+        }
+        if(collection.size()>2||collection.size()<1){
+            throw new JdbcMybatisRuntimeException("between query param error");
+        }
+        return Pair.of(betweenSql,collection);
     }
 
     private static String mybatisNamedParam(String fieldName){

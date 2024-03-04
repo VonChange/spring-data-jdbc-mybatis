@@ -2,9 +2,12 @@ package com.vonchange.common.util;
 
 public final class Pair<A, B> {
 
-	private final  A first;
-	private final  B second;
+	private   A first;
+	private   B second;
 
+	public Pair(){
+
+	}
 	private Pair(A first, B second) {
 		this.first = first;
 		this.second = second;
@@ -37,5 +40,13 @@ public final class Pair<A, B> {
 	 */
 	public B getSecond() {
 		return second;
+	}
+
+	public void setFirst(A first) {
+		this.first = first;
+	}
+
+	public void setSecond(B second) {
+		this.second = second;
 	}
 }

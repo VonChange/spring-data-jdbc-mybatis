@@ -1,12 +1,12 @@
 package com.vonchange.jdbc.model;
 
-public class SplitMap {
+public class SqlMatch {
     private String split;
     private EnumStep enumStep;
-    public SplitMap(){
+    public SqlMatch(){
 
     }
-    public SplitMap(String split, EnumStep enumStep) {
+    public SqlMatch(String split, EnumStep enumStep) {
         this.split = split;
         this.enumStep = enumStep;
     }
