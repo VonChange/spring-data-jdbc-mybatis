@@ -19,7 +19,6 @@ public class EntityInfo {
 
 	private Map<String,Integer> fieldMap;
 	private Map<String,Integer> columnMap;
-	private EntityField logicDeleteField;
 
 	public String getEntityName() {
 		return entityName;
@@ -94,11 +93,5 @@ public class EntityInfo {
 		this.columnReturns = columnReturns;
 	}
 
-	public EntityField getLogicDeleteField() {
-		return logicDeleteField;
-	}
 
-	public void setLogicDeleteField(EntityField logicDeleteField) {
-		this.logicDeleteField = logicDeleteField;
-	}
 }

@@ -212,10 +212,8 @@ public class CrudUtil {
         for (EntityField entityField : entityFieldList) {
             if(entityField.getIfColumn()){
                 value= BeanUtil.getProperty(entity,entityField.getFieldName());
-                if(entityField.getVersion()){
-                    if(null==value){
-                        value=1;
-                    }
+                if(entityField.getVersion()&&null==value){
+                    value=1;
                 }
                 if(insertColumn(entityField,value,ifNullInsert)){
                     columns.add(entityField.getColumnName());

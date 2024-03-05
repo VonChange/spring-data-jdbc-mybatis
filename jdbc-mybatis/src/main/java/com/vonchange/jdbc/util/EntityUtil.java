@@ -6,7 +6,6 @@ import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
 import com.vonchange.jdbc.annotation.ColumnNot;
-import com.vonchange.jdbc.annotation.DeleteProperty;
 import com.vonchange.jdbc.annotation.InsertOnlyProperty;
 import com.vonchange.jdbc.annotation.InsertReturn;
 import com.vonchange.jdbc.model.BaseEntityField;
@@ -182,13 +181,8 @@ public class EntityUtil {
                     columnReturns.add(columnName);
                     continue;
                 }
-                if(annotation instanceof DeleteProperty){
-                    entityField.setDelete(true);
-                    continue;
-                }
                 if (annotation instanceof Transient ||annotation instanceof javax.persistence.Transient||annotation instanceof ColumnNot) {
                     entityField.setIfColumn(false);
-
                 }
             }
             entityFieldList.add(entityField);
