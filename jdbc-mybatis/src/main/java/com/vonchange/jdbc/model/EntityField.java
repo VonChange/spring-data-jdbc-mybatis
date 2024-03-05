@@ -13,6 +13,7 @@ public class EntityField extends BaseEntityField{
 	private Boolean insertNot=false;
 
 	private Boolean version=false;
+	private Boolean delete=false;
 
 
 	public Boolean getIfId() {
@@ -47,4 +48,11 @@ public class EntityField extends BaseEntityField{
 		this.insertNot = insertNot;
 	}
 
+	public Boolean getDelete() {
+		return delete;
+	}
+
+	public void setDelete(Boolean delete) {
+		this.delete = delete;
+	}
 }

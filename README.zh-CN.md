@@ -29,7 +29,7 @@ SELECT  [@id column] FROM user_info
 <if test="null!=createTime">  and create_time < #{createTime}  </if>
 </where>
 ```
-* 扩展findByExample 按实体属性名查询扩展 入参是任意符合规范的实体
+* 扩展findByExample 按实体属性名查询扩展 入参是任意符合规范的实体 但请慎用 传入实体不可过多字段
 ```
 userInfoMethodDao.findAll(UserExample.builder()
 .userCodeIn(Arrays.asList("u001","u002"))

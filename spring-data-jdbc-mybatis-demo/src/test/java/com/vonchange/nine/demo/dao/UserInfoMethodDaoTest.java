@@ -114,7 +114,7 @@ class UserInfoMethodDaoTest {
 
     @Test
     @Transactional
-    @Rollback
+    @Rollback(value = false)
     public void insert() throws IOException {
         UserInfoDO userInfoDO = new UserInfoDO();
         userInfoDO.setUserCode("L001");
