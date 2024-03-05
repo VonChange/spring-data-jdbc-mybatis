@@ -1,6 +1,5 @@
 package com.vonchange.nine.demo.dao;
 
-import com.vonchange.jdbc.mapper.AbstractPageWork;
 import com.vonchange.jdbc.mybatis.core.query.BatchUpdate;
 import com.vonchange.jdbc.mybatis.core.support.CrudExtendRepository;
 import com.vonchange.nine.demo.domain.SearchParam;
@@ -33,7 +32,5 @@ public interface UserInfoRepository extends CrudExtendRepository<UserInfoDO, Lon
 
   @BatchUpdate
   int batchUpdate(List<UserInfoDO> list);
-
-  void findBigData(@Param("abstractPageWork")AbstractPageWork<UserInfoDO> abstractPageWork,@Param("userName") String userName);
 
 }

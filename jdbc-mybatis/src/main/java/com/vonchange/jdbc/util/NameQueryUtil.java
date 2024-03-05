@@ -125,7 +125,7 @@ public class NameQueryUtil {
         }
         orderColumn.add(pair);
 
-        return "order by "+orderColumn.stream().filter(item->null!=item.getFirst()).map(item->item.getFirst()+StringPool.SPACE+
+        return " order by "+orderColumn.stream().filter(item->null!=item.getFirst()).map(item->item.getFirst()+StringPool.SPACE+
                 (null==item.getSecond()?StringPool.EMPTY:item.getSecond()))
                 .collect(Collectors.joining(","));
     }

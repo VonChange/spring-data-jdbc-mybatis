@@ -96,19 +96,6 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
 			sqlParam = NameQueryUtil.nameSql(sqlId,configInfo.getDomainType(), bindParameter.getIndexedParams());
 		}
-		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
-			return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).list():
-					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).list();
-		}
-		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
-			return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
-					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
-		}
-		if (queryMethod.isPageQuery()) {
-			return  nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable()):
-					operations.sqlId(sqlId).params(bindParameter.getNamedParams())
-					.query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable());
-		}
 		if (queryMethod.isBatchUpdate()) {
 			return operations.sqlId(sqlId).updateBatch((List<Object>) bindParameter.getFirstParam());
 		}
@@ -120,6 +107,21 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 			return (returnedObjectType == boolean.class || returnedObjectType == Boolean.class) ? updatedCount != 0
 					: updatedCount;
 		}
+		if (queryMethod.isPageQuery()) {
+			return  nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable()):
+					operations.sqlId(sqlId).params(bindParameter.getNamedParams())
+							.query(queryMethod.getReturnedObjectType()).page(bindParameter.getPageable());
+		}
+		if (queryMethod.isCollectionQuery() || queryMethod.isStreamQuery()) {
+			return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).list():
+					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).list();
+		}
+		if (ClazzUtils.isBaseType(queryMethod.getReturnedObjectType())) {
+			return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
+					operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
+		}
+
+
 		return nameQuery?operations.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(queryMethod.getReturnedObjectType()).single():
 				operations.sqlId(sqlId).params(bindParameter.getNamedParams()).query(queryMethod.getReturnedObjectType()).single();
 

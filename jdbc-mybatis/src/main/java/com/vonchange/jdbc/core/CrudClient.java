@@ -54,7 +54,7 @@ public interface CrudClient {
     <T> int update(T entity);
     <T> int updateBatch(List<T> entities,boolean ifNullUpdateByFirstEntity);
     interface StatementSpec {
-
+        <X> StatementSpec namespace(X service);
         StatementSpec param(String name, @Nullable Object value);
         StatementSpec params(Map<String, ?> paramMap);
         <T> MappedQuerySpec<T> query(Class<T> mappedClass);

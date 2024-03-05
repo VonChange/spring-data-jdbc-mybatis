@@ -1,6 +1,7 @@
 package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.ConvertUtil;
+import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumRWType;
@@ -90,7 +91,7 @@ public class DefaultCrudClient implements CrudClient{
 
 
     private class DefaultStatementSpec implements StatementSpec {
-        private final String sqlId;
+        private  String sqlId;
 
         private SqlParam sqlParam;
 
@@ -102,6 +103,10 @@ public class DefaultCrudClient implements CrudClient{
         }
 
 
+        public <X> StatementSpec namespace(X service){
+            this.sqlId=CrudUtil.interfaceNameMd(service.getClass())+ StringPool.DOT+sqlId;
+            return this;
+        }
         @Override
         public StatementSpec param(String name, Object value) {
             this.namedParams.put(name,value);

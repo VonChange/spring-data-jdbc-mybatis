@@ -57,4 +57,6 @@ public interface CrudExtendRepository<T, ID> extends CrudRepository<T, ID> {
 	<X> Page<T> findAll(X example, Pageable pageable);
 
 	<X> Long count(X example);
+
+	void deleteAllById(Iterable<? extends ID> ids);
 }

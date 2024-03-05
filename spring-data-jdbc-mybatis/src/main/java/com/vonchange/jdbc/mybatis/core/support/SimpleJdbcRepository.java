@@ -21,7 +21,6 @@ import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.EnumNameQueryType;
 import com.vonchange.jdbc.core.CrudClient;
-import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.model.EntityInfo;
 import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
@@ -35,6 +34,7 @@ import org.springframework.data.util.Streamable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -96,7 +96,8 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 			return new ArrayList<>();
 		}
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
-		return crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("findByIdIn",tClass)).param(ids).query(tClass).iterable();
+		SqlParam sqlParam= NameQueryUtil.nameSql("findByIdIn",tClass, Collections.singletonList(ids));
+		return crudClient.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams()).query(tClass).iterable();
 	}
 
 	@Override
@@ -123,7 +124,6 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	public void deleteById(ID id) {
 		Assert.notNull(id,"id can not null");
 		findById(id).ifPresent(item->{
-			SqlParam sqlParam= CrudUtil.generateInsertSql(item,false,false);
 			log.info("jdbc delete {}", JsonUtil.toJson(item));
 			crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("deleteById",configInfo.getDomainType())).param(id)
 					.update();
@@ -207,5 +207,12 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 		SqlParam sqlParam= NameQueryUtil.exampleSql(EnumNameQueryType.Count,tClass,example);
 		return crudClient.jdbc().sql(sqlParam.getSql()).params(sqlParam.getParams())
 				.query(Long.class).single();
+	}
+
+	@Override
+	public void deleteAllById(Iterable<? extends ID> ids) {
+		for (ID id : ids) {
+			deleteById(id);
+		}
 	}
 }

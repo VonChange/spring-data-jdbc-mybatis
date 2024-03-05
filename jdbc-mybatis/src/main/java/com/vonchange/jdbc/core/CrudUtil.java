@@ -298,5 +298,18 @@ public class CrudUtil {
         return null;
     }
 
-
+    public static String interfaceNameMd(Class<?> interfaceDefine){
+        String interfaceName =ConstantJdbc.SqlPackage +interfaceDefine.getSimpleName();
+        boolean flag = UtilAll.UFile.isClassResourceExist(
+                UtilAll.UFile.classPath(interfaceName)+StringPool.markdown_suffix);
+        if(flag){
+            return interfaceName;
+        }
+        String fullName =interfaceDefine.getName();
+        flag = UtilAll.UFile.isClassResourceExist(UtilAll.UFile.classPath(fullName)+ StringPool.markdown_suffix);
+        if(flag){
+            return fullName;
+        }
+        return null;
+    }
 }

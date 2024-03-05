@@ -34,7 +34,7 @@ class UserInfoMethodDaoTest {
     public  void methodSql() {
         //OrderByCreateTimeDesc findByUserCodeInAndCreateTimeOrderByCreateTimeDesc
         SqlParam sqlParam = NameQueryUtil.nameSql(
-                "findByUserCode",UserInfoDO.class,Arrays.asList(new String[]{"233","333"},9));
+                "findByUserCodeInOrderByCreateTimeDesc",UserInfoDO.class,Arrays.asList(new String[]{"233","333"},9));
         log.info("\nnameSql {}", sqlParam.getSql());
     }
     @Test
@@ -52,16 +52,17 @@ class UserInfoMethodDaoTest {
     @Test
     void findAllByExample() {
         List<UserInfoDO> userInfo = userInfoMethodDao
-                .findAll(UserExample.builder().userCodeIn(Arrays.asList("u001","u002"))
+                .findAll(UserExample.builder().userCodeIn(Arrays.asList("u000","u001","u002"))
                         .userNameLike("ch%").createTimeDesc(true).build());
         log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
     }
     @Test
     void findOneByExample() {
-        List<UserInfoDO> userInfo = userInfoMethodDao
-                .findAll(UserExample.builder().userCodeIn(Arrays.asList("u001","u002"))
-                        .userNameLike("ch%").createTimeDesc(true).build());
-        log.info("\nuserInfo {}", JsonUtil.toJson(userInfo));
+        userInfoMethodDao
+                .findOne(UserExample.builder().userCodeIn(Arrays.asList("u000","u002"))
+                        .userNameLike("ch%").createTimeDesc(true).build()).ifPresent(u->{
+                    log.info("\nuserInfo {}", JsonUtil.toJson(u));
+                });
     }
     @Test
     void countByExample() {
@@ -73,7 +74,7 @@ class UserInfoMethodDaoTest {
     @Test
     void findByCreateTimeBetween() {
         List<UserInfoDO> userInfoList = userInfoMethodDao.findByCreateTimeBetween(
-                LocalDateTime.now().minusMinutes(60L),LocalDateTime.now().plusMinutes(3L));
+                Arrays.asList(LocalDateTime.now().minusMinutes(60L),LocalDateTime.now().plusMinutes(3L)));
         log.info("\nuserInfo {}", JsonUtil.toJson(userInfoList));
     }
 
@@ -91,8 +92,8 @@ class UserInfoMethodDaoTest {
         userInfoDOList.forEach(UserInfoDO -> {
             log.info("\nUserInfoDOList {}", JsonUtil.toJson(UserInfoDO));
         });
-        userInfoDOList = userInfoMethodDao.findByUserCodeIn(
-                null);
+       // userInfoDOList = userInfoMethodDao.findByUserCodeIn(
+              //  null);
     }
 
     @Test

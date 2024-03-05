@@ -1,7 +1,6 @@
 package com.vonchange.nine.demo.dao;
 
 import com.vonchange.common.util.JsonUtil;
-import com.vonchange.jdbc.mapper.AbstractPageWork;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -118,39 +116,6 @@ public class UserInfoRepositoryTest {
         log.info("time {}",System.currentTimeMillis()-start);
         Iterable<UserInfoDO> userInfoDOList = userInfoRepository.findAllById(Arrays.asList(1L,2L));
         log.info("userInfoDOList {}",JsonUtil.toJson(userInfoDOList));
-    }
-
-    @Test
-    @Transactional
-    public void findBigData() {
-        long start = System.currentTimeMillis();
-        List<UserInfoDO> list = new ArrayList<>();
-        for (int i=0;i<10006;i++) {
-            UserInfoDO userInfoDO = UserInfoDO.builder().userCode("code:"+i).userName("name:"+i)
-                    .build();
-            userInfoDO.setCreateTime(LocalDateTime.now());
-            list.add(userInfoDO);
-        }
-        int resultNum = 0;
-                //userInfoRepository.saveAllNotNull(list,1000);
-        log.info("resultNum {}",resultNum);
-        log.info("time {}",System.currentTimeMillis()-start);//1554
-        AbstractPageWork<UserInfoDO> abstractPageWork = new AbstractPageWork<UserInfoDO>() {
-            @Override
-            protected void doPage(List<UserInfoDO> pageContentList, int pageNum, Map<String, Object> extData) {
-                pageContentList.forEach(UserInfoDO -> {
-                    log.info("{}",UserInfoDO.toString());
-                });
-
-            }
-
-            @Override
-            protected int getPageSize() {
-                return 500;
-            }
-        };
-       userInfoRepository.findBigData(abstractPageWork,"name");
-        log.info("{} {} {}",abstractPageWork.getSize(),abstractPageWork.getTotalPages(),abstractPageWork.getTotalElements());
     }
 
 

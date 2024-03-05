@@ -17,10 +17,10 @@ package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
-import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
@@ -59,7 +59,7 @@ class JdbcQueryLookupStrategy implements QueryLookupStrategy {
 	@Override
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata repositoryMetadata,
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
-		String configLoc = JdbcMybatisUtil.interfaceNameMd(repositoryMetadata.getRepositoryInterface());
+		String configLoc = CrudUtil.interfaceNameMd(repositoryMetadata.getRepositoryInterface());
 		DataSourceKey dataSourceKey=	repositoryMetadata.getRepositoryInterface().getAnnotation(DataSourceKey.class);
 		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value(): ConstantJdbc.DataSourceDefault;
 		JdbcQueryMethod queryMethod = new JdbcQueryMethod(method, repositoryMetadata, projectionFactory);

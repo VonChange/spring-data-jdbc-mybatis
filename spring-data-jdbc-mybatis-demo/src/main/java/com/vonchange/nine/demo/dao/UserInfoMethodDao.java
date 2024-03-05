@@ -11,7 +11,7 @@ import java.util.List;
 public interface UserInfoMethodDao extends CrudExtendRepository<UserInfoDO, Long> {
     UserInfoDO findByUserCode(String userCode);
 
-    List<UserInfoDO> findByCreateTimeBetween(LocalDateTime begin,LocalDateTime end);
+    List<UserInfoDO> findByCreateTimeBetween(List<LocalDateTime> time);
     boolean countByUserCodeIn(List<String> userCodes);
     List<UserInfoDO> findByUserCodeIn(List<String> userCodes);
     Page<UserInfoDO> findPageByUserCodeIn(Pageable pageable,List<String> userCodes);

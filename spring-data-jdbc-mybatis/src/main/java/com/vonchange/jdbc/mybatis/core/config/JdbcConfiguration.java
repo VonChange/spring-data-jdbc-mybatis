@@ -19,10 +19,11 @@ import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.dialect.MySQLDialect;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
@@ -39,26 +40,25 @@ import javax.sql.DataSource;
 @Configuration("jdbcConfiguration")
 public class JdbcConfiguration {
 
-	private Dialect defaultDialect;
 	private DataSource dataSource;
+
+	@Value("${jdbc.mybatis.dialect:com.vonchange.mybatis.dialect.MySQLDialect}")
+	private String dialog;
 
 	@Autowired
 	public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
-	@Autowired
-	public void setDefaultDialect(@Autowired(required = false) Dialect dialect) {
-		if(null==dialect){
-			defaultDialect=new MySQLDialect();
-			return;
-		}
-		this.defaultDialect=dialect;
-	}
+
 	public CrudClient getCrudClient(String key){
 		if(!CrudClient.crudClientMap.containsKey(key)){
 			throw new JdbcMybatisRuntimeException("datasource {} not found",key);
 		}
 		return CrudClient.crudClientMap.get(key);
+	}
+	@Bean
+	public CrudClient defaultCrudClient(){
+		return getCrudClient(ConstantJdbc.DataSourceDefault);
 	}
 	@Autowired
 	public void setDataSourceWrappers(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper) {
@@ -68,7 +68,17 @@ public class JdbcConfiguration {
 		CrudClient.create(defaultDataSource());
 	}
 	private DataSourceWrapper defaultDataSource() {
-		return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault,this.defaultDialect);
+		Dialect defaultDialect;
+		try {
+			 defaultDialect= (Dialect) Class.forName(dialog).newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault,defaultDialect);
 	}
 
 }

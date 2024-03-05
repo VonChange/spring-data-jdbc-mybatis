@@ -19,10 +19,10 @@ package com.vonchange.jdbc.mybatis.core.support;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
-import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
 import com.vonchange.jdbc.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.core.EntityInformation;
@@ -68,7 +68,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 		if(!domainType.equals(QueryModel.class)){//QueryRepository
 			EntityUtil.getEntityInfo(domainType);
 		}
-		String mdFile= JdbcMybatisUtil.interfaceNameMd(repositoryInformation.getRepositoryInterface());
+		String mdFile= CrudUtil.interfaceNameMd(repositoryInformation.getRepositoryInterface());
 		//初始化markdown数据
 		if(null!=mdFile){
 			MarkdownUtil.readMarkdownFile(mdFile,false);
