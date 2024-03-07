@@ -48,6 +48,7 @@ public class JdbcConfiguration {
 	@Autowired
 	public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
 		this.dataSource = dataSource;
+		CrudClient.create(defaultDataSource());
 	}
 
 	public CrudClient getCrudClient(String key){
@@ -62,20 +63,18 @@ public class JdbcConfiguration {
 	}
 	@Autowired
 	public void setDataSourceWrappers(@Autowired(required = false)DataSourceWrapper... dataSourceWrapper) {
+		if(null==dataSourceWrapper){
+			return;
+		}
 		for (DataSourceWrapper sourceWrapper : dataSourceWrapper) {
 			CrudClient.create(sourceWrapper);
 		}
-		CrudClient.create(defaultDataSource());
 	}
 	private DataSourceWrapper defaultDataSource() {
 		Dialect defaultDialect;
 		try {
 			 defaultDialect= (Dialect) Class.forName(dialog).newInstance();
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (ClassNotFoundException e) {
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 		return new DataSourceWrapper(dataSource, ConstantJdbc.DataSourceDefault,defaultDialect);

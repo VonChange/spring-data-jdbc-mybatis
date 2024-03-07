@@ -79,6 +79,7 @@
 								<arg>--pinentry-mode</arg>
 								<arg>loopback</arg>
 							</gpgArguments>
+							<passphrase>change2012</passphrase>
 						</configuration>
 					</execution>
 				</executions>
