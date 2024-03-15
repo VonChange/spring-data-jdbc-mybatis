@@ -2,7 +2,7 @@ package com.vonchange.jdbc.util;
 
 import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ClazzUtils;
-import com.vonchange.common.util.Pair;
+import com.vonchange.common.util.Two;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
@@ -92,8 +92,8 @@ public class NameQueryUtil {
         }
         columnsMap.putAll(orderMap);
         int i =0;
-        List<Pair<String,String>> orderColumn=new ArrayList<>();
-        Pair<String,String>  pair=new Pair<>();
+        List<Two<String,String>> orderColumn=new ArrayList<>();
+        Two<String,String> two =new Two<>();
         while (i<splits.length) {
             String mapKey=splits[i];
             i++;
@@ -115,15 +115,15 @@ public class NameQueryUtil {
                 throw new JdbcMybatisRuntimeException("{} can not generate order by",orderBy);
             }
             if(sqlMatch.getEnumStep().equals(EnumStep.Column)){
-                pair.setFirst(sqlMatch.getSplit());
+                two.setFirst(sqlMatch.getSplit());
             }
             if(sqlMatch.getEnumStep().equals(EnumStep.ORDER)){
-                pair.setSecond(sqlMatch.getSplit());
-                orderColumn.add(pair);
-                pair=new Pair<>();
+                two.setSecond(sqlMatch.getSplit());
+                orderColumn.add(two);
+                two =new Two<>();
             }
         }
-        orderColumn.add(pair);
+        orderColumn.add(two);
 
         return " order by "+orderColumn.stream().filter(item->null!=item.getFirst()).map(item->item.getFirst()+StringPool.SPACE+
                 (null==item.getSecond()?StringPool.EMPTY:item.getSecond()))
@@ -193,7 +193,7 @@ public class NameQueryUtil {
         List<Object> values = new ArrayList<>();
         List<String> querySql=new ArrayList<>();
         QueryColumn queryColumn;
-        Pair<String,Collection<?>> pair;
+        Two<String,Collection<?>> two;
         for (BaseEntityField baseEntityField : baseEntityFields) {
             queryColumn = fieldQuery(example,baseEntityField);
             if(null==queryColumn){
@@ -203,9 +203,9 @@ public class NameQueryUtil {
                 orders.add(queryColumn.getColumn());
                 continue;
             }
-            pair=CrudUtil.conditionSql(queryColumn);
-            querySql.add(pair.getFirst());
-            values.addAll(pair.getSecond());
+            two =CrudUtil.conditionSql(queryColumn);
+            querySql.add(two.getFirst());
+            values.addAll(two.getSecond());
         }
         if(!querySql.isEmpty()){
             sql=sql+ " where " + String.join(" and ", querySql);
@@ -323,9 +323,9 @@ public class NameQueryUtil {
         for (int columnIndex = 0; columnIndex < queryColumns.size(); columnIndex++) {
             QueryColumn queryColumn1= queryColumns.get(columnIndex);
             queryColumn1.setValue(params.get(columnIndex));
-            Pair<String,Collection<?>> pair =  CrudUtil.conditionSql(queryColumn1);
-            sqlBuilder.append(pair.getFirst());
-            values.addAll(pair.getSecond());
+            Two<String,Collection<?>> two =  CrudUtil.conditionSql(queryColumn1);
+            sqlBuilder.append(two.getFirst());
+            values.addAll(two.getSecond());
         }
 
        log.debug("gen sql {}",sqlBuilder);

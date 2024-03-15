@@ -1,31 +1,31 @@
 package com.vonchange.common.util;
 
-public final class Pair<A, B> {
+public final class Two<A, B> {
 
 	private   A first;
 	private   B second;
 
-	public Pair(){
+	public Two(){
 
 	}
-	private Pair(A first, B second) {
+	private Two(A first, B second) {
 		this.first = first;
 		this.second = second;
 	}
 
 	/**
-	 * Creates a new {@link Pair} for the given elements.
+	 * Creates a new {@link Two} for the given elements.
 	 *
 	 * @param first must not be {@literal null}.
 	 * @param second must not be {@literal null}.
 	 * @return
 	 */
-	public static <A, B> Pair<A, B> of(A first, B second) {
-		return new Pair<>(first, second);
+	public static <A, B> Two<A, B> of(A first, B second) {
+		return new Two<>(first, second);
 	}
 
 	/**
-	 * Returns the first element of the {@link Pair}.
+	 * Returns the first element of the {@link Two}.
 	 *
 	 * @return
 	 */
@@ -34,7 +34,7 @@ public final class Pair<A, B> {
 	}
 
 	/**
-	 * Returns the second element of the {@link Pair}.
+	 * Returns the second element of the {@link Two}.
 	 *
 	 * @return
 	 */

@@ -1,7 +1,7 @@
 package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.MarkdownUtil;
-import com.vonchange.common.util.Pair;
+import com.vonchange.common.util.Two;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
@@ -106,7 +106,7 @@ public class CrudUtil {
     }
 
 
-    public static Pair<String,Collection<?>> conditionSql(QueryColumn queryColumn){
+    public static Two<String,Collection<?>> conditionSql(QueryColumn queryColumn){
         if(null==queryColumn||null==queryColumn.getValue()){
             return null;
         }
@@ -122,10 +122,10 @@ public class CrudUtil {
         if(condition.equals("between")){
             return betweenSql(pre,queryColumn.getValue());
         }
-        return Pair.of(pre+StringPool.QUESTION_MARK+StringPool.SPACE,
+        return Two.of(pre+StringPool.QUESTION_MARK+StringPool.SPACE,
                 Collections.singleton(queryColumn.getValue()));
     }
-    private static Pair<String,Collection<?>> inSql(String sql, Object value){
+    private static Two<String,Collection<?>> inSql(String sql, Object value){
         if (!(value instanceof Collection ||value.getClass().isArray())){
             throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
         }
@@ -144,9 +144,9 @@ public class CrudUtil {
                 collection.add(o);
             }
         }
-        return Pair.of(inSb.substring(0,inSb.length()-1)+")",collection);
+        return Two.of(inSb.substring(0,inSb.length()-1)+")",collection);
     }
-    private static Pair<String,Collection<?>> betweenSql(String sql, Object value) {
+    private static Two<String,Collection<?>> betweenSql(String sql, Object value) {
         if (!(value instanceof Collection||value.getClass().isArray())){
             throw new  JdbcMybatisRuntimeException("between query parameter must collection or array");
         }
@@ -166,7 +166,7 @@ public class CrudUtil {
         if(collection.size()>2||collection.size()<1){
             throw new JdbcMybatisRuntimeException("between query param error");
         }
-        return Pair.of(betweenSql,collection);
+        return Two.of(betweenSql,collection);
     }
 
     private static String mybatisNamedParam(String fieldName){
