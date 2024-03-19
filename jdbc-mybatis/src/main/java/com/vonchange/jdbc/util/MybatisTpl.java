@@ -11,8 +11,10 @@ import com.vonchange.common.ibatis.session.Configuration;
 import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.sql.DynamicSql;
 import org.slf4j.Logger;
@@ -36,7 +38,8 @@ public class MybatisTpl {
 
      public static SqlParam generate(String sqlId, Map<String,Object> parameter, Dialect dialect){
          if(!sqlId.contains(StringPool.DOT)||sqlId.contains(StringPool.SPACE)){
-              throw new JdbcMybatisRuntimeException("{} sqlId error can not found in markdown",sqlId);
+             throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.SqlIdNotFound,
+                     ErrorMsg.builder().message("{} sqlId error can not found in markdown",sqlId));
          }
         String sqlInXml=MarkdownUtil.getContent(sqlId);
          return generate(sqlId,sqlInXml,parameter,dialect);
@@ -44,7 +47,8 @@ public class MybatisTpl {
     @SuppressWarnings("unchecked")
     public static SqlParam generate(String sqlId, String sqlInXml, Map<String,Object> parameter, Dialect dialect){
         if(UtilAll.UString.isBlank(sqlInXml)){
-            throw new JdbcMybatisRuntimeException("{} sql in markdown null",sqlId);
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.SqlIdNotFound,
+                    ErrorMsg.builder().message("{} sql in markdown null",sqlId));
         }
         sqlInXml= DynamicSql.dynamicSql(sqlInXml,dialect);
         sqlInXml=sqlInXml.trim();
@@ -71,7 +75,8 @@ public class MybatisTpl {
         try{
              boundSql=sqlSource.getBoundSql(parameter);
         }catch (Exception e){
-            throw new JdbcMybatisRuntimeException(e,"{} error builder mybatis dynamic sql ",sqlId);
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.MybatisSqlError,
+                    ErrorMsg.builder().message("{} error builder mybatis dynamic sql",sqlId).throwable(e));
         }
         List<ParameterMapping> list= boundSql.getParameterMappings();
         List<Object> argList= new ArrayList<>();
@@ -92,7 +97,8 @@ public class MybatisTpl {
                 }else {
                     MetaObject metaObject = configuration.newMetaObject(param);
                     if(!metaObject.hasGetter(propertyName)){
-                        throw  new JdbcMybatisRuntimeException("{} placeholder #{{}}  not found",sqlId,propertyName);
+                        throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.PlaceholderNotFound,
+                                ErrorMsg.builder().message("{} placeholder #{{}}  not found",sqlId,propertyName));
                     }
                     value = metaObject.getValue(propertyName);
                 }

@@ -1,11 +1,13 @@
 package com.vonchange.jdbc.mapper;
 
 import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.core.CrudUtil;
-import com.vonchange.jdbc.util.ConvertMap;
-import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
-import com.vonchange.jdbc.util.EntityUtil;
 import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.jdbc.util.ConvertMap;
+import com.vonchange.jdbc.util.EntityUtil;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
+import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -39,7 +41,8 @@ public class BeanInsertMapper<T> implements ResultSetExtractor<Void> {
         EntityInfo entityInfo = EntityUtil.getEntityInfo(entity.getClass());
         String idFieldName = entityInfo.getIdFieldName();
         if(UtilAll.UString.isBlank(idFieldName)){
-            throw new JdbcMybatisRuntimeException("need @Id in your entity");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.NeedIdAnnotation,
+                    ErrorMsg.builder().message("need @Id in your entity"));
         }
         ConvertMap.toBean(CrudUtil.rowToMap(entityInfo,rs,idFieldName),entity);
     }

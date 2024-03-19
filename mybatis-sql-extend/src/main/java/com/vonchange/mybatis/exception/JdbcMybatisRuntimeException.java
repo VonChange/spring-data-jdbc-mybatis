@@ -2,55 +2,19 @@
 package com.vonchange.mybatis.exception;
 
 
-import com.vonchange.common.util.UtilAll;
+import com.vonchange.common.util.exception.CommonRuntimeException;
+import com.vonchange.common.util.exception.ErrorMsg;
 
-public class JdbcMybatisRuntimeException extends RuntimeException {
+public class JdbcMybatisRuntimeException extends CommonRuntimeException {
 
-  private static final long serialVersionUID = 1L;
-  protected EnumErrorCode code = EnumErrorCode.Error;
-
-  public JdbcMybatisRuntimeException() {
-    super();
+  private static final long serialVersionUID = 4638320203258180664L;
+  public JdbcMybatisRuntimeException(EnumJdbcErrorCode errorCode) {
+    super(errorCode);
   }
-
-  public JdbcMybatisRuntimeException(String message, Throwable cause) {
-    super(message, cause);
+  public JdbcMybatisRuntimeException(EnumJdbcErrorCode errorCode, ErrorMsg message) {
+    super(errorCode,message);
   }
-  public JdbcMybatisRuntimeException(EnumErrorCode code, String message, Object... parameters) {
-    super(UtilAll.UString.format(message, parameters));
-    this.code = code;
+  public EnumJdbcErrorCode getErrorCode() {
+    return (EnumJdbcErrorCode) super.getErrorCode();
   }
-  public JdbcMybatisRuntimeException(String message, Object... parameters) {
-    super(UtilAll.UString.format(message, parameters));
-  }
-  public JdbcMybatisRuntimeException(Throwable cause,String message, Object... parameters) {
-    super(UtilAll.UString.format(message, parameters),cause);
-  }
-  public JdbcMybatisRuntimeException(String message) {
-    super(message);
-  }
-
-  public JdbcMybatisRuntimeException(EnumErrorCode code, String message) {
-    super(message);
-    this.code = code;
-  }
-  public JdbcMybatisRuntimeException(EnumErrorCode code) {
-    super(code.name());
-    this.code = code;
-  }
-
-  public JdbcMybatisRuntimeException(Throwable cause) {
-    super(cause);
-  }
-
-
-  public void setCode(EnumErrorCode code) {
-    this.code = code;
-  }
-
-
-  public EnumErrorCode getCode() {
-    return code;
-  }
-
 }

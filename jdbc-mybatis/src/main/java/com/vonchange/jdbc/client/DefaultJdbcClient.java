@@ -1,6 +1,7 @@
 package com.vonchange.jdbc.client;
 
 import com.vonchange.common.util.StringPool;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.config.EnumRWType;
 import com.vonchange.jdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.core.CrudUtil;
@@ -11,6 +12,7 @@ import com.vonchange.jdbc.mapper.ScalarMapper;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.jdbc.model.SqlParam;
 import com.vonchange.jdbc.util.MybatisTpl;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +89,8 @@ public class DefaultJdbcClient implements JdbcClient{
         }
         private <T> SqlParam getSqlParameter(String sql){
             if(!sql.contains(StringPool.SPACE)){
-                throw new JdbcMybatisRuntimeException("{} error",sql);
+                throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.SqlError,
+                        ErrorMsg.builder().message("{} error",sql));
             }
             if(sql.contains("[@")||sql.contains("#{")){
                 SqlParam sqlParam = MybatisTpl.generate("mybatis_sql",sql,namedParams,dataSourceWrapper.getDialect());

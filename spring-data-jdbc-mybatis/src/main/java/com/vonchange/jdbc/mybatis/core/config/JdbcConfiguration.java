@@ -15,10 +15,12 @@
  */
 package com.vonchange.jdbc.mybatis.core.config;
 
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,7 +55,8 @@ public class JdbcConfiguration {
 
 	public CrudClient getCrudClient(String key){
 		if(!CrudClient.crudClientMap.containsKey(key)){
-			throw new JdbcMybatisRuntimeException("datasource {} not found",key);
+			throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.DataSourceNotFound,
+					ErrorMsg.builder().message("datasource {} not found",key));
 		}
 		return CrudClient.crudClientMap.get(key);
 	}

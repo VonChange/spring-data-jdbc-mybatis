@@ -5,12 +5,14 @@ import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
 import com.vonchange.common.util.bean.MethodAccessData;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.annotation.ColumnNot;
 import com.vonchange.jdbc.annotation.InsertOnlyProperty;
 import com.vonchange.jdbc.annotation.InsertReturn;
 import com.vonchange.jdbc.model.BaseEntityField;
 import com.vonchange.jdbc.model.EntityField;
 import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,7 +169,8 @@ public class EntityUtil {
                 if(annotation instanceof Version||annotation instanceof javax.persistence.Version){
                     boolean flag=  ClazzUtils.isVersionType(type);
                     if(!flag){
-                        throw new JdbcMybatisRuntimeException("@Version only support Long or Integer");
+                        throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.TypeError,
+                                ErrorMsg.builder().message("@Version only support Long or Integer"));
                     }
                     entityField.setVersion(true);
                     continue;

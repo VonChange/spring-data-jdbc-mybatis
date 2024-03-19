@@ -4,9 +4,11 @@ import com.vonchange.common.util.Assert;
 import com.vonchange.common.util.ClazzUtils;
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.config.EnumMappedClass;
 import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.model.EntityInfo;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.springframework.jdbc.support.JdbcUtils;
 
@@ -60,12 +62,9 @@ public class ConvertMap {
         T   entity =null;
         try {
            entity = (T) type.newInstance();
-        } catch (InstantiationException e) {
-            throw new JdbcMybatisRuntimeException(
-                    "java.lang.InstantiationException {} need no-arguments constructor",type.getName());
-        } catch (IllegalAccessException e) {
-            throw new JdbcMybatisRuntimeException(
-                    "java.lang.IllegalAccessException {} need no-arguments constructor",type.getName());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.NewInstanceError,
+                    ErrorMsg.builder().message("java.lang.InstantiationException {} need no-arguments constructor",type.getName()));
         }
         return toBean(map,entity);
     }

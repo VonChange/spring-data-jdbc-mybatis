@@ -5,6 +5,7 @@ import com.vonchange.common.util.Two;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumSqlRead;
 import com.vonchange.jdbc.count.CountSqlParser;
@@ -18,6 +19,7 @@ import com.vonchange.jdbc.util.MybatisTpl;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.jdbc.util.OrmUtil;
 import com.vonchange.mybatis.dialect.Dialect;
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +56,13 @@ public class CrudUtil {
         String tableName = entityInfo.getTableName();
         String idColumnName = entityInfo.getIdColumnName();
         if (null == idColumnName) {
-            throw new JdbcMybatisRuntimeException("need entity field @ID");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.NeedIdAnnotation,
+                    ErrorMsg.builder().message("need entity field @ID"));
         }
         Object idValue = BeanUtil.getPropertyT(entity,  entityInfo.getIdFieldName());
         if (null == idValue) {
-            throw new JdbcMybatisRuntimeException("ID value is null,can not update");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.ParamEmpty,
+                    ErrorMsg.builder().message("ID value is null,can not update"));
         }
         List<EntityField> entityFieldList = entityInfo.getEntityFields();
         List<String> columns = new ArrayList<>();
@@ -127,7 +131,8 @@ public class CrudUtil {
     }
     private static Two<String,Collection<?>> inSql(String sql, Object value){
         if (!(value instanceof Collection ||value.getClass().isArray())){
-            throw new  JdbcMybatisRuntimeException("in query parameter must collection or array");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.MustArray,
+                    ErrorMsg.builder().message("in query parameter must collection or array"));
         }
         StringBuilder inSb=new StringBuilder(sql+" (");
         Collection<Object> collection = new ArrayList<>();
@@ -148,7 +153,8 @@ public class CrudUtil {
     }
     private static Two<String,Collection<?>> betweenSql(String sql, Object value) {
         if (!(value instanceof Collection||value.getClass().isArray())){
-            throw new  JdbcMybatisRuntimeException("between query parameter must collection or array");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.MustArray,
+                    ErrorMsg.builder().message("between query parameter must collection or array"));
         }
         String betweenSql=sql+" ? and ? ";
         Collection<Object> collection = new ArrayList<>();
@@ -164,7 +170,8 @@ public class CrudUtil {
             }
         }
         if(collection.size()>2||collection.size()<1){
-            throw new JdbcMybatisRuntimeException("between query param error");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.Error,
+                    ErrorMsg.builder().message("between query param error"));
         }
         return Two.of(betweenSql,collection);
     }

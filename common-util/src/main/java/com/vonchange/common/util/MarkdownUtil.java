@@ -2,6 +2,7 @@ package com.vonchange.common.util;
 
 
 import com.vonchange.common.util.exception.EnumUtilErrorCode;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.common.util.exception.UtilException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,8 @@ public class MarkdownUtil {
              if(!notFoundError){
                  return null;
              }
-             throw new UtilException(path+" not Find");
+            throw new UtilException(EnumUtilErrorCode.MarkdownPathNotFound,
+                    ErrorMsg.builder().message(path+" not found"));
         }
         String content=null;
         try {
@@ -151,7 +153,8 @@ public class MarkdownUtil {
             if(!notFoundThrowError){
                 return null;
             }
-            throw new UtilException(EnumUtilErrorCode.MarkdownIdNotFound,id+" not found");
+            throw new UtilException(EnumUtilErrorCode.MarkdownIdNotFound,
+                    ErrorMsg.builder().message(id+" not found"));
         }
         String filePath= UtilAll.UString.substringBeforeLast(id, StringPool.DOT);
         String codeId= id.substring(filePath.length()+1);
@@ -160,7 +163,8 @@ public class MarkdownUtil {
             if(!notFoundThrowError){
                 return null;
             }
-            throw new UtilException(EnumUtilErrorCode.MarkdownIdNotFound,id+" not found");
+            throw new UtilException(EnumUtilErrorCode.MarkdownIdNotFound,
+                    ErrorMsg.builder().message(id+" not found"));
         }
         String content=  extendContent(contentMap,codeId);
         if(UtilAll.UString.isNotBlank(content)){

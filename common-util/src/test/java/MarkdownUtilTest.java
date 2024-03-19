@@ -6,8 +6,9 @@ public class MarkdownUtilTest {
 
     @Test
     public void markdownUtilTest(){
-        String content =  MarkdownUtil.getContent("config.test.sql");
+        String content =  MarkdownUtil.getContent("config.test.sql2");
         System.out.println(content);
+
     }
     @Test
     public void markdownUtilTest2(){

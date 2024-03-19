@@ -6,6 +6,7 @@ import com.vonchange.common.util.Two;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.common.util.UtilAll;
 import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.common.util.exception.ErrorMsg;
 import com.vonchange.common.util.map.VarMap;
 import com.vonchange.jdbc.config.EnumNameQueryType;
 import com.vonchange.jdbc.core.CrudUtil;
@@ -17,7 +18,8 @@ import com.vonchange.jdbc.model.EnumStep;
 import com.vonchange.jdbc.model.QueryColumn;
 import com.vonchange.jdbc.model.SqlMatch;
 import com.vonchange.jdbc.model.SqlParam;
-import com.vonchange.mybatis.exception.EnumErrorCode;
+
+import com.vonchange.mybatis.exception.EnumJdbcErrorCode;
 import com.vonchange.mybatis.exception.JdbcMybatisRuntimeException;
 import com.vonchange.mybatis.tpl.MyOgnl;
 import org.slf4j.Logger;
@@ -76,7 +78,8 @@ public class NameQueryUtil {
             return   StringPool.EMPTY;
         }
         if(!orderBy.startsWith("orderBy")){
-            throw  new JdbcMybatisRuntimeException("must start with orderBy");
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.OrderSqlMustStartWithOrderBy,
+                    ErrorMsg.builder().message("must start with orderBy"));
         }
         orderBy=orderBy.substring(7);
         if(UtilAll.UString.isBlank(orderBy)){
@@ -112,7 +115,8 @@ public class NameQueryUtil {
                 }
             }
             if(null==sqlMatch){
-                throw new JdbcMybatisRuntimeException("{} can not generate order by",orderBy);
+                throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.OrderSqlCanNotGen,
+                        ErrorMsg.builder().message("{} can not generate order by",orderBy));
             }
             if(sqlMatch.getEnumStep().equals(EnumStep.Column)){
                 two.setFirst(sqlMatch.getSplit());
@@ -178,10 +182,12 @@ public class NameQueryUtil {
                                            Class<?> entityClass, S example){
         Assert.notNull(example,"param can not null");
         if(ClazzUtils.isBaseType(example.getClass())){
-            throw new JdbcMybatisRuntimeException("not support {} {}",example,example.getClass());
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.NotSupportClass,
+                    ErrorMsg.builder().message("not support {} {}",example.getClass()));
         }
         if(ClazzUtils.isBaseType(entityClass)){
-            throw new JdbcMybatisRuntimeException("entityClass not support {}",entityClass);
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.NotSupportClass,
+                    ErrorMsg.builder().message("entityClass not support {}",entityClass));
         }
         boolean found=enumNameQueryType.equals(EnumNameQueryType.Find);
         EntityInfo  entityInfo =EntityUtil.getEntityInfo(entityClass);
@@ -238,7 +244,8 @@ public class NameQueryUtil {
                 if(map.containsKey(two)){
                     //匹配了2个
                     if(size<3){
-                        throw new JdbcMybatisRuntimeException("{} field not allowed",two);
+                        throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.FieldNotAllowed,
+                                ErrorMsg.builder().message("{} field not allowed",two));
                     }
                     column=ormField.substring(0,ormField.length()-two.length()-1);
                     return new QueryColumn(column,two,value);
@@ -257,7 +264,8 @@ public class NameQueryUtil {
     public static SqlParam nameSql(String method, Class<?> entityType, List<Object> params){
         for (Object param : params) {
             if(MyOgnl.isEmpty(param)){
-                throw new JdbcMybatisRuntimeException("name query params can not null or empty");
+                throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.ParamEmpty,
+                        ErrorMsg.builder().message("name query params can not null or empty"));
             }
         }
         if(methodMap.containsKey(method)){
@@ -265,7 +273,10 @@ public class NameQueryUtil {
             return new SqlParam(sql, params);
         }
         EnumNameQueryType enumNameQueryType = nameQueryType(method);
-        if(null==enumNameQueryType)  throw new JdbcMybatisRuntimeException(EnumErrorCode.CanNotGenNameQuery,EnumErrorCode.CanNotGenNameQueryMessage,method);
+        if(null==enumNameQueryType) {
+            throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.CanNotGenNameQuery,
+                    ErrorMsg.builder().message(EnumJdbcErrorCode.CanNotGenNameQueryMessage,method));
+        }
         EntityInfo  entityInfo=EntityUtil.getEntityInfo(entityType);
         //排除orderBy
         String orderBy=UtilAll.UString.substringAfterLast(method,"OrderBy");
@@ -301,7 +312,8 @@ public class NameQueryUtil {
                 }
             }
             if(null==sqlMatch){
-                throw new JdbcMybatisRuntimeException("{} can not generate sql by method name,please define in the markdown",method);
+                throw  new JdbcMybatisRuntimeException(EnumJdbcErrorCode.CanNotGenNameQuery,
+                        ErrorMsg.builder().message(EnumJdbcErrorCode.CanNotGenNameQueryMessage,method));
             }
             //queryColumn.setJoin("");
             if(sqlMatch.getEnumStep().equals(EnumStep.Column)){
