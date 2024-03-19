@@ -9,7 +9,7 @@
     <description>spring-data-jdbc-mybatis-demo 测试</description>
     <properties>
         <spring.boot.version>2.7.18</spring.boot.version>
-        <spring.jdbc.mybatis>2.5.0</spring.jdbc.mybatis>
+        <spring.jdbc.mybatis>2.5.0.1</spring.jdbc.mybatis>
         <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
         <version.slf4j>2.17.0</version.slf4j>
     </properties>
