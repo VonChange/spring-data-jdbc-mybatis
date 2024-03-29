@@ -13,7 +13,7 @@
 
 * 扩展mybatis动态sql能力(不依赖mybatis!提取了动态sql代码),可以应对复杂sql,如果换其他模板引擎也是可以的,但有学习成本
 
-* SQL统一写在Markdown里,不提供@Query和QueryDSL写法,但按方法名查找和扩展的findByExample可以应付大部分单表查询需求
+* 复杂的SQL写在Markdown的代码片段中,不提供@Query和QueryDSL写法,但按方法名查找和扩展的findByExample可以应付大部分单表查询需求
 
 * 简化mybatis动态sql写法 [easy-dynamic-sql.md](easy-dynamic-sql.md)
 
