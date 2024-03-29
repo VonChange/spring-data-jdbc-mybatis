@@ -9,6 +9,8 @@
 
 **spring data jdbc 扩展 mybatis 动态sql能力**
 ## What Is This?
+* 底层 jdbcTemplate 复杂SQL才需要mybatis动态模板能力
+
 * 和spring data jdbc一样的追求简单,使用jdbcTemplate,调用jdbc。不提供缓存、延迟加载、QueryDSL等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM
 
 * 扩展mybatis动态sql能力(不依赖mybatis!提取了动态sql代码),可以应对复杂sql,如果换其他模板引擎也是可以的,但有学习成本
