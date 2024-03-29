@@ -14,7 +14,9 @@ import java.util.List;
 public interface UserInfoRepository extends CrudExtendRepository<UserInfoDO, Long> {
 
   List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
+  // 根据用户代码查找用户信息
   UserInfoDO findByUserCode(@Param("userCode") String userCode);
+
   String findUserNameByCode(@Param("userCode") String userCode);
 
   List<UserInfoDO> findUserList(@Param("userCodes") List<String> userCodes,

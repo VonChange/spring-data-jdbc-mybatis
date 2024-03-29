@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IUserInfoCrudClientDao {
     List<UserInfoDO> findList(String userCode);
+
 }
