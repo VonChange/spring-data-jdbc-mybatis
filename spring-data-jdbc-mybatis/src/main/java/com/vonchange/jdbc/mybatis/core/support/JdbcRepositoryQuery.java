@@ -16,6 +16,7 @@
 package com.vonchange.jdbc.mybatis.core.support;
 
 import com.vonchange.common.util.ClazzUtils;
+import com.vonchange.common.util.MarkdownUtil;
 import com.vonchange.common.util.StringPool;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.core.CrudClient;
@@ -89,8 +90,11 @@ class JdbcRepositoryQuery implements RepositoryQuery {
 		boolean nameQuery=true;
 		SqlParam sqlParam = null;
 		if(null!=configInfo.getLocation()){
-			nameQuery =false;
-			sqlId = configInfo.getLocation() + StringPool.DOT + configInfo.getMethod();
+			String sqlIdInMd = configInfo.getLocation() + StringPool.DOT + configInfo.getMethod();
+			if(null!=MarkdownUtil.getContent(sqlIdInMd,false)){
+				sqlId=sqlIdInMd;
+				nameQuery =false;
+			}
 		}
 		if(nameQuery){
 			Assert.notNull(configInfo.getDomainType(),"domain type must not null,define  crudRepository");
