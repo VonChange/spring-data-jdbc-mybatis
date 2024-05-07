@@ -110,13 +110,13 @@ public class SimpleJdbcRepository<T, ID> implements CrudExtendRepository<T, ID> 
 	@SuppressWarnings("unchecked")
 	public Iterable<T> findAll() {
 		Class<T> tClass= (Class<T>) configInfo.getDomainType();
-		return  crudClient.sqlId(NameQueryUtil.simpleNameSql("findAll",configInfo.getDomainType()))
+		return  crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("findAll",configInfo.getDomainType()))
 				.query(tClass).iterable();
 	}
 
 	@Override
 	public long count() {
-		return crudClient.sqlId(NameQueryUtil.simpleNameSql("countAll",configInfo.getDomainType())).query(Long.class).single();
+		return crudClient.jdbc().sql(NameQueryUtil.simpleNameSql("countAll",configInfo.getDomainType())).query(Long.class).single();
 	}
 
 	@Override
