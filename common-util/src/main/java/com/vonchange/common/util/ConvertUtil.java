@@ -1,14 +1,26 @@
 package com.vonchange.common.util;
 
+import com.vonchange.common.util.bean.BeanUtil;
+import com.vonchange.common.util.bean.MethodAccessData;
 import com.vonchange.common.util.bean.convert.Converter;
+import com.vonchange.common.util.model.BaseField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 简单方式(效率高)实现类型转换,细节部分会不如ConvertUtils :ConvertUtils一次类型转换需要69ms 有点代价过高
@@ -17,7 +29,70 @@ import java.util.Date;
  * @author vonchange@163.com
  */
 public class ConvertUtil {
-	private static final String NULLSTR = "NULL";
+	private static Logger log = LoggerFactory.getLogger(ConvertUtil.class);
+	private static final String NULL_STR = "NULL";
+	private static final Map<String, List<BaseField>> fieldMap = new ConcurrentHashMap<>();
+
+	@SuppressWarnings("unchecked")
+	public static <T> Map<String, Object> toMap(T entity)  {
+		if (entity instanceof Map) {
+			return (Map<String, Object>) entity;
+		}
+		List<BaseField> baseFields =getBeanInfo(entity.getClass());
+		MethodAccessData methodAccessData = BeanUtil.methodAccessData(entity.getClass());
+		Map<String, Object> map = new HashMap<>();
+		for (BaseField baseField : baseFields) {
+			Integer index =BeanUtil.getPropertyIndex(methodAccessData,baseField.getFieldName());
+			if(null!=index){
+				Object value=methodAccessData.getMethodAccess().invoke(entity,index);
+				map.put(baseField.getFieldName(),value);
+			}
+		}
+		return map;
+	}
+	public static  List<BaseField> getBeanInfo(Class<?> clazz){
+		String entityName = clazz.getName();
+		if(!fieldMap.containsKey(entityName)){
+			initField(clazz);
+		}
+		return fieldMap.get(entityName);
+	}
+	private static void getFieldList(Class<?> clazz, List<Field> fieldList) {
+		fieldList.addAll(Arrays.asList(clazz.getDeclaredFields()));
+		if(null!=clazz.getSuperclass()){
+			getFieldList(clazz.getSuperclass(), fieldList);
+		}
+	}
+
+	private static synchronized   void initField(Class<?> clazz) {
+		if(ClazzUtils.isBaseType(clazz)){
+			return;
+		}
+		String entityName=clazz.getName();
+		log.debug("initField {}",entityName);
+		List<Field> fieldList = new ArrayList<>();
+		getFieldList(clazz,fieldList);
+		List<BaseField> entityFieldList = new ArrayList<>();
+		Map<String,Integer> fieldHasMap = new HashMap<>();
+		MethodAccessData methodAccessData = BeanUtil.methodAccessData(clazz);
+		int i=0;
+		for (Field field : fieldList) {
+			Class<?> type = field.getType();
+			boolean isNormalField =BeanUtil.containsProperty(methodAccessData,field.getName(),"set")
+					&&ClazzUtils.isBaseType(type);
+			String fieldName = field.getName();
+			if(!isNormalField||fieldHasMap.containsKey(fieldName)){
+				continue;
+			}
+			BaseField entityField = new BaseField();
+			entityField.setFieldName(fieldName);
+			entityField.setType(type);
+			entityFieldList.add(entityField);
+			fieldHasMap.put(fieldName, i);
+			i++;
+		}
+		fieldMap.put(clazz.getName(), entityFieldList);
+	}
 
 	private static Object toNull(Object value) {
 		if (null == value) {
@@ -25,7 +100,7 @@ public class ConvertUtil {
 		}
 		if (value instanceof String) {
 			value = value.toString().trim();
-			if (NULLSTR.equals(value)) {
+			if (NULL_STR.equals(value)) {
 				return null;
 			}
 			if ("".equals(value)) {

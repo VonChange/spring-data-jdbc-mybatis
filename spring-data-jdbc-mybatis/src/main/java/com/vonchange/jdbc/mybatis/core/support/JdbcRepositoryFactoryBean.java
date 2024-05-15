@@ -15,8 +15,7 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
-import java.io.Serializable;
-
+import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,8 +23,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
+import java.io.Serializable;
 
 //import org.springframework.data.jdbc.core.DefaultDataAccessStrategy;
 
@@ -44,8 +42,7 @@ import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
 public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> //
 		extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> {
 
-	private JdbcRepository jdbcRepository;
-	private DataSourceWrapperHelper dataSourceWrapperHelper;
+	private JdbcConfiguration jdbcConfiguration;
 
 	/**
 	 * Creates a new {@link JdbcRepositoryFactoryBean} for the given repository
@@ -76,19 +73,14 @@ public class JdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
 	 */
 	@Override
 	protected RepositoryFactorySupport doCreateRepositoryFactory() {
-		JdbcRepositoryFactory jdbcRepositoryFactory = new JdbcRepositoryFactory(
-				jdbcRepository, dataSourceWrapperHelper);
-		return jdbcRepositoryFactory;
+		return new JdbcRepositoryFactory(jdbcConfiguration);
 	}
 
-	@Autowired
-	public void setDataSourceWrapperHelper(DataSourceWrapperHelper dataSourceWrapperHelper) {
-		this.dataSourceWrapperHelper = dataSourceWrapperHelper;
-	}
+
 
 	@Autowired
-	public void setJdbcOperations(@Qualifier("jdbcRepository") JdbcRepository jdbcRepository) {
-		this.jdbcRepository = jdbcRepository;
+	public void setJdbcOperations(@Qualifier("jdbcConfiguration") JdbcConfiguration jdbcConfiguration) {
+		this.jdbcConfiguration = jdbcConfiguration;
 	}
 
 }

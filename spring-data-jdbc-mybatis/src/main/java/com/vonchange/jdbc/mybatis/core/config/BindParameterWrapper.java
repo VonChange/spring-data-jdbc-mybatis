@@ -1,15 +1,14 @@
 package com.vonchange.jdbc.mybatis.core.config;
 
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 public class BindParameterWrapper<T> {
     private Pageable pageable;
-    private AbstractPageWork<T> abstractPageWork;
-    private Class<? extends T> abstractPageWorkClass;
-    private Map<String, Object> parameter;
+    private Map<String, Object> namedParams;
+    private List<Object> indexedParams;
     private Object firstParam;
 
     public Object getFirstParam() {
@@ -20,14 +19,6 @@ public class BindParameterWrapper<T> {
         this.firstParam = firstParam;
     }
 
-    public AbstractPageWork<T> getAbstractPageWork() {
-        return abstractPageWork;
-    }
-
-    public void setAbstractPageWork(AbstractPageWork<T> abstractPageWork) {
-        this.abstractPageWork = abstractPageWork;
-    }
-
     public Pageable getPageable() {
         return pageable;
     }
@@ -36,19 +27,19 @@ public class BindParameterWrapper<T> {
         this.pageable = pageable;
     }
 
-    public Map<String, Object> getParameter() {
-        return parameter;
+    public Map<String, Object> getNamedParams() {
+        return namedParams;
     }
 
-    public void setParameter(Map<String, Object> parameter) {
-        this.parameter = parameter;
+    public void setNamedParams(Map<String, Object> namedParams) {
+        this.namedParams = namedParams;
     }
 
-    public Class<? extends T> getAbstractPageWorkClass() {
-        return abstractPageWorkClass;
+    public List<Object> getIndexedParams() {
+        return indexedParams;
     }
 
-    public void setAbstractPageWorkClass(Class<? extends T> abstractPageWorkClass) {
-        this.abstractPageWorkClass = abstractPageWorkClass;
+    public void setIndexedParams(List<Object> indexedParams) {
+        this.indexedParams = indexedParams;
     }
 }

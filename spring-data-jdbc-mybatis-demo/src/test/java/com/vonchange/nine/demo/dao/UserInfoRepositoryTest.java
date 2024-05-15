@@ -1,13 +1,9 @@
 package com.vonchange.nine.demo.dao;
 
-import com.vonchange.common.util.map.MyHashMap;
-import com.vonchange.jdbc.abstractjdbc.handler.AbstractPageWork;
-import com.vonchange.jdbc.abstractjdbc.util.NameQueryUtil;
-import com.vonchange.mybatis.tpl.model.SqlWithParam;
+import com.vonchange.common.util.JsonUtil;
+import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
-import com.vonchange.nine.demo.util.JsonUtil;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,21 +11,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 
 
@@ -73,7 +64,7 @@ public class UserInfoRepositoryTest {
         Pageable pageable = PageRequest.of(0,10);
         Page<UserInfoDO> userInfoDOPage = userInfoRepository
                 .findUserList(pageable,Arrays.asList("u000","u001","u002"),
-                        "ch",LocalDateTime.now().plusHours(1L));
+                        "",LocalDateTime.now().plusHours(1L));
         log.info("\n {}",userInfoDOPage.getTotalElements());
         userInfoDOPage.getContent().forEach(UserInfoDO -> {
             log.info("\n {}",UserInfoDO.toString());
@@ -89,7 +80,7 @@ public class UserInfoRepositoryTest {
         searchParam.setSort(NameQueryUtil.orderSql("orderByCreateTimeDescId",UserInfoDO.class));
         List<UserInfoDO> userInfoDOList = userInfoRepository.findUserBySearchParam(searchParam);
         userInfoDOList.forEach(userInfoDO -> {
-            log.info("\n {}",JsonUtil.toJson(userInfoDO));
+            log.info("\n {}", JsonUtil.toJson(userInfoDO));
         });
     }
     public static Date toDate(LocalDateTime localDateTime) {
@@ -104,8 +95,9 @@ public class UserInfoRepositoryTest {
     public void updateIsDelete() {
         int result = userInfoRepository.updateIsDelete(1,1L);
         log.info("result {}",result);
-        UserInfoDO userInfoDO= userInfoRepository.findById(1L);
-        log.info("\nuserInfoDO {}",JsonUtil.toJson(userInfoDO));
+        userInfoRepository.findById(1L)
+                .ifPresent(u->log.info("\nuserInfoDO {}",JsonUtil.toJson(u)));
+
     }
 
 
@@ -122,40 +114,8 @@ public class UserInfoRepositoryTest {
         int resultNum  = userInfoRepository.batchUpdate(list);
         log.info("resultNum {}",resultNum);
         log.info("time {}",System.currentTimeMillis()-start);
-        List<UserInfoDO> userInfoDOList = userInfoRepository.findAllById(Arrays.asList(1L,2L));
+        Iterable<UserInfoDO> userInfoDOList = userInfoRepository.findAllById(Arrays.asList(1L,2L));
         log.info("userInfoDOList {}",JsonUtil.toJson(userInfoDOList));
-    }
-
-    @Test
-    @Transactional
-    public void findBigData() {
-        long start = System.currentTimeMillis();
-        List<UserInfoDO> list = new ArrayList<>();
-        for (int i=0;i<10006;i++) {
-            UserInfoDO userInfoDO = UserInfoDO.builder().userCode("code:"+i).userName("name:"+i)
-                    .build();
-            userInfoDO.setCreateTime(LocalDateTime.now());
-            list.add(userInfoDO);
-        }
-        int resultNum = userInfoRepository.saveAllNotNull(list,1000);
-        log.info("resultNum {}",resultNum);
-        log.info("time {}",System.currentTimeMillis()-start);//1554
-        AbstractPageWork<UserInfoDO> abstractPageWork = new AbstractPageWork<UserInfoDO>() {
-            @Override
-            protected void doPage(List<UserInfoDO> pageContentList, int pageNum, Map<String, Object> extData) {
-                pageContentList.forEach(UserInfoDO -> {
-                    log.info("{}",UserInfoDO.toString());
-                });
-
-            }
-
-            @Override
-            protected int getPageSize() {
-                return 500;
-            }
-        };
-       userInfoRepository.findBigData(abstractPageWork,"name");
-        log.info("{} {} {}",abstractPageWork.getSize(),abstractPageWork.getTotalPages(),abstractPageWork.getTotalElements());
     }
 
 

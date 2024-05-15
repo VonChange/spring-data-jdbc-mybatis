@@ -4,13 +4,12 @@ import com.vonchange.jdbc.mybatis.core.support.QueryRepository;
 import com.vonchange.nine.demo.domain.UserInfoDO;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
 
 
 public interface UserInfoQueryDao extends QueryRepository {
 
-  List<UserInfoDO> findList(@Param("userName") String userName,
-                            @Param("createTime") Date createTime);
+  List<UserInfoDO> findList(@Param("userCode") String userCode);
+  List<Map<String,Object>> findMapList(@Param("userCode") String userCode);
 }

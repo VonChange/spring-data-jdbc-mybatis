@@ -3,9 +3,6 @@ package com.vonchange.mybatis.dialect;
 
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.mybatis.config.Constant;
-import com.vonchange.mybatis.dialect.Dialect;
-import com.vonchange.mybatis.dialect.LikeTemplate;
 
 
 /**
@@ -34,7 +31,7 @@ public class H2Dialect implements Dialect {
 
     @Override
     public String getDialogName() {
-        return Constant.Dialog.MYSQL;
+        return "h2";
     }
 
     @Override

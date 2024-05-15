@@ -1,12 +1,11 @@
 package com.vonchange.nine.demo.domain;
 
-import com.vonchange.mybatis.tpl.annotation.UpdateNotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+
+import com.vonchange.jdbc.annotation.InsertOnlyProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Version;
 
 import javax.persistence.Id;
 import java.time.LocalDateTime;
@@ -18,9 +17,11 @@ import java.util.Date;
 public class BaseDO {
     @Id
     private Long id;
-    @UpdateNotNull
+    @InsertOnlyProperty
     private Integer isDelete;
-    @UpdateNotNull
+    @InsertOnlyProperty
     private LocalDateTime createTime;
+    @Version
+    private Integer version;
     private Date updateTime;
 }

@@ -1,6 +1,6 @@
 package com.vonchange.jdbc.mybatis.core.config;
 
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
+import com.vonchange.jdbc.model.DataSourceWrapper;
 
 public class ConfigInfo {
     private String location;

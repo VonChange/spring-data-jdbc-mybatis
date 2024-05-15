@@ -19,7 +19,7 @@ public class MybatisSqlLanguageUtil {
         if (script.startsWith("@")) {
             String sqlId = script.substring(1);
             sqlInXml = MarkdownUtil.getContent(null==prePackage?sqlId:(prePackage+"."+sqlId));
-            sqlInXml = DynamicSql.dynamicSql(sqlInXml, dialect);
+            sqlInXml = DynamicSql.dynamicSql(sqlInXml,dialect);
             sqlInXml = sqlInXml.trim();
             if (sqlInXml.contains("</")) {
                 sqlInXml = "<script>" + sqlInXml + "</script>";

@@ -26,10 +26,19 @@ SELECT  [@id column] FROM user_base
 </where>
 ```
 ## see  [easy-dynamic-sql.md](easy-dynamic-sql.md)
+
+* extend findByExample,findByBeanProperties [UserExample.java](spring-data-jdbc-mybatis-demo%2Fsrc%2Ftest%2Fjava%2Fcom%2Fvonchange%2Fnine%2Fdemo%2Fdao%2FUserExample.java)
+```
+userInfoMethodDao.findAll(UserExample.builder()
+.userCodeIn(Arrays.asList("u001","u002"))
+.userNameLike("ch%")
+.createTimeDesc(true).build());
+```
+
 ## Features
 * method name query [method-name-query.md](method-name-query.md)
 * @Id @Table @Column
-* extend CrudJdbcRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
+* recommend CrudExtendRepository not CrudRepository,because [curd-repository.md](curd-repository.md)
 * not support @Query or QueryDSL, sql must be written in markdown
 * batch update [bach-update.md](bach-update.md)
 * [multi-datasource.md](multi-datasource.md)
@@ -38,7 +47,7 @@ SELECT  [@id column] FROM user_base
 
 [UserInfoRepository.java](spring-data-jdbc-mybatis-demo%2Fsrc%2Fmain%2Fjava%2Fcom%2Fvonchange%2Fnine%2Fdemo%2Fdao%2FUserInfoRepository.java)
 ```java
-public interface UserInfoRepository extends CrudJdbcRepository<UserInfoDO, Long> {
+public interface UserInfoRepository extends CrudExtendRepository<UserInfoDO, Long> {
     List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
     List<UserInfoDO> findUserBySearchParam(@Param("param") SearchParam searchParam);
 }

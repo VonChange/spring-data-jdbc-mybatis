@@ -1,8 +1,7 @@
 package com.vonchange.nine.demo.config;
 
 
-import com.vonchange.jdbc.abstractjdbc.model.DataSourceWrapper;
-import com.vonchange.mybatis.dialect.H2Dialect;
+import com.vonchange.jdbc.model.DataSourceWrapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -31,7 +30,7 @@ public class DBConfig {
     //@DataSourceKey
     @Bean
     public DataSourceWrapper readDataSourceWrapper(@Qualifier("dataSourceRead") DataSource dataSource) {
-        return new DataSourceWrapper(dataSource,"dataSourceRead");
+        return new DataSourceWrapper(dataSource,"dataSourceRead",null);
     }
 
 

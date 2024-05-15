@@ -17,15 +17,13 @@ package com.vonchange.jdbc.mybatis.core.support;
 
 
 import com.vonchange.common.util.MarkdownUtil;
-import com.vonchange.common.util.StringPool;
-import com.vonchange.jdbc.abstractjdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.core.CrudClient;
+import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
+import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;
 import com.vonchange.jdbc.mybatis.core.query.DataSourceKey;
-import com.vonchange.jdbc.abstractjdbc.core.JdbcRepository;
-
-import com.vonchange.jdbc.mybatis.core.util.JdbcMybatisUtil;
-import com.vonchange.mybatis.tpl.EntityUtil;
-import com.vonchange.jdbc.mybatis.core.config.DataSourceWrapperHelper;
+import com.vonchange.jdbc.util.EntityUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
@@ -47,17 +45,12 @@ import java.util.Optional;
 public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 
 
-	private final JdbcRepository operations;
-	private final DataSourceWrapperHelper dataSourceWrapperHelper;
+	private final JdbcConfiguration jdbcConfiguration;
 
-	/**
-	 *
-	 *
-	 * @param operations must not be {@literal null}.
-	 */
-	public JdbcRepositoryFactory(@Qualifier("jdbcRepository")JdbcRepository operations, DataSourceWrapperHelper dataSourceWrapperHelper) {
-		this.operations = operations;
-		this.dataSourceWrapperHelper=dataSourceWrapperHelper;
+
+
+	public JdbcRepositoryFactory(@Qualifier("jdbcConfiguration")JdbcConfiguration jdbcConfiguration) {
+		this.jdbcConfiguration = jdbcConfiguration;
 	}
 
 
@@ -72,21 +65,20 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
 		Class<?> domainType =repositoryInformation.getDomainType();
-		EntityUtil.initEntityInfo(domainType);
-		/*if(!domainType.equals(BaseModel.class)){//QueryRepository
-			EntityUtil.initEntityInfo(domainType);
-		}*/
-		String mdFile= JdbcMybatisUtil.interfaceNameMd(repositoryInformation.getRepositoryInterface());
+		if(!domainType.equals(QueryModel.class)){//QueryRepository
+			EntityUtil.getEntityInfo(domainType);
+		}
+		String mdFile= CrudUtil.interfaceNameMd(repositoryInformation.getRepositoryInterface());
 		//初始化markdown数据
 		if(null!=mdFile){
 			MarkdownUtil.readMarkdownFile(mdFile,false);
 		}
 		DataSourceKey dataSourceKey=repositoryInformation.getRepositoryInterface().getAnnotation(DataSourceKey.class);
-		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():null;
+		String dataSourceKeyValue=null!=dataSourceKey?dataSourceKey.value():ConstantJdbc.DataSourceDefault;
 		ConfigInfo configInfo= new ConfigInfo();
-		configInfo.setDomainType(repositoryInformation.getDomainType());
-		configInfo.setDataSourceWrapper(null!=dataSourceKeyValue?dataSourceWrapperHelper.getDataSourceWrapperByKey(dataSourceKeyValue):null);
-		return new SimpleJdbcRepository<>(operations,configInfo);
+		configInfo.setDomainType(domainType);
+		CrudClient crudClient= jdbcConfiguration.getCrudClient(dataSourceKeyValue);
+		return new SimpleJdbcRepository<>(crudClient,configInfo);
 	}
 
 
@@ -107,7 +99,7 @@ public class JdbcRepositoryFactory extends RepositoryFactorySupport {
 		) {
 			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
 		}
-		return  Optional.of(new JdbcQueryLookupStrategy( operations,dataSourceWrapperHelper));
+		return  Optional.of(new JdbcQueryLookupStrategy(jdbcConfiguration));
 	}
 
 }

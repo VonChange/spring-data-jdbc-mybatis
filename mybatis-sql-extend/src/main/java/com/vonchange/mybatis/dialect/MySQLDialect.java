@@ -3,7 +3,6 @@ package com.vonchange.mybatis.dialect;
 
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.UtilAll;
-import com.vonchange.mybatis.config.Constant;
 
 
 /**
@@ -32,7 +31,7 @@ public class MySQLDialect implements Dialect {
 
     @Override
     public String getDialogName() {
-        return Constant.Dialog.MYSQL;
+        return "mysql";
     }
 
     @Override

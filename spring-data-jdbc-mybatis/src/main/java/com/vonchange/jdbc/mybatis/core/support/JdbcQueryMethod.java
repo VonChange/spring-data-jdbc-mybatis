@@ -15,17 +15,14 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
-import java.lang.reflect.Method;
-
 import com.vonchange.jdbc.mybatis.core.query.BatchUpdate;
-import com.vonchange.jdbc.mybatis.core.query.Insert;
-import com.vonchange.jdbc.mybatis.core.query.ReadDataSource;
+import com.vonchange.jdbc.mybatis.core.query.Modifying;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
 
-import com.vonchange.jdbc.mybatis.core.query.Update;
+import java.lang.reflect.Method;
 
 /**
  * {QueryMethod} implementation that implements a method by executing the query
@@ -44,25 +41,17 @@ public class JdbcQueryMethod extends QueryMethod {
 		this.method = method;
 	}
 
-	public boolean isReadDataSource() {
-		return AnnotationUtils.findAnnotation(method, ReadDataSource.class) != null;
-	}
 
 	public boolean isBatchUpdate() {
 		return AnnotationUtils.findAnnotation(method, BatchUpdate.class) != null;
 	}
 
-	public int getBatchSize() {
-		BatchUpdate annotation = AnnotationUtils.findAnnotation(method, BatchUpdate.class);
-		return null != annotation ? annotation.size() : 1000;
-	}
+
 
 	public boolean isUpdateQuery() {
-		return AnnotationUtils.findAnnotation(method, Update.class) != null;
+		return AnnotationUtils.findAnnotation(method, Modifying.class) != null;
 	}
 
-	public boolean isInsertQuery() {
-		return AnnotationUtils.findAnnotation(method, Insert.class) != null;
-	}
+
 
 }

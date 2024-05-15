@@ -308,6 +308,9 @@ public class UtilAll {
         }
 
         public static String format(String messageTemplate, Object... parameters) {
+            if(null==parameters||parameters.length==0){
+                return messageTemplate;
+            }
             return MessageFormatter.arrayFormat(messageTemplate, parameters).getMessage();
         }
         public static String formatException(String messageTemplate,Throwable throwable, Object... parameters) {

@@ -4,23 +4,44 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JsonUtil {
-	private static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
+	private static Logger log = LoggerFactory.getLogger(JsonUtil.class);
 	private JsonUtil() {
 		throw new IllegalStateException("Utility class");
 	}
+	static ObjectMapper objectMapper;
+	static List<String> moduleList=new ArrayList<>();
+	static {
+		objectMapper=new ObjectMapper();
+		moduleList.add("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule");
+		moduleList.add("com.fasterxml.jackson.module.paramnames.ParameterNamesModule");
+		moduleList.add("com.fasterxml.jackson.datatype.jdk8.Jdk8Module");
+		for (String module : moduleList) {
+			if(ClazzUtils.isClassExists(module)){
+				try {
+					objectMapper.registerModule((Module) Class.forName(module).newInstance());
+				} catch (Exception e) {
+					log.info("registerModule {} {}",module,e.getMessage());
+				}
+			}
+		}
+		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,true);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+	}
 	public static String toJson(Object object) {
-		ObjectMapper objectMapper = new ObjectMapper();  
 		try {
 			return objectMapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			logger.error("序列化对象失败{}",e);
+			log.error("toJson",e);
 		}
 		return null;	
 	}
@@ -35,33 +56,22 @@ public class JsonUtil {
 		return evalJson(json,clazz,null);
 	}
 	public static <T> T evalJson(String json, Class<T> clazz,TypeReference<T> type) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,true);
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 		T t =null;
 		if(null!=clazz){
-				t = mapper.readValue(json, clazz);
+				t = objectMapper.readValue(json, clazz);
 		}
 		if(null!=type){
-				t = mapper.readValue(json, type);
+				t = objectMapper.readValue(json, type);
 		}
 		return t;
 	}
 
 	private  static <T> T fromJson(String json, Class<T> clazz,TypeReference<T> type) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,true);
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 		T t =null;
 		try {
-			if(null!=clazz){
-				t = mapper.readValue(json, clazz);
-			}
-			if(null!=type){
-				t = mapper.readValue(json, type);
-			}
+			t=evalJson(json,clazz,type);
 		} catch (IOException e) {
-			logger.error("反序列化对象失败{}",e);
+			log.error("fromJson",e);
 		}
 		return t;
 	}

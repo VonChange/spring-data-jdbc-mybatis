@@ -8,7 +8,7 @@
         <version>2.5.0</version>
     </parent>
     <artifactId>spring-data-jdbc-mybatis</artifactId>
-    <version>2.5.0</version>
+    <version>2.5.0.3</version>
     <!-- SNAPSHOT-->
     <name>spring-data-jdbc-mybatis</name>
     <description>spring data jdbc with mybatis template dynamic query</description>
@@ -17,7 +17,7 @@
         <springdata.commons>2.1.5.RELEASE</springdata.commons>
         <spring.commons>5.1.5.RELEASE</spring.commons>
         <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
-        <mybatis.mini>2.5.0</mybatis.mini>
+        <mybatis.mini>2.5.0.1</mybatis.mini>
     </properties>
     <dependencies>
         <dependency>
@@ -29,6 +29,12 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
             <version>${springdata.commons}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.commons}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

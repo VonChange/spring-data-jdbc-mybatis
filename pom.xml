@@ -8,12 +8,11 @@
 	<version>2.5.0</version>
 	<modules>
 		<module>spring-data-jdbc-mybatis</module>
-        <module>mybatis-template</module>
 		<module>jdbc-mybatis</module>
 		<module>common-util</module>
 		<module>spring-data-jdbc-mybatis-demo</module>
 		<module>mybatis-sql-extend</module>
-	<!--	<module>mybatis-sql-extend-test</module>-->
+		<module>mybatis-sql-extend-test</module>
     </modules>
 	<name>spring-data-jdbc-mybatis parent pom</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>
@@ -80,6 +79,7 @@
 								<arg>--pinentry-mode</arg>
 								<arg>loopback</arg>
 							</gpgArguments>
+							<passphrase>change2012</passphrase>
 						</configuration>
 					</execution>
 				</executions>
