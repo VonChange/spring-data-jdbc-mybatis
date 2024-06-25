@@ -2,6 +2,7 @@ package com.vonchange.jdbc.core;
 
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.StringPool;
+import com.vonchange.jdbc.client.CrudClient;
 import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
 import com.vonchange.jdbc.config.EnumRWType;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultCrudClient implements CrudClient{
+public class DefaultCrudClient implements CrudClient {
     private static final Logger log = LoggerFactory.getLogger(DefaultCrudClient.class);
     private final MyJdbcTemplate classicOps;
     private final DataSourceWrapper dataSourceWrapper;
