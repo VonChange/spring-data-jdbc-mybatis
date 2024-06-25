@@ -13,6 +13,7 @@
 		<module>spring-data-jdbc-mybatis-demo</module>
 		<module>mybatis-sql-extend</module>
 		<module>mybatis-sql-extend-test</module>
+        <module>spring-data-jdbc-demo</module>
     </modules>
 	<name>spring-data-jdbc-mybatis parent pom</name>
 	<description>spring data jdbc with mybatis template dynamic query</description>
