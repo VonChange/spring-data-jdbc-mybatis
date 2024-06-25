@@ -13,7 +13,8 @@ spring:
   datasource:
     hikari:
       driver-class-name: org.h2.Driver
-      #jdbc-url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1 MYSQL MODE=MYSQL;
-      jdbc-url: jdbc:h2:mem:db_users;INIT=RUNSCRIPT FROM 'classpath:db-init.sql'
+      #jdbc-url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1 MYSQL MODE=MYSQL; DATABASE_TO_LOWER=TRUE;
+      jdbc-url: jdbc:h2:mem:db_users;DATABASE_TO_LOWER=TRUE;MODE=MYSQL;INIT=RUNSCRIPT FROM 'classpath:db-init.sql'
       username: root
       password: 123456
+

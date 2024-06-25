@@ -17,28 +17,16 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.lang.Nullable;
 
 import javax.sql.DataSource;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class MybatisJdbcTemplate extends NamedParameterJdbcTemplate {
     public MybatisJdbcTemplate(DataSource dataSource) {
         super(dataSource);
-        DatabaseMetaData metaData = null;
-        try {
-            metaData = dataSource.getConnection().getMetaData();
-            String name = metaData.getDatabaseProductName().toLowerCase(Locale.ENGLISH);
-            //h2
-            System.out.println("XXXX::"+name);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public MybatisJdbcTemplate(JdbcOperations classicJdbcTemplate) {

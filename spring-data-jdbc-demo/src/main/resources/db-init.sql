@@ -1,4 +1,4 @@
---SET MODE=MySQL;
+SET MODE=MySQL;
 SET FOREIGN_KEY_CHECKS=0;
 drop table if exists `user_info`;
 CREATE TABLE IF NOT EXISTS `user_info` (
