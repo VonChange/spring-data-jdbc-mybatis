@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <properties>
+        <!-- 文件输出格式 -->
+        <property name="PATTERN">%d %-5p [%traceId] %c - {} [%T] %m%n</property>
+        <Property name="FILE_PATH">./logs/</Property>
+    </properties>
+    <appenders>
+        <Console name="CONSOLE" target="system_out">
+            <PatternLayout pattern="${PATTERN}" />
+        </Console>
+        <!-- error -->
+        <RollingFile name="errorRollingFile"
+                     fileName="${FILE_PATH}/exception.log"
+                     filePattern="${FILE_PATH}/exception_%d{yyyy-MM-dd}-%i.log">
+            <SizeBasedTriggeringPolicy size="100MB" />
+            <!-- DefaultRolloverStrategy 属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了10 -->
+            <DefaultRolloverStrategy max="10" />
+            <ThresholdFilter level="error" onMatch="ACCEPT"
+                             onMismatch="DENY" />
+            <PatternLayout pattern="${PATTERN}"/>
+        </RollingFile>
+        <!-- INFO/WARN/DEBUG/ERROR日志输出 -->
+        <RollingFile name="runRollingFile"
+                     fileName="${FILE_PATH}/run.log" filePattern="${FILE_PATH}/run_%d{yyyy-MM-dd}-%i.log">
+            <SizeBasedTriggeringPolicy size="100MB" />
+            <!-- DefaultRolloverStrategy 属性如不设置，则默认为最多同一文件夹下 7 个文件，这里设置了 10 -->
+            <DefaultRolloverStrategy max="10" />
+            <Filters>
+                <ThresholdFilter level="FATAL" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${PATTERN}"/>
+        </RollingFile>
+
+
+        <!-- 日志异步配置,可不开启异步 -->
+        <Async name="infoAsync" blocking="false" includeLocation="true">
+            <AppenderRef ref="runRollingFile"/>
+        </Async>
+        <Async name="errorAsync" blocking="false" includeLocation="true">
+            <AppenderRef ref="errorRollingFile"/>
+        </Async>
+    </appenders>
+    <loggers>
+        <root  level="INFO">
+            <appenderref ref="CONSOLE" />
+            <appenderref ref="infoAsync" />
+            <appenderref ref="errorAsync" />
+        </root>
+        <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG" />
+        <logger name="com.vonchange" level="DEBUG" additivity="false">
+            <appenderref ref="CONSOLE" />
+            <appenderref ref="infoAsync" />
+            <appenderref ref="errorAsync" />
+        </logger>
+    </loggers>
+</configuration>
