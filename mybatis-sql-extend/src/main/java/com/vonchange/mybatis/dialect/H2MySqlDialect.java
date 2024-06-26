@@ -10,7 +10,7 @@ import com.vonchange.common.util.UtilAll;
  * @author von_change@163.com
  *  2015-6-14 下午12:47:21
  */
-public class H2Dialect implements Dialect {
+public class H2MySqlDialect implements Dialect {
 
     @Override
     public String getPageSql(String sql, int beginNo, int pageSize)  {
