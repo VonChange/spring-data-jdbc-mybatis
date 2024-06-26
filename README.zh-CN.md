@@ -7,8 +7,30 @@
 [![](https://gitee.com/vonchange/spring-data-jdbc-mybatis/badge/star.svg?theme=dark)
 ](https://gitee.com/vonchange/spring-data-jdbc-mybatis) 
 
-**spring data jdbc 扩展 mybatis 动态sql能力**
-## What Is This?
+**简单点 开发的方法简单点 繁琐的功能请省略 你有不是个AI**
+## spring data jdbc 扩展 mybatis 动态sql能力
+### spring data jdbc官方直接 扩展 mybatis动态sql能力
+
+使用方式和官方教程一直 引入spring-boot-starter-data-jdbc 即可
+只需要配置魔改的NamedParameterJdbcTemplate 即可
+```
+    @Bean
+    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {return new MybatisJdbcTemplate(dataSource) {@Override
+            protected Dialect dialect() {return new MySQLDialect();}
+        };
+    }
+```
+@Query 的ID 是user.md里面ID是queryByUserCode的sql片段
+```
+    @Query("user.queryByUserCode")
+    List<UserDTO> queryByUserCode(@Param("userCode") String userCode);
+```
+具体使用参考spring-data-jdbc-demo  
+但是 @Query spring 6(jdk17以上) 以上才支持SPEL 不支持实体参数
+通过改代码可以解决(支持mybatis版本的) 但有代码侵入性  
+无法直接 根据方法名 自动查找sql片段
+
+### 更推荐自研版本spring data jdbc扩展 mybatis动态sql能力
 * 底层 jdbcTemplate 复杂SQL才需要mybatis动态模板能力 无QueryDSL 提供crudClient 和jdbcClient
 
 * 和spring data jdbc一样的追求简单,使用jdbcTemplate,调用jdbc。不提供缓存、延迟加载、QueryDSL等JPA或mybatis的许多特性。一个简单、有限、固执己见的ORM

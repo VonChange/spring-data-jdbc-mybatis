@@ -20,12 +20,8 @@ import javax.sql.DataSource;
 public class App 
 {
     @Bean
-    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
-        return new MybatisJdbcTemplate(dataSource) {
-            @Override
-            protected Dialect dialect() {
-                return new MySQLDialect();
-            }
+    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {return new MybatisJdbcTemplate(dataSource) {@Override
+            protected Dialect dialect() {return new MySQLDialect();}
         };
     }
     public static void main( String[] args )
