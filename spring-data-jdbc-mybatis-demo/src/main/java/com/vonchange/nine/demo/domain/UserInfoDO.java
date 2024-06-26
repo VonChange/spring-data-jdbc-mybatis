@@ -32,4 +32,8 @@ public class UserInfoDO extends BaseDO{
     private byte[] headImageData;
 
 
+    @Column(name="`order`")
+    private String order;
+
+
 }
