@@ -9,10 +9,10 @@
 
 **简单点 开发的方法简单点 繁琐的功能请省略 你有不是个AI**
 ## spring data jdbc 扩展 mybatis 动态sql能力
-### spring data jdbc官方直接 扩展 mybatis动态sql能力
+### 官方spring data jdbc原生直接扩展 mybatis动态sql能力
 
-使用方式和官方教程一直 引入spring-boot-starter-data-jdbc 即可
-只需要配置魔改的NamedParameterJdbcTemplate 即可
+使用方式和官方教程一样 引入spring-boot-starter-data-jdbc 即可
+只需要配置扩展的NamedParameterJdbcTemplate 即可
 ```
 @Configuration
 public class MybatisQuerySupportConfig {
@@ -22,7 +22,7 @@ public class MybatisQuerySupportConfig {
     }
 }
 ```
-@Query 的ID 是user.md里面ID是queryByUserCode的sql片段
+@Query 的ID 是user.md里面ID为queryByUserCode的mybatis sql片段
 ```
     @Query("user.queryByUserCode")
     List<UserDTO> queryByUserCode(@Param("userCode") String userCode);
