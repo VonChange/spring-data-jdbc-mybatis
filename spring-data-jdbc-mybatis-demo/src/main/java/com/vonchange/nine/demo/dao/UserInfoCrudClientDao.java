@@ -1,6 +1,7 @@
 package com.vonchange.nine.demo.dao;
 
-import com.vonchange.jdbc.core.CrudClient;
+
+import com.vonchange.jdbc.client.CrudClient;
 import com.vonchange.nine.demo.domain.UserInfoDO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -4,7 +4,7 @@ server:
 
 jdbc:
  mybatis:
-  dialect: com.vonchange.mybatis.dialect.H2MysqlDialect
+  dialect: com.vonchange.mybatis.dialect.H2MySqlDialect
   logRead: true
   logWrite: true
   logFullSql: true
