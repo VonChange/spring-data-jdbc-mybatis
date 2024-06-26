@@ -16,8 +16,8 @@
 package com.vonchange.jdbc.mybatis.core.config;
 
 import com.vonchange.common.util.exception.ErrorMsg;
+import com.vonchange.jdbc.client.CrudClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
-import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.Dialect;
 import com.vonchange.mybatis.exception.EnumJdbcErrorCode;

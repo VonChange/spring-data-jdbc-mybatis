@@ -1,23 +1,13 @@
 package com.vonchange.mybatis.dialect;
 
-
 import com.vonchange.common.util.ConvertUtil;
 import com.vonchange.common.util.UtilAll;
 
-
-/**
- *mysql方言
- * @author von_change@163.com
- *  2015-6-14 下午12:47:21
- */
-public class H2Dialect implements Dialect {
-
+public class PostgresDialect implements Dialect {
     @Override
-    public String getPageSql(String sql, int beginNo, int pageSize)  {
-    	return 	UtilAll.UString.format("{} limit {},{} ", sql, ConvertUtil.toString(beginNo), ConvertUtil.toString(pageSize));
+    public String getPageSql(String sql, int beginNo, int pageSize) {
+        return 	UtilAll.UString.format("{} limit {} OFFSET {} ", sql,ConvertUtil.toString(pageSize), ConvertUtil.toString(beginNo));
     }
-
-
 
     @Override
     public int getBigDataFetchSize() {
@@ -26,12 +16,12 @@ public class H2Dialect implements Dialect {
 
     @Override
     public int getFetchSize() {
-        return -1;
+        return 500;
     }
 
     @Override
     public String getDialogName() {
-        return "h2";
+        return "postgres";
     }
 
     @Override

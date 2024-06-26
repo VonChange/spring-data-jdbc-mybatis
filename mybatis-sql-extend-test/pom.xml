@@ -14,7 +14,7 @@
     <artifactId>mybatis-sql-extend-test</artifactId>
     <version>2.5.0</version>
     <properties>
-        <spring.jdbc.mybatis>2.5.0</spring.jdbc.mybatis>
+        <spring.jdbc.mybatis>2.5.1</spring.jdbc.mybatis>
         <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
     </properties>
 <dependencies>

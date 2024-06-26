@@ -1,4 +1,4 @@
-package com.vonchange.jdbc.core;/*
+package com.vonchange.jdbc.client;/*
  * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@ package com.vonchange.jdbc.core;/*
  */
 
 
-import com.vonchange.jdbc.client.JdbcClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
+import com.vonchange.jdbc.core.DefaultCrudClient;
 import com.vonchange.jdbc.mapper.AbstractPageWork;
 import com.vonchange.jdbc.model.DataSourceWrapper;
 import com.vonchange.mybatis.dialect.MySQLDialect;

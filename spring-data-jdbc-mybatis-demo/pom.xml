@@ -9,7 +9,7 @@
     <description>spring-data-jdbc-mybatis-demo 测试</description>
     <properties>
         <spring.boot.version>2.7.18</spring.boot.version>
-        <spring.jdbc.mybatis>2.5.0.1</spring.jdbc.mybatis>
+        <jdbc.mybatis>2.5.1</jdbc.mybatis>
         <mysql-connector-java.version>8.0.15</mysql-connector-java.version>
         <version.slf4j>2.17.0</version.slf4j>
     </properties>
@@ -37,17 +37,18 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+        </dependency>
+        <dependency>
             <groupId>com.vonchange.common</groupId>
             <artifactId>spring-data-jdbc-mybatis</artifactId>
-            <version>${spring.jdbc.mybatis}</version>
+            <version>${jdbc.mybatis}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -57,11 +58,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.6</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -93,12 +89,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>-->
     </dependencies>
 
     <build>

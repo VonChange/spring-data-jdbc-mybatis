@@ -15,8 +15,8 @@
  */
 package com.vonchange.jdbc.mybatis.core.support;
 
+import com.vonchange.jdbc.client.CrudClient;
 import com.vonchange.jdbc.config.ConstantJdbc;
-import com.vonchange.jdbc.core.CrudClient;
 import com.vonchange.jdbc.core.CrudUtil;
 import com.vonchange.jdbc.mybatis.core.config.ConfigInfo;
 import com.vonchange.jdbc.mybatis.core.config.JdbcConfiguration;

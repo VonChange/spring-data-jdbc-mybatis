@@ -1,0 +1,1 @@
+org.springframework.data.jdbc.repository.config.DialectResolver$JdbcDialectProvider=com.vonchange.common.config.MyDialectResolver

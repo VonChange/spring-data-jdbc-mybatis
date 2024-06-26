@@ -64,6 +64,14 @@ class UserInfoMethodDaoTest {
                     log.info("\nuserInfo {}", JsonUtil.toJson(u));
                 });
     }
+
+    @Test
+    void findAll() {
+        userInfoMethodDao
+                .findAll().forEach(u->{
+                    log.info("\nuserInfo {}", JsonUtil.toJson(u));
+                });
+    }
     @Test
     void countByExample() {
         Long num = userInfoMethodDao
@@ -121,6 +129,7 @@ class UserInfoMethodDaoTest {
         userInfoDO.setUserCode("L001");
         userInfoDO.setUserName("Bruce Lee");
         userInfoDO.setValid(true);
+        userInfoDO.setOrder("order1111");
         //userInfoDO.setHeadImageData(IOUtils.toByteArray(UtilAll.UFile.getClassResource("db-init.sql")));
         userInfoMethodDao.insert(userInfoDO);
         log.info("\ninsert {}",JsonUtil.toJson(userInfoDO));
