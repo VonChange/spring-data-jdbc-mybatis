@@ -25,6 +25,7 @@ public class UserInfoDO {
     private String userName;
     private String  mobileNo;
     private String address;
+    private String order;
    // private boolean isValid;
    // private Integer status;
    // private byte[] headImageData;

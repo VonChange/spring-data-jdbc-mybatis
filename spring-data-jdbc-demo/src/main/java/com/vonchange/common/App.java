@@ -19,8 +19,6 @@ import javax.sql.DataSource;
 @EnableJdbcRepositories
 public class App 
 {
-
-
     @Bean
     public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
         return new MybatisJdbcTemplate(dataSource) {

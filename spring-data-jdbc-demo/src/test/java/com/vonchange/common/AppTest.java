@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -69,10 +67,11 @@ public class AppTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
+    //@Rollback
+    //@Transactional
     public  void insert() {
-        UserInfoDO userInfoDO =userRepository.save(UserInfoDO.builder().userCode("u009").userName("insert").mobileNo("13888888888").build());
+        UserInfoDO userInfoDO =userRepository.save(UserInfoDO.builder()
+                .userCode("u009").userName("insert").order("order").build());
         log.info("insert:{}",userInfoDO);
     }
     @Test
