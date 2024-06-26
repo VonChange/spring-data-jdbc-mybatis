@@ -40,13 +40,13 @@ public abstract class MybatisJdbcTemplate extends NamedParameterJdbcTemplate {
         if(null==sqlParam){
             return getPreparedStatementCreatorOriginal(sql,paramSource,customizer);
         }
+        Object[] paramObj=sqlParam.getParams().toArray();
         List<SqlParameter> declaredParameters = buildSqlParameterList(sqlParam.getParams());
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sqlParam.getSql(),declaredParameters);
         if (customizer != null) {
             customizer.accept(pscf);
         }
-        Object[] paramObj=sqlParam.getParams().toArray();
-        return pscf.newPreparedStatementCreator(paramObj);
+        return pscf.newPreparedStatementCreator(sqlParam.getSql(),paramObj);
     }
     protected PreparedStatementCreator getPreparedStatementCreatorOriginal(String sql, SqlParameterSource paramSource,
                                                                            @Nullable Consumer<PreparedStatementCreatorFactory> customizer) {
