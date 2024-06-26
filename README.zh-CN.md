@@ -14,11 +14,13 @@
 使用方式和官方教程一直 引入spring-boot-starter-data-jdbc 即可
 只需要配置魔改的NamedParameterJdbcTemplate 即可
 ```
+@Configuration
+public class MybatisQuerySupportConfig {
     @Bean
-    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {return new MybatisJdbcTemplate(dataSource) {@Override
-            protected Dialect dialect() {return new MySQLDialect();}
-        };
+    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
+        return new MybatisJdbcTemplate(dataSource) {@Override protected Dialect dialect() {return new MySQLDialect();}};
     }
+}
 ```
 @Query 的ID 是user.md里面ID是queryByUserCode的sql片段
 ```

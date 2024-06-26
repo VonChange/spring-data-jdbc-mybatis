@@ -84,3 +84,24 @@ public class JdbcMybatisTestApplication {
 ```
 
 
+
+## official spring data jdbc extend mybatis dynamic sql
+
+see spring-data-jdbc-demo
+
+configuration
+```
+@Configuration
+public class MybatisQuerySupportConfig {
+    @Bean
+    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
+        return new MybatisJdbcTemplate(dataSource) {@Override protected Dialect dialect() {return new MySQLDialect();}};
+    }
+}
+```
+use
+```
+    @Query("user.queryByUserCode")
+    List<UserDTO> queryByUserCode(@Param("userCode") String userCode);
+```
+but SpEL support became available with Spring Data JDBC 3.0 RC1 
