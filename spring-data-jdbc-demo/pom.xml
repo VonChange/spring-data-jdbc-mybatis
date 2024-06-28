@@ -9,7 +9,7 @@
     <artifactId>spring-data-jdbc-demo</artifactId>
     <packaging>jar</packaging>
 
-    <name>spring-data-jdbc-native</name>
+    <name>spring-data-jdbc-demo</name>
     <url>http://maven.apache.org</url>
     <properties>
         <spring.boot.version>2.7.18</spring.boot.version>

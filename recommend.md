@@ -4,10 +4,10 @@
 
 **简单点 开发的方法简单点 繁琐的功能请省略 你有不是个AI**
 ### spring data jdbc 扩展 mybatis 动态sql能力
-##### spring data jdbc官方直接 扩展 mybatis动态sql能力
+##### 官方spring data jdbc原生直接扩展 mybatis动态sql能力
 
-使用方式和官方教程一直 引入spring-boot-starter-data-jdbc 即可
-只需要配置魔改的NamedParameterJdbcTemplate 即可
+使用方式和官方教程一样 引入spring-boot-starter-data-jdbc 即可
+只需要配置扩展的NamedParameterJdbcTemplate 即可
 ```
 @Configuration
 public class MybatisQuerySupportConfig {
@@ -17,7 +17,7 @@ public class MybatisQuerySupportConfig {
     }
 }
 ```
-@Query 的ID 是user.md里面ID是queryByUserCode的sql片段
+@Query 的ID 是user.md里面ID为queryByUserCode的mybatis sql片段
 ```
     @Query("user.queryByUserCode")
     List<UserDTO> queryByUserCode(@Param("userCode") String userCode);
@@ -28,14 +28,14 @@ public class MybatisQuerySupportConfig {
 无法直接 根据方法名 自动查找sql片段
 
 ##### 仿spring 6+ jdbcClient实现 更推荐crudClient
-##### 更推荐自研版本spring data jdbc扩展 mybatis动态sql能力
+##### 更推荐自研版本spring data jdbc扩展 mybatis动态sql框架(spring-data-jdbc-mybatis)
 * 底层 jdbcTemplate 复杂SQL才需要mybatis动态模板能力 无QueryDSL/queryMapper 提供crudClient 和jdbcClient
 
 * 和spring data jdbc一样的追求简单,使用jdbcTemplate,调用jdbc。不提供缓存、延迟加载、QueryDSL等JPA或mybatis的许多特性。一个简单、有限的ORM
 
 * 扩展并兼容mybatis动态sql能力(不依赖mybatis!提取了动态sql代码),可以应对复杂sql,如果换其他模板引擎(后续可以加)也是可以的,但有学习成本
 
-* 复杂的SQL写在Markdown的代码片段中,不提供@Query和QueryDSL写法,但按方法名查找和扩展的findByExample可以应付大部分单表查询需求
+* 复杂的SQL写在Markdown的代码片段中,更方便编写和阅读,不提供@Query和QueryDSL写法,但按方法名查找和扩展的findByExample可以应付大部分单表查询需求
 
 * 简化mybatis动态sql写法 [easy-dynamic-sql.md](easy-dynamic-sql.md)
 
