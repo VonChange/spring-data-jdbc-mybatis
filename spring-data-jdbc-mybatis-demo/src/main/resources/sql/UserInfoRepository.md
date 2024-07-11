@@ -8,7 +8,7 @@ id,user_code,user_name,mobile_no,address,create_time,update_time,is_delete
 
 ```
 -- findByUserCodes
-select [@id column] from user_info  <where>
+select id,user_code,user_name a_userName,mobile_no,address from user_info  <where>
 [@@and user_code in userCodes]</where>
 ```
 

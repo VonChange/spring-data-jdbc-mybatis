@@ -4,6 +4,7 @@ import com.vonchange.jdbc.mybatis.core.query.BatchUpdate;
 import com.vonchange.jdbc.mybatis.core.support.CrudExtendRepository;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
+import com.vonchange.nine.demo.domain.UserInfoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -13,9 +14,9 @@ import java.util.List;
 
 public interface UserInfoRepository extends CrudExtendRepository<UserInfoDO, Long> {
 
-  List<UserInfoDO> findByUserCodes(@Param("userCodes") List<String> userCodes);
+  List<UserInfoDTO> findByUserCodes(@Param("userCodes") List<String> userCodes);
   // 根据用户代码查找用户信息
-  UserInfoDO findByUserCode(@Param("userCode") String userCode);
+  UserInfoDTO findByUserCode(@Param("userCode") String userCode);
 
   String findUserNameByCode(@Param("userCode") String userCode);
 

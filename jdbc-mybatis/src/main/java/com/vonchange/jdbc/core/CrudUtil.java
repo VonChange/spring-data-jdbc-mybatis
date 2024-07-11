@@ -302,6 +302,14 @@ public class CrudUtil {
         if(entityInfo.getFieldMap().containsKey(field)){
             return field;
         }
+        String lowerField= field.toLowerCase();
+        Map<String,String> fieldLowerMap = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : entityInfo.getFieldMap().entrySet()) {
+            fieldLowerMap.put(entry.getKey().toLowerCase(),entry.getKey());
+        }
+        if(fieldLowerMap.containsKey(lowerField)){
+            return fieldLowerMap.get(lowerField);
+        }
         return null;
     }
 

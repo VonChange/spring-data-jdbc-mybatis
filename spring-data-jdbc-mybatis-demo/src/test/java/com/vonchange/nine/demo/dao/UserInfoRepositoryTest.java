@@ -4,6 +4,7 @@ import com.vonchange.common.util.JsonUtil;
 import com.vonchange.jdbc.util.NameQueryUtil;
 import com.vonchange.nine.demo.domain.SearchParam;
 import com.vonchange.nine.demo.domain.UserInfoDO;
+import com.vonchange.nine.demo.domain.UserInfoDTO;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,17 +37,22 @@ public class UserInfoRepositoryTest {
 
     @Test
     public void findByUserCodes() {
-        List<UserInfoDO> userInfoDOList = userInfoRepository.findByUserCodes(
+        List<UserInfoDTO> userInfoDOList = userInfoRepository.findByUserCodes(
                 Arrays.asList("u001","u002"));
         userInfoDOList.forEach(UserInfoDO -> {
             log.info("\nUserInfoDOList {}",JsonUtil.toJson(UserInfoDO));
         });
     }
+    @Test
+    public void findByUserCode() {
+        UserInfoDTO userInfoDTO = userInfoRepository.findByUserCode("u001");
+        log.info("\nuserInfoDTO {}",JsonUtil.toJson(userInfoDTO));
+    }
 
     @Test
     public void findUserNameByCode() {
-        String sqlDialect=System.getenv("ID_END");
-        log.info("XXX:: "+sqlDialect);
+        //String sqlDialect=System.getenv("ID_END");
+       // log.info("XXX:: "+sqlDialect);
         String userName = userInfoRepository.findUserNameByCode("u000");
         log.info("\n userName {}",userName);
     }
