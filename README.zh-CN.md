@@ -7,7 +7,7 @@
 [![](https://gitee.com/vonchange/spring-data-jdbc-mybatis/badge/star.svg?theme=dark)
 ](https://gitee.com/vonchange/spring-data-jdbc-mybatis) 
 
-**简单点 开发的方法简单点 繁琐的功能请省略 你有不是个AI**
+**简单点 开发的方法简单点 繁琐的功能请省略**
 ## spring data jdbc 扩展 mybatis 动态sql能力
 ### 官方spring data jdbc原生直接扩展 mybatis动态sql能力
 
