@@ -8,6 +8,44 @@
 
 > 简单点，开发的方法简单点，繁琐的功能请省略。
 
+## 💡 为什么选择本框架？
+
+### 独创亮点
+
+**1. Markdown SQL** - SQL 写在 Markdown 中，可读性革命
+```markdown
+​```sql
+-- findUserList
+SELECT * FROM user_info
+<where>[@and user_name like userName%]</where>
+​```
+```
+
+**2. 简化动态 SQL** - 一行代码替代 MyBatis 6 行 XML
+```sql
+-- 本框架
+[@and user_name like userName%]
+
+-- 等价 MyBatis XML
+<if test="null!=userName and ''!=userName">
+    and user_name like CONCAT(#{userName}, '%')
+</if>
+```
+
+**3. 零依赖动态 SQL** - 提取 MyBatis 动态 SQL 能力，无需引入 MyBatis
+
+### 与同类框架对比
+
+| 特性 | Spring Data JDBC | MyBatis | MyBatis-Plus | 本框架 |
+|------|------------------|---------|--------------|--------|
+| 动态 SQL | ❌ | ✅ XML | ✅ Wrapper | ✅ **简化语法** |
+| SQL 管理 | @Query | XML | @Select | **Markdown** |
+| 方法名查询 | ✅ | ❌ | ❌ | ✅ |
+| findByExample | ❌ | ❌ | ✅ | ✅ **增强版** |
+| 非空字段更新 | ❌ | ✅ | ✅ | ✅ |
+| 学习成本 | 低 | 高 | 中 | **低** |
+| 依赖量 | 少 | 多 | 多 | **少** |
+
 ## ✨ 核心特性
 
 | 特性 | 说明 |

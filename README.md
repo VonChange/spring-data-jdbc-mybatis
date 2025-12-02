@@ -8,6 +8,44 @@
 
 **Keep it simple** — A lightweight Spring Data JDBC extension with MyBatis dynamic SQL capabilities (without MyBatis dependency).
 
+## 💡 Why This Framework?
+
+### Unique Highlights
+
+**1. Markdown SQL** - Write SQL in Markdown for better readability
+```markdown
+​```sql
+-- findUserList
+SELECT * FROM user_info
+<where>[@and user_name like userName%]</where>
+​```
+```
+
+**2. Simplified Dynamic SQL** - One line replaces 6 lines of MyBatis XML
+```sql
+-- This framework
+[@and user_name like userName%]
+
+-- Equivalent MyBatis XML
+<if test="null!=userName and ''!=userName">
+    and user_name like CONCAT(#{userName}, '%')
+</if>
+```
+
+**3. Zero-Dependency Dynamic SQL** - MyBatis dynamic SQL capability without MyBatis
+
+### Comparison with Similar Frameworks
+
+| Feature | Spring Data JDBC | MyBatis | MyBatis-Plus | This Framework |
+|---------|------------------|---------|--------------|----------------|
+| Dynamic SQL | ❌ | ✅ XML | ✅ Wrapper | ✅ **Simplified** |
+| SQL Management | @Query | XML | @Select | **Markdown** |
+| Method Name Query | ✅ | ❌ | ❌ | ✅ |
+| findByExample | ❌ | ❌ | ✅ | ✅ **Enhanced** |
+| Non-null Update | ❌ | ✅ | ✅ | ✅ |
+| Learning Curve | Low | High | Medium | **Low** |
+| Dependencies | Few | Many | Many | **Few** |
+
 ## ✨ Features
 
 | Feature | Description |
